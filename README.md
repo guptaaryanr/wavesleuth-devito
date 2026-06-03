@@ -1,0 +1,262 @@
+# WaveSleuth-Devito
+
+WaveSleuth-Devito is a toy inverse-physics playground I made just for fun and because I was bored and wanted to try something new. It uses Devito to simulate acoustic waves through hidden 2D media, records sparse receiver traces, and tries to reconstruct hidden structures using simple inversion strategies.
+
+The vibe is scientific Battleship with wave propagation: hide something in a medium, fire waves through it, observe only a few traces, then make a guess about what was hidden.
+
+## What this is
+
+WaveSleuth-Devito is a small, runnable sandbox for learning and tinkering with:
+
+- wave propagation
+- hidden-medium reconstruction
+- inverse problems
+- sparse sensing
+- source and receiver placement
+- simple search-based inversion
+- visualization
+- future AI-for-science extensions
+
+## What this is not
+
+This is not a paper, not a production inversion package, not a generic Devito benchmark, and not a polished full-waveform inversion framework. The MVP intentionally favors a hackable end-to-end pipeline over architectural depth.
+
+## Why it exists
+
+A lot of inverse-problem software jumps from textbook math to heavyweight research systems. WaveSleuth-Devito tries to make the basic loop tangible:
+
+1. define a hidden 2D world
+2. simulate acoustic waves through it
+3. record sparse receiver traces
+4. search over candidate hidden structures
+5. visualize and score the guess
+
+The default inversion is deliberately simple: a coarse grid search for the center of a circular anomaly. It is not smart, but it is inspectable.
+
+## Installation
+
+For the full wave simulation path, install with the Devito extra:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[devito,test]"
+```
+
+On Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[devito,test]"
+```
+
+A lighter install works for JSON generation, scoring helpers, and non-Devito tests:
+
+```bash
+python -m pip install -e ".[test]"
+```
+
+Simulation and inversion commands will clearly fail if Devito is not installed.
+
+## Quickstart
+
+```bash
+wavesleuth-devito generate-world --kind circle --out worlds/circle.json
+wavesleuth-devito simulate worlds/circle.json --out runs/circle_obs.npz
+wavesleuth-devito invert runs/circle_obs.npz --method grid-search --out runs/circle_recon.json
+wavesleuth-devito visualize-world worlds/circle.json --out figures/circle_world.png
+wavesleuth-devito visualize-run runs/circle_obs.npz --out figures/circle_traces.png
+wavesleuth-devito visualize-reconstruction runs/circle_recon.json --out figures/circle_recon.png
+wavesleuth-devito score worlds/circle.json runs/circle_recon.json
+```
+
+Or run the whole tiny pipeline:
+
+```bash
+wavesleuth-devito demo --out-dir demo_output
+```
+
+## CLI commands
+
+```bash
+wavesleuth-devito --help
+
+wavesleuth-devito generate-world --kind circle --out worlds/circle.json
+wavesleuth-devito generate-world --kind rectangle --out worlds/rectangle.json
+wavesleuth-devito generate-world --kind layered --out worlds/layered.json
+wavesleuth-devito generate-world --kind blobs --out worlds/blobs.json
+
+wavesleuth-devito simulate worlds/circle.json --out runs/circle_obs.npz
+wavesleuth-devito invert runs/circle_obs.npz --method grid-search --out runs/circle_recon.json
+wavesleuth-devito visualize-world worlds/circle.json --out figures/circle_world.png
+wavesleuth-devito visualize-run runs/circle_obs.npz --out figures/circle_traces.png
+wavesleuth-devito visualize-reconstruction runs/circle_recon.json --out figures/circle_recon.png
+
+wavesleuth-devito score worlds/circle.json runs/circle_recon.json
+wavesleuth-devito demo --out-dir demo_output
+wavesleuth-devito self-test
+```
+
+## Worlds
+
+A world is a JSON file containing grid geometry, velocity settings, hidden-medium parameters, source and receiver coordinates, and simulation settings.
+
+Supported generated worlds:
+
+- `circle`: one circular velocity anomaly
+- `rectangle`: one rectangular velocity anomaly
+- `layered`: horizontal velocity layers
+- `blobs`: multiple deterministic random circular anomalies
+
+Example:
+
+```json
+{
+  "name": "circle_demo",
+  "grid": {
+    "nx": 70,
+    "nz": 70,
+    "extent_x": 1.0,
+    "extent_z": 1.0
+  },
+  "medium": {
+    "background_velocity": 1.5,
+    "anomaly_velocity": 2.2,
+    "anomaly": {
+      "kind": "circle",
+      "center_x": 0.55,
+      "center_z": 0.52,
+      "radius": 0.12
+    }
+  },
+  "acquisition": {
+    "sources": [
+      {"x": 0.2, "z": 0.12}
+    ],
+    "receivers": [
+      {"x": 0.15, "z": 0.82},
+      {"x": 0.30, "z": 0.82},
+      {"x": 0.45, "z": 0.82},
+      {"x": 0.60, "z": 0.82},
+      {"x": 0.75, "z": 0.82},
+      {"x": 0.90, "z": 0.82}
+    ]
+  },
+  "simulation": {
+    "nt": 360,
+    "dt": 0.0015,
+    "space_order": 4,
+    "source_frequency": 20.0
+  }
+}
+```
+
+Coordinates are physical coordinates in the domain described by `extent_x` and `extent_z`.
+
+## Simulation
+
+The forward simulation uses a simple constant-density acoustic wave equation in 2D, implemented with Devito symbols and operators. Sources and receivers are sparse Devito time functions. The source pulse is a Ricker wavelet.
+
+The generated `.npz` run file contains:
+
+- `receiver_traces`: array with shape `(nt, n_receivers)`
+- `time`: simulation times
+- `velocity_model`: 2D velocity grid
+- `source_coordinates`: source locations as `(x, z)`
+- `receiver_coordinates`: receiver locations as `(x, z)`
+- `final_wavefield`: final wavefield if saved
+- `snapshots`: sparse wavefield snapshots if saved
+- `world_json`: serialized world metadata
+
+MVP boundary behavior is intentionally crude. The solver does not implement a production absorbing boundary or PML. Expect boundary reflections, especially for long runs or sources near the edges.
+
+## Inversion
+
+The first inversion method is `grid-search` for circular anomalies.
+
+Given observed traces from a circle world, the inversion:
+
+1. reads the hidden-world metadata stored inside the `.npz`
+2. holds radius and anomaly velocity fixed unless overridden
+3. scans a coarse grid of candidate circle centers
+4. runs a Devito forward simulation for each candidate
+5. computes normalized trace mismatch
+6. saves the best candidate and mismatch map
+
+Example:
+
+```bash
+wavesleuth-devito invert runs/circle_obs.npz \
+  --method grid-search \
+  --candidate-grid-size 5 \
+  --out runs/circle_recon.json
+```
+
+Useful options:
+
+```bash
+--candidate-grid-size 7
+--radius 0.10
+--anomaly-velocity 2.1
+--max-candidates 20
+--quiet
+```
+
+This is intentionally brute force. It is there to make the inverse loop visible, not to be clever.
+
+## Scoring
+
+For circle worlds, scoring reports:
+
+- center error
+- normalized center error
+- radius error
+- anomaly mask IoU
+- best mismatch if available
+
+For non-circle worlds, the MVP scorer returns a clear unsupported message instead of pretending to evaluate a method it does not yet understand.
+
+## Visualization
+
+Matplotlib visualizations are available for:
+
+- worlds: velocity model plus source and receiver overlays
+- runs: receiver trace heatmap
+- reconstructions: true/predicted circles plus candidate mismatch heatmap
+
+No notebooks are required.
+
+## Current limitations
+
+- Circle inversion only searches for the anomaly center.
+- Radius and anomaly velocity are fixed or supplied manually.
+- The default acoustic solver uses simple zero-style boundary behavior, not a tuned absorbing boundary.
+- One or more sources are supported, but the default examples use a single simultaneous shot.
+- The inversion repeatedly runs forward models, so it is intentionally small.
+- The numerical model is for learning and play, not validated field-scale modeling.
+
+## Future ideas
+
+- better absorbing boundaries
+- multiple shot experiments
+- active source/receiver placement
+- CO2 plume toy mode
+- ultrasound mode
+- nondestructive testing mode
+- learned inversion using small neural networks
+- surrogate forward models
+- uncertainty maps
+- comparison against stronger inversion methods
+- performance and validation reports as secondary support features
+
+## Development checks
+
+```bash
+python -m pytest
+wavesleuth-devito self-test
+```
+
+Devito-heavy tests are skipped when Devito is unavailable.

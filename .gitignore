@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+
+# Generated playground outputs
+runs/*
+!runs/README.md
+figures/*
+!figures/README.md
+worlds/*.json
+
+# OS/editor noise
+.DS_Store
+.vscode/
+.idea/

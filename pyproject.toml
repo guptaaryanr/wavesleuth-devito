@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wavesleuth-devito"
+version = "0.1.0"
+description = "A toy inverse-physics playground using Devito acoustic wave simulation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "WaveSleuth contributors"}]
+keywords = ["devito", "wave-equation", "inverse-problems", "simulation", "acoustics"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Physics"
+]
+dependencies = [
+  "numpy>=1.23",
+  "matplotlib>=3.6"
+]
+
+[project.optional-dependencies]
+devito = ["devito>=4.8"]
+test = ["pytest>=7"]
+all = ["devito>=4.8", "pytest>=7"]
+
+[project.scripts]
+wavesleuth-devito = "wavesleuth_devito.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "devito: tests that require Devito and may compile a tiny operator"
+]
