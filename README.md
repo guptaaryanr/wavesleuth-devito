@@ -1,6 +1,8 @@
 # WaveSleuth-Devito
 
-WaveSleuth-Devito is a toy inverse-physics playground I made just for fun and because I was bored and wanted to try something new. It uses Devito to simulate acoustic waves through hidden 2D media, records sparse receiver traces, and tries to reconstruct hidden structures using simple inversion strategies.
+WaveSleuth-Devito is a toy inverse-physics playground I made just for fun and because I was bored and wanted to try something new.
+
+It uses Devito to simulate acoustic waves through hidden 2D media, records sparse receiver traces, and tries to reconstruct hidden structures using simple inversion strategies.
 
 The vibe is scientific Battleship with wave propagation: hide something in a medium, fire waves through it, observe only a few traces, then make a guess about what was hidden.
 
@@ -260,3 +262,22 @@ wavesleuth-devito self-test
 ```
 
 Devito-heavy tests are skipped when Devito is unavailable.
+## v0.2 improvements
+
+This repo has been upgraded with a more useful inverse-problem baseline:
+
+- `--acquisition-preset crossfire` generates sparse multi-angle source/receiver geometry.
+- `simulate --shot-mode sequential` fires sources one at a time and stores a trace cube.
+- `invert --mismatch-mode differential` subtracts a background simulation before comparing traces.
+- `invert --refine-levels N` performs local grid refinement after the first coarse search.
+- `invert --metric correlation`, `--time-min`, `--time-max`, and `--normalize-traces` expose a few simple objective variants.
+
+A good v0.2 workflow is:
+
+```bash
+wavesleuth-devito generate-world --kind circle --acquisition-preset crossfire --out worlds/circle_crossfire.json
+wavesleuth-devito simulate worlds/circle_crossfire.json --shot-mode sequential --out runs/circle_crossfire_obs.npz
+wavesleuth-devito invert runs/circle_crossfire_obs.npz --method grid-search --candidate-grid-size 5 --refine-levels 1 --mismatch-mode differential --out runs/circle_crossfire_recon.json
+wavesleuth-devito visualize-reconstruction runs/circle_crossfire_recon.json --out figures/circle_crossfire_recon.png
+wavesleuth-devito score worlds/circle_crossfire.json runs/circle_crossfire_recon.json
+```

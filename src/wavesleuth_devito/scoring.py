@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 
-from .exceptions import UnsupportedWorldError
+from .exceptions import UnsupportedWorldError, ValidationError
 from .geometry import grid_extent, grid_shape
 from .world import anomaly_kind, anomaly_mask_from_world, circle_parameters
 
@@ -46,15 +46,90 @@ def iou_score(true_mask: np.ndarray, predicted_mask: np.ndarray) -> float:
     return float(intersection / union)
 
 
-def trace_mismatch(observed: np.ndarray, simulated: np.ndarray, *, eps: float = 1.0e-12) -> float:
-    """Normalized L2 trace mismatch."""
+def _time_axis(data: np.ndarray) -> int:
+    if data.ndim == 2:
+        return 0
+    if data.ndim == 3:
+        return 1
+    raise ValidationError(f"Trace data must be 2D (time, receiver) or 3D (shot, time, receiver), got {data.shape}")
+
+
+def window_trace_data(
+    data: np.ndarray,
+    time: np.ndarray | None,
+    *,
+    time_min: float | None = None,
+    time_max: float | None = None,
+) -> np.ndarray:
+    """Apply a time window to 2D or 3D trace data."""
+    arr = np.asarray(data)
+    if time_min is None and time_max is None:
+        return arr
+    if time is None:
+        raise ValidationError("A time array is required when using time_min or time_max.")
+    t = np.asarray(time, dtype=np.float64)
+    axis = _time_axis(arr)
+    expected = arr.shape[axis]
+    if t.shape[0] != expected:
+        raise ValidationError(f"Time length {t.shape[0]} does not match trace time axis {expected}.")
+    mask = np.ones_like(t, dtype=bool)
+    if time_min is not None:
+        mask &= t >= float(time_min)
+    if time_max is not None:
+        mask &= t <= float(time_max)
+    if not bool(np.any(mask)):
+        raise ValidationError("Time window removed every trace sample.")
+    return np.take(arr, np.flatnonzero(mask), axis=axis)
+
+
+def normalize_trace_channels(data: np.ndarray, *, eps: float = 1.0e-12) -> np.ndarray:
+    """Normalize each receiver channel, preserving time and shot structure."""
+    arr = np.asarray(data, dtype=np.float64)
+    axis = _time_axis(arr)
+    norm = np.sqrt(np.sum(arr * arr, axis=axis, keepdims=True))
+    return arr / np.maximum(norm, eps)
+
+
+def trace_mismatch(
+    observed: np.ndarray,
+    simulated: np.ndarray,
+    *,
+    eps: float = 1.0e-12,
+    metric: str = "l2",
+    time: np.ndarray | None = None,
+    time_min: float | None = None,
+    time_max: float | None = None,
+    normalize_traces: bool = False,
+) -> float:
+    """Compare observed and simulated traces.
+
+    Supported metrics:
+
+    - `l2`: normalized squared L2 mismatch.
+    - `correlation`: one minus global normalized correlation. Useful when the
+      timing pattern matters more than absolute amplitude.
+    """
     obs = np.asarray(observed, dtype=np.float64)
     sim = np.asarray(simulated, dtype=np.float64)
     if obs.shape != sim.shape:
         raise ValueError(f"Trace shapes differ: observed {obs.shape}, simulated {sim.shape}")
-    residual = obs - sim
-    denom = float(np.sum(obs * obs)) + eps
-    return float(np.sum(residual * residual) / denom)
+    obs = window_trace_data(obs, time, time_min=time_min, time_max=time_max)
+    sim = window_trace_data(sim, time, time_min=time_min, time_max=time_max)
+    if normalize_traces:
+        obs = normalize_trace_channels(obs, eps=eps)
+        sim = normalize_trace_channels(sim, eps=eps)
+
+    metric = metric.lower()
+    if metric == "l2":
+        residual = obs - sim
+        denom = float(np.sum(obs * obs)) + eps
+        return float(np.sum(residual * residual) / denom)
+    if metric == "correlation":
+        x = obs.ravel()
+        y = sim.ravel()
+        denom = float(np.linalg.norm(x) * np.linalg.norm(y)) + eps
+        return float(1.0 - (float(np.dot(x, y)) / denom))
+    raise ValidationError(f"Unsupported trace mismatch metric {metric!r}.")
 
 
 def circle_mask_from_params(

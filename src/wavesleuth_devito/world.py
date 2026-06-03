@@ -20,9 +20,64 @@ from .geometry import (
 
 DEFAULT_SEED = 20260203
 SUPPORTED_WORLD_KINDS = ("circle", "rectangle", "layered", "blobs")
+SUPPORTED_ACQUISITION_PRESETS = ("single", "crossfire")
 
 
-def _base_world(name: str, kind: str) -> dict[str, Any]:
+def _single_acquisition() -> dict[str, list[dict[str, float]]]:
+    """One-source, top-receiver acquisition used by the original MVP."""
+    return {
+        "sources": [{"x": 0.20, "z": 0.12}],
+        "receivers": [
+            {"x": 0.15, "z": 0.82},
+            {"x": 0.30, "z": 0.82},
+            {"x": 0.45, "z": 0.82},
+            {"x": 0.60, "z": 0.82},
+            {"x": 0.75, "z": 0.82},
+            {"x": 0.90, "z": 0.82},
+        ],
+    }
+
+
+def _crossfire_acquisition() -> dict[str, list[dict[str, float]]]:
+    """Sparse multi-angle acquisition for a less ambiguous toy inverse problem.
+
+    The sources are intended to be fired sequentially. Keeping receivers on more
+    than one side of the domain makes the coarse search surface less degenerate
+    than the original single-shot, top-receiver setup.
+    """
+    return {
+        "sources": [
+            {"x": 0.18, "z": 0.18},
+            {"x": 0.82, "z": 0.18},
+            {"x": 0.18, "z": 0.72},
+        ],
+        "receivers": [
+            {"x": 0.20, "z": 0.84},
+            {"x": 0.40, "z": 0.84},
+            {"x": 0.60, "z": 0.84},
+            {"x": 0.80, "z": 0.84},
+            {"x": 0.88, "z": 0.30},
+            {"x": 0.88, "z": 0.50},
+            {"x": 0.88, "z": 0.70},
+            {"x": 0.12, "z": 0.34},
+            {"x": 0.12, "z": 0.54},
+            {"x": 0.12, "z": 0.74},
+        ],
+    }
+
+
+def acquisition_preset(name: str) -> dict[str, list[dict[str, float]]]:
+    """Return a named acquisition preset."""
+    if name == "single":
+        return _single_acquisition()
+    if name == "crossfire":
+        return _crossfire_acquisition()
+    raise UnsupportedWorldError(
+        f"Unsupported acquisition preset {name!r}. Supported: {', '.join(SUPPORTED_ACQUISITION_PRESETS)}"
+    )
+
+
+def _base_world(name: str, kind: str, *, acquisition: str = "single") -> dict[str, Any]:
     return {
         "name": name,
         "grid": {
@@ -36,32 +91,29 @@ def _base_world(name: str, kind: str) -> dict[str, Any]:
             "anomaly_velocity": 2.2,
             "anomaly": {"kind": kind},
         },
-        "acquisition": {
-            "sources": [{"x": 0.20, "z": 0.12}],
-            "receivers": [
-                {"x": 0.15, "z": 0.82},
-                {"x": 0.30, "z": 0.82},
-                {"x": 0.45, "z": 0.82},
-                {"x": 0.60, "z": 0.82},
-                {"x": 0.75, "z": 0.82},
-                {"x": 0.90, "z": 0.82},
-            ],
-        },
+        "acquisition": acquisition_preset(acquisition),
         "simulation": {
             "nt": 360,
             "dt": 0.0015,
             "space_order": 4,
             "source_frequency": 20.0,
+            "shot_mode": "sequential" if acquisition == "crossfire" else "simultaneous",
         },
     }
 
 
-def make_default_world(kind: str = "circle", *, seed: int = DEFAULT_SEED, name: str | None = None) -> dict[str, Any]:
+def make_default_world(
+    kind: str = "circle",
+    *,
+    seed: int = DEFAULT_SEED,
+    name: str | None = None,
+    acquisition: str = "single",
+) -> dict[str, Any]:
     """Create a deterministic world dictionary for a supported kind."""
     if kind not in SUPPORTED_WORLD_KINDS:
         raise UnsupportedWorldError(f"Unsupported world kind {kind!r}. Supported: {', '.join(SUPPORTED_WORLD_KINDS)}")
 
-    world = _base_world(name or f"{kind}_demo", kind)
+    world = _base_world(name or f"{kind}_demo", kind, acquisition=acquisition)
     anomaly = world["medium"]["anomaly"]
 
     if kind == "circle":
@@ -189,6 +241,9 @@ def validate_world(world: dict[str, Any]) -> None:
         raise ValidationError("simulation.space_order must be at least 2.")
     if float(simulation["source_frequency"]) <= 0.0:
         raise ValidationError("simulation.source_frequency must be positive.")
+    shot_mode = str(simulation.get("shot_mode", "simultaneous"))
+    if shot_mode not in {"simultaneous", "sequential"}:
+        raise ValidationError("simulation.shot_mode must be 'simultaneous' or 'sequential' when supplied.")
 
 
 def anomaly_kind(world: dict[str, Any]) -> str:
@@ -280,6 +335,22 @@ def velocity_model_from_world(world: dict[str, Any]) -> np.ndarray:
     return model
 
 
+def background_velocity_model_from_world(world: dict[str, Any]) -> np.ndarray:
+    """Return the background model used by differential inversion.
+
+    For circle/rectangle/blob worlds this is a homogeneous background. For a
+    layered world, the generated velocity model is already a background-like
+    structure, so it is returned as-is.
+    """
+    validate_world(world)
+    kind = anomaly_kind(world)
+    if kind == "layered":
+        return velocity_model_from_world(world)
+    nx, nz = grid_shape(world)
+    background = float(world["medium"]["background_velocity"])
+    return np.full((nx, nz), background, dtype=np.float32)
+
+
 def circle_parameters(world: dict[str, Any]) -> dict[str, float] | None:
     """Return circle parameters if the world contains a circular anomaly."""
     if anomaly_kind(world) != "circle":
@@ -316,18 +387,11 @@ def world_with_circle_candidate(
 
 
 def make_demo_world() -> dict[str, Any]:
-    """Return a slightly smaller circle world for the end-to-end demo."""
-    world = make_default_world("circle", name="wavesleuth_demo")
+    """Return a small crossfire circle world for the end-to-end demo."""
+    world = make_default_world("circle", name="wavesleuth_demo", acquisition="crossfire")
     world["grid"].update({"nx": 52, "nz": 52, "extent_x": 1.0, "extent_z": 1.0})
-    world["simulation"].update({"nt": 340, "dt": 0.0015, "space_order": 4, "source_frequency": 18.0})
-    world["acquisition"]["sources"] = [{"x": 0.20, "z": 0.18}]
-    world["acquisition"]["receivers"] = [
-        {"x": 0.18, "z": 0.78},
-        {"x": 0.32, "z": 0.78},
-        {"x": 0.46, "z": 0.78},
-        {"x": 0.60, "z": 0.78},
-        {"x": 0.74, "z": 0.78},
-        {"x": 0.88, "z": 0.78},
-    ]
+    world["simulation"].update(
+        {"nt": 360, "dt": 0.0015, "space_order": 4, "source_frequency": 18.0, "shot_mode": "sequential"}
+    )
     validate_world(world)
     return world

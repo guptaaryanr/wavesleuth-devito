@@ -68,22 +68,25 @@ def save_run_npz(
     final_wavefield: np.ndarray | None,
     snapshots: np.ndarray | None,
     world_json: str,
+    shot_mode: str | None = None,
 ) -> Path:
     """Save a simulation run as a compressed `.npz` file."""
     p = ensure_parent(path)
     final = np.asarray(final_wavefield if final_wavefield is not None else np.empty((0,), dtype=np.float32), dtype=np.float32)
     snaps = np.asarray(snapshots if snapshots is not None else np.empty((0,), dtype=np.float32), dtype=np.float32)
-    np.savez_compressed(
-        p,
-        receiver_traces=np.asarray(receiver_traces, dtype=np.float32),
-        time=np.asarray(time, dtype=np.float32),
-        velocity_model=np.asarray(velocity_model, dtype=np.float32),
-        source_coordinates=np.asarray(source_coordinates, dtype=np.float32),
-        receiver_coordinates=np.asarray(receiver_coordinates, dtype=np.float32),
-        final_wavefield=final,
-        snapshots=snaps,
-        world_json=np.asarray(world_json),
-    )
+    payload: dict[str, np.ndarray] = {
+        "receiver_traces": np.asarray(receiver_traces, dtype=np.float32),
+        "time": np.asarray(time, dtype=np.float32),
+        "velocity_model": np.asarray(velocity_model, dtype=np.float32),
+        "source_coordinates": np.asarray(source_coordinates, dtype=np.float32),
+        "receiver_coordinates": np.asarray(receiver_coordinates, dtype=np.float32),
+        "final_wavefield": final,
+        "snapshots": snaps,
+        "world_json": np.asarray(world_json),
+    }
+    if shot_mode is not None:
+        payload["shot_mode"] = np.asarray(str(shot_mode))
+    np.savez_compressed(p, **payload)
     return p
 
 
@@ -112,16 +115,25 @@ def load_run_npz(path: str | Path) -> dict[str, np.ndarray]:
         raise ValidationError(f"Could not load run file {p}: {exc}") from exc
 
 
+def array_string(value: np.ndarray | str | bytes, *, default: str = "") -> str:
+    """Extract a string saved as a scalar NPZ array."""
+    try:
+        if isinstance(value, np.ndarray):
+            return str(value.item())
+        if isinstance(value, bytes):
+            return value.decode("utf-8")
+        return str(value)
+    except Exception:
+        return default
+
+
 def world_from_run(run: dict[str, np.ndarray]) -> dict[str, Any]:
     """Extract and validate the world metadata stored inside a run dictionary."""
     raw = run.get("world_json")
     if raw is None:
         raise ValidationError("Run data is missing world_json metadata.")
     try:
-        if isinstance(raw, np.ndarray):
-            world_json = str(raw.item())
-        else:
-            world_json = str(raw)
+        world_json = array_string(raw)
         world = json.loads(world_json)
     except (ValueError, json.JSONDecodeError) as exc:
         raise ValidationError("Run world_json metadata is invalid.") from exc

@@ -13,7 +13,15 @@ from .visualization import visualize_reconstruction, visualize_run, visualize_wo
 from .world import make_demo_world
 
 
-def run_demo(out_dir: str | Path, *, candidate_grid_size: int = 5, quiet: bool = False) -> dict[str, Any]:
+def run_demo(
+    out_dir: str | Path,
+    *,
+    candidate_grid_size: int = 5,
+    quiet: bool = False,
+    refine_levels: int = 1,
+    mismatch_mode: str = "differential",
+    metric: str = "l2",
+) -> dict[str, Any]:
     """Run the tiny end-to-end WaveSleuth pipeline."""
     root = Path(out_dir)
     worlds = root / "worlds"
@@ -29,11 +37,14 @@ def run_demo(out_dir: str | Path, *, candidate_grid_size: int = 5, quiet: bool =
     recon_path = runs / "circle_recon.json"
 
     save_world(world, world_path)
-    simulate_world(world, out_path=str(run_path), save_wavefield=True, quiet=quiet)
+    simulate_world(world, out_path=str(run_path), save_wavefield=True, quiet=quiet, shot_mode="sequential")
     reconstruction = grid_search_circle(
         run_path,
         out_path=recon_path,
         candidate_grid_size=candidate_grid_size,
+        refine_levels=refine_levels,
+        mismatch_mode=mismatch_mode,
+        metric=metric,
         quiet=quiet,
     )
     visualize_world(world, figures / "circle_world.png")
@@ -46,4 +57,7 @@ def run_demo(out_dir: str | Path, *, candidate_grid_size: int = 5, quiet: bool =
         "reconstruction_path": str(recon_path),
         "figures_dir": str(figures),
         "score": final_score,
+        "objective": reconstruction.get("objective", {}),
+        "best_candidate": reconstruction.get("best_candidate", {}),
+        "nearest_true_candidate": reconstruction.get("nearest_true_candidate", {}),
     }
