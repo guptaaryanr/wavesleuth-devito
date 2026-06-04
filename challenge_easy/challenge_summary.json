@@ -1,0 +1,52 @@
+{
+  "best_candidate": {
+    "anomaly_velocity": 2.2,
+    "center_x": 0.5460000038146973,
+    "center_z": 0.5,
+    "index_x": 3,
+    "index_z": 2,
+    "level": 1,
+    "mismatch": 0.4070723295211332,
+    "radius": 0.12
+  },
+  "challenge": "circle-easy",
+  "challenge_score": {
+    "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+    "iou": 0.8,
+    "n_forward_runs": 50,
+    "n_receivers": 10,
+    "n_sources": 3,
+    "normalized_center_error": 0.014422204572852888,
+    "runtime_seconds": 1.2013669940060936,
+    "score": 71.94954223860289,
+    "supported": true
+  },
+  "figures_dir": "challenge_easy/figures",
+  "reconstruction_path": "challenge_easy/runs/circle-easy_recon.json",
+  "report_path": "challenge_easy/reports/report.html",
+  "run_path": "challenge_easy/runs/circle-easy_obs.npz",
+  "runtime_seconds": 1.2013669940060936,
+  "score": {
+    "best_mismatch": 0.4070723295211332,
+    "center_error": 0.020396077306247824,
+    "iou": 0.8,
+    "normalized_center_error": 0.014422204572852888,
+    "radius_error": 0.0,
+    "reconstruction_score": 0.8,
+    "supported": true
+  },
+  "settings": {
+    "amplitude_jitter": 0.0,
+    "candidate_grid_size": 5,
+    "challenge": "circle-easy",
+    "metric": "l2",
+    "mismatch_mode": "differential",
+    "noise_level": 0.0,
+    "receiver_dropout": 0.0,
+    "refine_levels": 1,
+    "search_radius": false,
+    "search_velocity": false,
+    "time_jitter": 0.0
+  },
+  "world_path": "challenge_easy/worlds/circle-easy.json"
+}

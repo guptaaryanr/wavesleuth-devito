@@ -1,4 +1,4 @@
-"""Matplotlib visualizations for worlds, runs, and reconstructions."""
+"""Matplotlib visualizations for worlds, runs, reconstructions, and uncertainty."""
 
 from __future__ import annotations
 
@@ -14,10 +14,8 @@ from .world import anomaly_kind, velocity_model_from_world
 
 def _plt():
     import matplotlib
-
     matplotlib.use("Agg", force=True)
     import matplotlib.pyplot as plt
-
     return plt
 
 
@@ -38,30 +36,15 @@ def _overlay_anomaly(ax: Any, world: dict[str, Any], *, label: str = "true anoma
     anomaly = world["medium"]["anomaly"]
     kind = anomaly_kind(world)
     if kind == "circle":
-        patch = plt.Circle(
-            (float(anomaly["center_x"]), float(anomaly["center_z"])),
-            float(anomaly["radius"]),
-            fill=False,
-            linewidth=2.0,
-            label=label,
-        )
-        ax.add_patch(patch)
+        ax.add_patch(plt.Circle((float(anomaly["center_x"]), float(anomaly["center_z"])), float(anomaly["radius"]), fill=False, linewidth=2.0, label=label))
     elif kind == "rectangle":
         width = float(anomaly["width"])
         height = float(anomaly["height"])
         lower_left = (float(anomaly["center_x"]) - width / 2.0, float(anomaly["center_z"]) - height / 2.0)
-        patch = plt.Rectangle(lower_left, width, height, fill=False, linewidth=2.0, label=label)
-        ax.add_patch(patch)
+        ax.add_patch(plt.Rectangle(lower_left, width, height, fill=False, linewidth=2.0, label=label))
     elif kind == "blobs":
         for idx, blob in enumerate(anomaly["blobs"]):
-            patch = plt.Circle(
-                (float(blob["center_x"]), float(blob["center_z"])),
-                float(blob["radius"]),
-                fill=False,
-                linewidth=1.5,
-                label=label if idx == 0 else None,
-            )
-            ax.add_patch(patch)
+            ax.add_patch(plt.Circle((float(blob["center_x"]), float(blob["center_z"])), float(blob["radius"]), fill=False, linewidth=1.5, label=label if idx == 0 else None))
     elif kind == "layered":
         for layer in anomaly["layers"]:
             ax.axhline(float(layer["z_min"]), linewidth=1.0)
@@ -75,12 +58,7 @@ def visualize_world(world_or_path: dict[str, Any] | str | Path, out_path: str | 
     plt = _plt()
     out = ensure_parent(out_path)
     fig, ax = plt.subplots(figsize=(6.5, 5.5))
-    image = ax.imshow(
-        velocity_model.T,
-        origin="lower",
-        extent=_domain_extent(world),
-        aspect="equal",
-    )
+    image = ax.imshow(velocity_model.T, origin="lower", extent=_domain_extent(world), aspect="equal")
     fig.colorbar(image, ax=ax, label="velocity")
     _overlay_anomaly(ax, world)
     _overlay_acquisition(ax, world)
@@ -95,14 +73,7 @@ def visualize_world(world_or_path: dict[str, Any] | str | Path, out_path: str | 
 
 def _trace_image(ax: Any, fig: Any, traces: np.ndarray, time: np.ndarray, *, title: str) -> None:
     vmax = float(np.percentile(np.abs(traces), 99.0)) if np.any(traces) else 1.0
-    image = ax.imshow(
-        traces.T,
-        origin="lower",
-        aspect="auto",
-        extent=[float(time[0]), float(time[-1]), -0.5, traces.shape[1] - 0.5],
-        vmin=-vmax,
-        vmax=vmax,
-    )
+    image = ax.imshow(traces.T, origin="lower", aspect="auto", extent=[float(time[0]), float(time[-1]), -0.5, traces.shape[1] - 0.5], vmin=-vmax, vmax=vmax)
     fig.colorbar(image, ax=ax, label="pressure")
     ax.set_xlabel("time")
     ax.set_ylabel("receiver")
@@ -163,15 +134,8 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
     fig.colorbar(image0, ax=ax0, label="velocity")
     _overlay_anomaly(ax0, world, label="true")
     if best:
-        patch = plt.Circle(
-            (float(best["center_x"]), float(best["center_z"])),
-            float(best["radius"]),
-            fill=False,
-            linestyle="--",
-            linewidth=2.0,
-            label="reconstructed",
-        )
-        ax0.add_patch(patch)
+        label = f"reconstructed r={float(best.get('radius', 0.0)):.3f}"
+        ax0.add_patch(plt.Circle((float(best["center_x"]), float(best["center_z"])), float(best["radius"]), fill=False, linestyle="--", linewidth=2.0, label=label))
     ax0.set_title("True and reconstructed anomaly")
     ax0.set_xlabel("x")
     ax0.set_ylabel("z")
@@ -180,18 +144,12 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
     ax1 = axes[1]
     xs_raw, zs_raw, mismatch_raw = _latest_grid_for_reconstruction(reconstruction)
     if mismatch_raw:
-        mismatch = np.asarray(
-            [[np.nan if value is None else float(value) for value in row] for row in mismatch_raw],
-            dtype=np.float64,
-        )
+        mismatch = np.asarray([[np.nan if value is None else float(value) for value in row] for row in mismatch_raw], dtype=np.float64)
         xs = np.asarray(xs_raw, dtype=float)
         zs = np.asarray(zs_raw, dtype=float)
-        if xs.size >= 2 and zs.size >= 2:
-            extent = [float(xs.min()), float(xs.max()), float(zs.min()), float(zs.max())]
-        else:
-            extent = _domain_extent(world)
+        extent = [float(xs.min()), float(xs.max()), float(zs.min()), float(zs.max())] if xs.size >= 2 and zs.size >= 2 else _domain_extent(world)
         image1 = ax1.imshow(mismatch, origin="lower", aspect="auto", extent=extent)
-        fig.colorbar(image1, ax=ax1, label="mismatch")
+        fig.colorbar(image1, ax=ax1, label="best mismatch at center")
         if true:
             ax1.scatter([float(true["center_x"])], [float(true["center_z"])], marker="o", s=80, label="true center")
         if best:
@@ -205,6 +163,74 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
     ax1.set_xlabel("candidate center x")
     ax1.set_ylabel("candidate center z")
 
+    fig.tight_layout()
+    fig.savefig(out, dpi=160)
+    plt.close(fig)
+    return out
+
+
+def _candidate_center_probabilities(reconstruction: dict[str, Any], temperature: float | None = None) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    candidates = list(reconstruction.get("candidates", []))
+    if not candidates:
+        return np.asarray([]), np.asarray([]), np.asarray([[]])
+    xs = np.asarray(sorted({round(float(c["center_x"]), 8) for c in candidates}), dtype=float)
+    zs = np.asarray(sorted({round(float(c["center_z"]), 8) for c in candidates}), dtype=float)
+    grid = np.zeros((len(zs), len(xs)), dtype=float)
+    x_index = {round(float(x), 8): i for i, x in enumerate(xs)}
+    z_index = {round(float(z), 8): i for i, z in enumerate(zs)}
+    mismatches = np.asarray([float(c["mismatch"]) for c in candidates], dtype=float)
+    finite = np.isfinite(mismatches)
+    if not bool(np.any(finite)):
+        return xs, zs, grid
+    if temperature is None:
+        temp = float((reconstruction.get("uncertainty") or {}).get("temperature", 0.0) or 0.0)
+    else:
+        temp = float(temperature)
+    if temp <= 0.0:
+        temp = max(float(np.nanpercentile(mismatches[finite], 75.0) - np.nanmin(mismatches[finite])), 1.0e-9)
+    logits = -(mismatches - np.nanmin(mismatches[finite])) / temp
+    logits[~finite] = -np.inf
+    logits -= float(np.nanmax(logits))
+    raw = np.exp(logits)
+    probs = raw / max(float(raw.sum()), 1.0e-12)
+    for c, p in zip(candidates, probs):
+        grid[z_index[round(float(c["center_z"]), 8)], x_index[round(float(c["center_x"]), 8)]] += float(p)
+    return xs, zs, grid
+
+
+def visualize_uncertainty(reconstruction_or_path: dict[str, Any] | str | Path, out_path: str | Path, *, temperature: float | None = None) -> Path:
+    """Plot a pseudo-probability map from candidate mismatches."""
+    reconstruction = load_json(reconstruction_or_path) if isinstance(reconstruction_or_path, (str, Path)) else reconstruction_or_path
+    world = reconstruction.get("world")
+    if not isinstance(world, dict):
+        raise ValueError("Reconstruction does not contain embedded world metadata.")
+    best = reconstruction.get("best_candidate", {})
+    true = reconstruction.get("true_center", {})
+    uncertainty = reconstruction.get("uncertainty") or {}
+    plt = _plt()
+    out = ensure_parent(out_path)
+    fig, ax = plt.subplots(figsize=(6.4, 5.4))
+    xs, zs, grid = _candidate_center_probabilities(reconstruction, temperature=temperature)
+    if xs.size and zs.size:
+        extent = [float(xs.min()), float(xs.max()), float(zs.min()), float(zs.max())]
+        image = ax.imshow(grid, origin="lower", aspect="auto", extent=extent)
+        fig.colorbar(image, ax=ax, label="pseudo-probability by center")
+    else:
+        ax.text(0.5, 0.5, "No candidate uncertainty available", ha="center", va="center")
+    if true:
+        ax.scatter([float(true["center_x"])], [float(true["center_z"])], marker="o", s=85, label="true center")
+    if best:
+        ax.scatter([float(best["center_x"])], [float(best["center_z"])], marker="x", s=95, label="best")
+    ax.set_xlim(0.0, float(world["grid"]["extent_x"]))
+    ax.set_ylim(0.0, float(world["grid"]["extent_z"]))
+    ax.set_xlabel("candidate center x")
+    ax.set_ylabel("candidate center z")
+    ax.set_title(
+        "Uncertainty from mismatch surface\n"
+        f"entropy={float(uncertainty.get('normalized_entropy', 0.0)):.3f}, "
+        f"effective={float(uncertainty.get('effective_candidates', 0.0)):.1f}"
+    )
+    ax.legend(loc="upper right", fontsize=8)
     fig.tight_layout()
     fig.savefig(out, dpi=160)
     plt.close(fig)

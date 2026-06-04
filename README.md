@@ -281,3 +281,39 @@ wavesleuth-devito invert runs/circle_crossfire_obs.npz --method grid-search --ca
 wavesleuth-devito visualize-reconstruction runs/circle_crossfire_recon.json --out figures/circle_crossfire_recon.png
 wavesleuth-devito score worlds/circle_crossfire.json runs/circle_crossfire_recon.json
 ```
+## v0.3 improvements
+
+v0.3 expands the playground from a better demo into a small experiment engine:
+
+- `invert --radius-values`, `--anomaly-velocity-values`, `--search-radius`, and `--search-velocity` can search size and contrast, not just center.
+- `simulate --noise-level`, `--receiver-dropout`, `--amplitude-jitter`, and `--time-jitter` create deterministic imperfect observations.
+- `generate-world --acquisition-preset ring|top-only|left-right` adds more source/receiver layouts.
+- `--boundary sponge --sponge-width N --sponge-strength X` enables a simple damping sponge. This is not a full PML.
+- `visualize-uncertainty` turns candidate mismatch values into pseudo-probability diagnostics.
+- `challenge` runs named budgeted reconstruction games such as `circle-easy`, `circle-noisy`, `circle-limited-angle`, and `circle-radius-velocity`.
+- `leaderboard` scans challenge summaries and ranks them by budgeted score.
+- `compare-acquisition` runs the same hidden object under multiple source/receiver layouts.
+- `report` writes a small HTML experiment report.
+
+Example v0.3 commands:
+
+```bash
+wavesleuth-devito demo --out-dir demo_output_v03 --quiet
+wavesleuth-devito challenge circle-noisy --out-dir challenge_noisy --quiet
+wavesleuth-devito leaderboard .
+wavesleuth-devito generate-world --kind circle --acquisition-preset ring --boundary sponge --sponge-width 5 --sponge-strength 12 --out worlds/circle_ring.json
+wavesleuth-devito compare-acquisition worlds/circle_ring.json --out-dir acq_compare --quiet
+```
+
+Radius/velocity search example:
+
+```bash
+wavesleuth-devito invert runs/circle_obs.npz \
+  --method grid-search \
+  --candidate-grid-size 5 \
+  --refine-levels 1 \
+  --mismatch-mode differential \
+  --radius-values 0.09,0.12,0.15 \
+  --anomaly-velocity-values 2.0,2.2,2.4 \
+  --out runs/circle_recon_param_search.json
+```

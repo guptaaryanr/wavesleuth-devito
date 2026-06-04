@@ -1,4 +1,4 @@
-"""Scoring and mismatch helpers."""
+"""Scoring, mismatch, uncertainty, and challenge-score helpers."""
 
 from __future__ import annotations
 
@@ -101,14 +101,7 @@ def trace_mismatch(
     time_max: float | None = None,
     normalize_traces: bool = False,
 ) -> float:
-    """Compare observed and simulated traces.
-
-    Supported metrics:
-
-    - `l2`: normalized squared L2 mismatch.
-    - `correlation`: one minus global normalized correlation. Useful when the
-      timing pattern matters more than absolute amplitude.
-    """
+    """Compare observed and simulated traces."""
     obs = np.asarray(observed, dtype=np.float64)
     sim = np.asarray(simulated, dtype=np.float64)
     if obs.shape != sim.shape:
@@ -226,3 +219,80 @@ def score_reconstruction(true_world: dict[str, Any], reconstruction: dict[str, A
         predicted_radius=radius,
         best_mismatch=None if mismatch is None else float(mismatch),
     )
+
+
+def probability_map_from_mismatch_map(
+    mismatch_map: list[list[float | None]] | np.ndarray,
+    *,
+    temperature: float | None = None,
+) -> tuple[np.ndarray, dict[str, float]]:
+    """Convert a mismatch map into a pseudo-probability map.
+
+    This is not Bayesian inference. It is a useful visualization of which
+    candidates were nearly competitive under the chosen objective.
+    """
+    arr = np.asarray(
+        [[np.nan if value is None else float(value) for value in row] for row in mismatch_map],
+        dtype=np.float64,
+    )
+    finite = np.isfinite(arr)
+    if arr.size == 0 or not bool(np.any(finite)):
+        raise ValidationError("Cannot build an uncertainty map from an empty mismatch map.")
+    best = float(np.nanmin(arr))
+    shifted = arr - best
+    positive = shifted[finite & (shifted > 0.0)]
+    if temperature is None:
+        if positive.size:
+            temperature = float(np.median(positive))
+        else:
+            temperature = 1.0
+    temperature = max(float(temperature), 1.0e-12)
+    weights = np.zeros_like(arr, dtype=np.float64)
+    weights[finite] = np.exp(-shifted[finite] / temperature)
+    total = float(np.sum(weights))
+    if total <= 0.0:
+        weights[finite] = 1.0
+        total = float(np.sum(weights))
+    prob = weights / total
+    p = prob[prob > 0.0]
+    entropy = float(-np.sum(p * np.log(p)))
+    max_entropy = float(np.log(p.size)) if p.size > 1 else 1.0
+    return prob, {
+        "temperature": float(temperature),
+        "entropy": entropy,
+        "normalized_entropy": float(entropy / max_entropy) if max_entropy > 0 else 0.0,
+        "max_probability": float(np.max(prob)),
+        "best_mismatch": best,
+    }
+
+
+def budgeted_challenge_score(
+    reconstruction_score: dict[str, Any],
+    *,
+    n_forward_runs: int,
+    n_sources: int,
+    n_receivers: int,
+    runtime_seconds: float | None = None,
+) -> dict[str, Any]:
+    """Return a lightweight game-style score for budgeted challenge runs."""
+    if not reconstruction_score.get("supported", False):
+        return {
+            "supported": False,
+            "message": reconstruction_score.get("message", "unsupported reconstruction score"),
+        }
+    iou = float(reconstruction_score.get("iou", 0.0))
+    norm_err = float(reconstruction_score.get("normalized_center_error", 1.0))
+    raw = 100.0 * iou - 20.0 * norm_err - 0.08 * int(n_forward_runs) - 0.75 * int(n_sources) - 0.15 * int(n_receivers)
+    if runtime_seconds is not None:
+        raw -= 0.01 * max(0.0, float(runtime_seconds))
+    return {
+        "supported": True,
+        "score": float(raw),
+        "iou": iou,
+        "normalized_center_error": norm_err,
+        "n_forward_runs": int(n_forward_runs),
+        "n_sources": int(n_sources),
+        "n_receivers": int(n_receivers),
+        "runtime_seconds": None if runtime_seconds is None else float(runtime_seconds),
+        "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+    }

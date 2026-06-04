@@ -20,7 +20,8 @@ from .geometry import (
 
 DEFAULT_SEED = 20260203
 SUPPORTED_WORLD_KINDS = ("circle", "rectangle", "layered", "blobs")
-SUPPORTED_ACQUISITION_PRESETS = ("single", "crossfire")
+SUPPORTED_ACQUISITION_PRESETS = ("single", "crossfire", "ring", "top-only", "left-right")
+SUPPORTED_BOUNDARIES = ("none", "sponge")
 
 
 def _single_acquisition() -> dict[str, list[dict[str, float]]]:
@@ -39,12 +40,7 @@ def _single_acquisition() -> dict[str, list[dict[str, float]]]:
 
 
 def _crossfire_acquisition() -> dict[str, list[dict[str, float]]]:
-    """Sparse multi-angle acquisition for a less ambiguous toy inverse problem.
-
-    The sources are intended to be fired sequentially. Keeping receivers on more
-    than one side of the domain makes the coarse search surface less degenerate
-    than the original single-shot, top-receiver setup.
-    """
+    """Sparse multi-angle acquisition for a less ambiguous toy inverse problem."""
     return {
         "sources": [
             {"x": 0.18, "z": 0.18},
@@ -66,15 +62,86 @@ def _crossfire_acquisition() -> dict[str, list[dict[str, float]]]:
     }
 
 
+def _ring_acquisition() -> dict[str, list[dict[str, float]]]:
+    """Four sources and twelve boundary receivers around the target area."""
+    return {
+        "sources": [
+            {"x": 0.18, "z": 0.18},
+            {"x": 0.82, "z": 0.18},
+            {"x": 0.82, "z": 0.82},
+            {"x": 0.18, "z": 0.82},
+        ],
+        "receivers": [
+            {"x": 0.25, "z": 0.12},
+            {"x": 0.50, "z": 0.12},
+            {"x": 0.75, "z": 0.12},
+            {"x": 0.88, "z": 0.25},
+            {"x": 0.88, "z": 0.50},
+            {"x": 0.88, "z": 0.75},
+            {"x": 0.75, "z": 0.88},
+            {"x": 0.50, "z": 0.88},
+            {"x": 0.25, "z": 0.88},
+            {"x": 0.12, "z": 0.75},
+            {"x": 0.12, "z": 0.50},
+            {"x": 0.12, "z": 0.25},
+        ],
+    }
+
+
+def _top_only_acquisition() -> dict[str, list[dict[str, float]]]:
+    """Limited-angle geometry: sources near the bottom, receivers at the top."""
+    return {
+        "sources": [{"x": 0.25, "z": 0.16}, {"x": 0.75, "z": 0.16}],
+        "receivers": [
+            {"x": 0.14, "z": 0.86},
+            {"x": 0.26, "z": 0.86},
+            {"x": 0.38, "z": 0.86},
+            {"x": 0.50, "z": 0.86},
+            {"x": 0.62, "z": 0.86},
+            {"x": 0.74, "z": 0.86},
+            {"x": 0.86, "z": 0.86},
+        ],
+    }
+
+
+def _left_right_acquisition() -> dict[str, list[dict[str, float]]]:
+    """Transmission geometry: left-side sources, right-side receivers."""
+    return {
+        "sources": [
+            {"x": 0.14, "z": 0.25},
+            {"x": 0.14, "z": 0.50},
+            {"x": 0.14, "z": 0.75},
+        ],
+        "receivers": [
+            {"x": 0.86, "z": 0.20},
+            {"x": 0.86, "z": 0.32},
+            {"x": 0.86, "z": 0.44},
+            {"x": 0.86, "z": 0.56},
+            {"x": 0.86, "z": 0.68},
+            {"x": 0.86, "z": 0.80},
+        ],
+    }
+
+
 def acquisition_preset(name: str) -> dict[str, list[dict[str, float]]]:
     """Return a named acquisition preset."""
     if name == "single":
         return _single_acquisition()
     if name == "crossfire":
         return _crossfire_acquisition()
+    if name == "ring":
+        return _ring_acquisition()
+    if name == "top-only":
+        return _top_only_acquisition()
+    if name == "left-right":
+        return _left_right_acquisition()
     raise UnsupportedWorldError(
         f"Unsupported acquisition preset {name!r}. Supported: {', '.join(SUPPORTED_ACQUISITION_PRESETS)}"
     )
+
+
+def _default_shot_mode(acquisition: str) -> str:
+    return "simultaneous" if acquisition == "single" else "sequential"
 
 
 def _base_world(name: str, kind: str, *, acquisition: str = "single") -> dict[str, Any]:
@@ -97,7 +164,10 @@ def _base_world(name: str, kind: str, *, acquisition: str = "single") -> dict[st
             "dt": 0.0015,
             "space_order": 4,
             "source_frequency": 20.0,
-            "shot_mode": "sequential" if acquisition == "crossfire" else "simultaneous",
+            "shot_mode": _default_shot_mode(acquisition),
+            "boundary": "none",
+            "sponge_width": 0,
+            "sponge_strength": 0.0,
         },
     }
 
@@ -244,6 +314,26 @@ def validate_world(world: dict[str, Any]) -> None:
     shot_mode = str(simulation.get("shot_mode", "simultaneous"))
     if shot_mode not in {"simultaneous", "sequential"}:
         raise ValidationError("simulation.shot_mode must be 'simultaneous' or 'sequential' when supplied.")
+    boundary = str(simulation.get("boundary", "none"))
+    if boundary not in SUPPORTED_BOUNDARIES:
+        raise ValidationError(f"simulation.boundary must be one of {SUPPORTED_BOUNDARIES}.")
+    if int(simulation.get("sponge_width", 0)) < 0:
+        raise ValidationError("simulation.sponge_width must be non-negative.")
+    if float(simulation.get("sponge_strength", 0.0)) < 0.0:
+        raise ValidationError("simulation.sponge_strength must be non-negative.")
+    noise = simulation.get("noise")
+    if noise is not None:
+        if not isinstance(noise, dict):
+            raise ValidationError("simulation.noise must be a dictionary when supplied.")
+        if float(noise.get("noise_level", 0.0)) < 0.0:
+            raise ValidationError("simulation.noise.noise_level must be non-negative.")
+        dropout = float(noise.get("receiver_dropout", 0.0))
+        if not (0.0 <= dropout < 1.0):
+            raise ValidationError("simulation.noise.receiver_dropout must be in [0, 1).")
+        if float(noise.get("amplitude_jitter", 0.0)) < 0.0:
+            raise ValidationError("simulation.noise.amplitude_jitter must be non-negative.")
+        if float(noise.get("time_jitter", 0.0)) < 0.0:
+            raise ValidationError("simulation.noise.time_jitter must be non-negative.")
 
 
 def anomaly_kind(world: dict[str, Any]) -> str:
@@ -336,12 +426,7 @@ def velocity_model_from_world(world: dict[str, Any]) -> np.ndarray:
 
 
 def background_velocity_model_from_world(world: dict[str, Any]) -> np.ndarray:
-    """Return the background model used by differential inversion.
-
-    For circle/rectangle/blob worlds this is a homogeneous background. For a
-    layered world, the generated velocity model is already a background-like
-    structure, so it is returned as-is.
-    """
+    """Return the background model used by differential inversion."""
     validate_world(world)
     kind = anomaly_kind(world)
     if kind == "layered":
@@ -386,12 +471,43 @@ def world_with_circle_candidate(
     return candidate
 
 
+def world_with_noise(
+    world: dict[str, Any],
+    *,
+    noise_level: float = 0.0,
+    receiver_dropout: float = 0.0,
+    amplitude_jitter: float = 0.0,
+    time_jitter: float = 0.0,
+    seed: int = DEFAULT_SEED,
+) -> dict[str, Any]:
+    """Return a copy of a world with observation-noise metadata attached."""
+    noisy = copy.deepcopy(world)
+    noisy.setdefault("simulation", {})["noise"] = {
+        "noise_level": float(noise_level),
+        "receiver_dropout": float(receiver_dropout),
+        "amplitude_jitter": float(amplitude_jitter),
+        "time_jitter": float(time_jitter),
+        "seed": int(seed),
+    }
+    validate_world(noisy)
+    return noisy
+
+
 def make_demo_world() -> dict[str, Any]:
     """Return a small crossfire circle world for the end-to-end demo."""
     world = make_default_world("circle", name="wavesleuth_demo", acquisition="crossfire")
     world["grid"].update({"nx": 52, "nz": 52, "extent_x": 1.0, "extent_z": 1.0})
     world["simulation"].update(
-        {"nt": 360, "dt": 0.0015, "space_order": 4, "source_frequency": 18.0, "shot_mode": "sequential"}
+        {
+            "nt": 360,
+            "dt": 0.0015,
+            "space_order": 4,
+            "source_frequency": 18.0,
+            "shot_mode": "sequential",
+            "boundary": "sponge",
+            "sponge_width": 5,
+            "sponge_strength": 12.0,
+        }
     )
     validate_world(world)
     return world

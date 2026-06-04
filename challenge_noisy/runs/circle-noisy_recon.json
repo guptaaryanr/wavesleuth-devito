@@ -1,0 +1,1893 @@
+{
+  "best_candidate": {
+    "anomaly_velocity": 2.2,
+    "center_x": 0.5460000038146973,
+    "center_z": 0.5,
+    "index_x": 3,
+    "index_z": 2,
+    "level": 1,
+    "mismatch": 0.6874296113595344,
+    "radius": 0.12
+  },
+  "best_mismatch": 0.6874296113595344,
+  "candidate_grid": {
+    "anomaly_velocities": [
+      2.2
+    ],
+    "background_forward_runs": 1,
+    "evaluated_candidates": 49,
+    "forward_runs": 50,
+    "grid_size": 5,
+    "margin": 0.132,
+    "possible_candidates_per_level": 25,
+    "radii": [
+      0.12
+    ],
+    "refine_levels": 1,
+    "xs": [
+      0.40799999237060547,
+      0.45399999618530273,
+      0.5,
+      0.5460000038146973,
+      0.5920000076293945
+    ],
+    "zs": [
+      0.40799999237060547,
+      0.45399999618530273,
+      0.5,
+      0.5460000038146973,
+      0.5920000076293945
+    ]
+  },
+  "candidates": [
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.13199999928474426,
+      "index_x": 0,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 15.530843275597917,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.13199999928474426,
+      "index_x": 1,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 1.5233910184864006,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.13199999928474426,
+      "index_x": 2,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 1.3701812498185932,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.13199999928474426,
+      "index_x": 3,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 1.741509656490235,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.13199999928474426,
+      "index_x": 4,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 17.70671485292352,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.3160000145435333,
+      "index_x": 0,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 21.406284644713466,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.3160000145435333,
+      "index_x": 1,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 4.701171657104465,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.3160000145435333,
+      "index_x": 2,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 1.7462024812449182,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.3160000145435333,
+      "index_x": 3,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 4.703469573437969,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.3160000145435333,
+      "index_x": 4,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 20.848495601293585,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.5,
+      "index_x": 0,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 18.173502165336014,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.5,
+      "index_x": 1,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 3.5834843672118444,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.5,
+      "index_x": 2,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 1.1741185875375213,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.5,
+      "index_x": 3,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 2.52120787270154,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.5,
+      "index_x": 4,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 9.074032975541847,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.6840000152587891,
+      "index_x": 0,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 61.69048750177811,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.6840000152587891,
+      "index_x": 1,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 10.891514867182819,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.6840000152587891,
+      "index_x": 2,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 3.4722712917145646,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.6840000152587891,
+      "index_x": 3,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 3.029336068598347,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.6840000152587891,
+      "index_x": 4,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 5.626213723129089,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.8679999709129333,
+      "index_x": 0,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 13.902321013025627,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.8679999709129333,
+      "index_x": 1,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 10.871201560331635,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.8679999709129333,
+      "index_x": 2,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 4.777153359010474,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.8679999709129333,
+      "index_x": 3,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 3.3487062751518284,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.8679999709129333,
+      "index_x": 4,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 1.943042832784178,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.40799999237060547,
+      "index_x": 0,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.8589147472974805,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.40799999237060547,
+      "index_x": 1,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.375470815216412,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.40799999237060547,
+      "index_x": 2,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.3289059156070668,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.40799999237060547,
+      "index_x": 3,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.179249571190334,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.40799999237060547,
+      "index_x": 4,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.2672446695207724,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.45399999618530273,
+      "index_x": 0,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 1.9227514929425373,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.45399999618530273,
+      "index_x": 1,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 1.4918995337027376,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.45399999618530273,
+      "index_x": 2,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 1.4323440449874023,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.45399999618530273,
+      "index_x": 3,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 0.9584620319816435,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.45399999618530273,
+      "index_x": 4,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 1.2981795595565653,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.5,
+      "index_x": 0,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 2.2046305041730294,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.5,
+      "index_x": 1,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 1.455437217361797,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.5,
+      "index_x": 3,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 0.6874296113595344,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.5,
+      "index_x": 4,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 1.339585151709019,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.5460000038146973,
+      "index_x": 0,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 2.3661932819237315,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.5460000038146973,
+      "index_x": 1,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 1.95812812083551,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.5460000038146973,
+      "index_x": 2,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 1.4667541195157097,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.5460000038146973,
+      "index_x": 3,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 0.9970380505822152,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.5460000038146973,
+      "index_x": 4,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 1.3693278200237606,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.5920000076293945,
+      "index_x": 0,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 3.1381065355339866,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.5920000076293945,
+      "index_x": 1,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 2.596168502600546,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.5920000076293945,
+      "index_x": 2,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 1.8243165813146944,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.5920000076293945,
+      "index_x": 3,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 1.6306216526374202,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.5920000076293945,
+      "index_x": 4,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 2.0265374563005554,
+      "radius": 0.12
+    }
+  ],
+  "created_utc": "2026-06-04T00:46:32+00:00",
+  "method": "grid-search",
+  "mismatch_map": [
+    [
+      1.8589147472974805,
+      1.375470815216412,
+      1.3289059156070668,
+      1.179249571190334,
+      1.2672446695207724
+    ],
+    [
+      1.9227514929425373,
+      1.4918995337027376,
+      1.4323440449874023,
+      0.9584620319816435,
+      1.2981795595565653
+    ],
+    [
+      2.2046305041730294,
+      1.455437217361797,
+      1.1741185875375213,
+      0.6874296113595344,
+      1.339585151709019
+    ],
+    [
+      2.3661932819237315,
+      1.95812812083551,
+      1.4667541195157097,
+      0.9970380505822152,
+      1.3693278200237606
+    ],
+    [
+      3.1381065355339866,
+      2.596168502600546,
+      1.8243165813146944,
+      1.6306216526374202,
+      2.0265374563005554
+    ]
+  ],
+  "nearest_true_candidate": {
+    "candidate": {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.5,
+      "index_x": 3,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 0.6874296113595344,
+      "radius": 0.12
+    },
+    "center_distance_to_true": 0.020396077306247824,
+    "distance_to_true_candidate": 0.020396077306247824,
+    "rank_by_mismatch": 1
+  },
+  "notes": [
+    "Grid search assumes a circular anomaly.",
+    "Differential mode compares hidden-minus-background residual traces and is usually less fooled by direct arrivals.",
+    "v0.3 can scan radius and anomaly velocity, but local refinements currently refine center position only.",
+    "The mismatch map minimizes over searched radius/velocity at each candidate center.",
+    "The optional sponge boundary is a simple damping layer, not a production PML."
+  ],
+  "objective": {
+    "background_subtracted": true,
+    "metric": "l2",
+    "mismatch_mode": "differential",
+    "normalize_traces": false,
+    "shot_mode": "sequential",
+    "time_max": null,
+    "time_min": null
+  },
+  "project": "WaveSleuth-Devito",
+  "run_path": "challenge_noisy/runs/circle-noisy_obs.npz",
+  "score": {
+    "best_mismatch": 0.6874296113595344,
+    "center_error": 0.020396077306247824,
+    "iou": 0.8,
+    "normalized_center_error": 0.014422204572852888,
+    "radius_error": 0.0,
+    "reconstruction_score": 0.8,
+    "supported": true
+  },
+  "search": {
+    "anomaly_velocities": [
+      2.2
+    ],
+    "radii": [
+      0.12
+    ],
+    "search_radius": false,
+    "search_velocity": false
+  },
+  "search_levels": [
+    {
+      "anomaly_velocities": [
+        2.2
+      ],
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.5,
+        "index_x": 2,
+        "index_z": 2,
+        "level": 0,
+        "mismatch": 1.1741185875375213,
+        "radius": 0.12
+      },
+      "best_parameter_map": [
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.13199999928474426,
+            "index_x": 0,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 15.530843275597917,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.13199999928474426,
+            "index_x": 1,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.5233910184864006,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.13199999928474426,
+            "index_x": 2,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.3701812498185932,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.13199999928474426,
+            "index_x": 3,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.741509656490235,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.13199999928474426,
+            "index_x": 4,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 17.70671485292352,
+            "radius": 0.12
+          }
+        ],
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.3160000145435333,
+            "index_x": 0,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 21.406284644713466,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.3160000145435333,
+            "index_x": 1,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 4.701171657104465,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.3160000145435333,
+            "index_x": 2,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 1.7462024812449182,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.3160000145435333,
+            "index_x": 3,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 4.703469573437969,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.3160000145435333,
+            "index_x": 4,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 20.848495601293585,
+            "radius": 0.12
+          }
+        ],
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.5,
+            "index_x": 0,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 18.173502165336014,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.5,
+            "index_x": 1,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 3.5834843672118444,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "index_x": 2,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 1.1741185875375213,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.5,
+            "index_x": 3,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 2.52120787270154,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.5,
+            "index_x": 4,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 9.074032975541847,
+            "radius": 0.12
+          }
+        ],
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.6840000152587891,
+            "index_x": 0,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 61.69048750177811,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.6840000152587891,
+            "index_x": 1,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 10.891514867182819,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.6840000152587891,
+            "index_x": 2,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 3.4722712917145646,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.6840000152587891,
+            "index_x": 3,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 3.029336068598347,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.6840000152587891,
+            "index_x": 4,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 5.626213723129089,
+            "radius": 0.12
+          }
+        ],
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.8679999709129333,
+            "index_x": 0,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 13.902321013025627,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.8679999709129333,
+            "index_x": 1,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 10.871201560331635,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.8679999709129333,
+            "index_x": 2,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 4.777153359010474,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.8679999709129333,
+            "index_x": 3,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 3.3487062751518284,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.8679999709129333,
+            "index_x": 4,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.943042832784178,
+            "radius": 0.12
+          }
+        ]
+      ],
+      "evaluated_candidates_this_level": 25,
+      "grid_size": 5,
+      "level": 0,
+      "margin": 0.132,
+      "mismatch_map": [
+        [
+          15.530843275597917,
+          1.5233910184864006,
+          1.3701812498185932,
+          1.741509656490235,
+          17.70671485292352
+        ],
+        [
+          21.406284644713466,
+          4.701171657104465,
+          1.7462024812449182,
+          4.703469573437969,
+          20.848495601293585
+        ],
+        [
+          18.173502165336014,
+          3.5834843672118444,
+          1.1741185875375213,
+          2.52120787270154,
+          9.074032975541847
+        ],
+        [
+          61.69048750177811,
+          10.891514867182819,
+          3.4722712917145646,
+          3.029336068598347,
+          5.626213723129089
+        ],
+        [
+          13.902321013025627,
+          10.871201560331635,
+          4.777153359010474,
+          3.3487062751518284,
+          1.943042832784178
+        ]
+      ],
+      "radii": [
+        0.12
+      ],
+      "uncertainty_summary": {
+        "best_mismatch": 1.1741185875375213,
+        "entropy": 2.751611100916122,
+        "max_probability": 0.10072496278135319,
+        "normalized_entropy": 0.8548360516606102,
+        "temperature": 3.5661928786867003
+      },
+      "xs": [
+        0.13199999928474426,
+        0.3160000145435333,
+        0.5,
+        0.6840000152587891,
+        0.8679999709129333
+      ],
+      "zs": [
+        0.13199999928474426,
+        0.3160000145435333,
+        0.5,
+        0.6840000152587891,
+        0.8679999709129333
+      ]
+    },
+    {
+      "anomaly_velocities": [
+        2.2
+      ],
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5460000038146973,
+        "center_z": 0.5,
+        "index_x": 3,
+        "index_z": 2,
+        "level": 1,
+        "mismatch": 0.6874296113595344,
+        "radius": 0.12
+      },
+      "best_parameter_map": [
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.40799999237060547,
+            "center_z": 0.40799999237060547,
+            "index_x": 0,
+            "index_z": 0,
+            "level": 1,
+            "mismatch": 1.8589147472974805,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.45399999618530273,
+            "center_z": 0.40799999237060547,
+            "index_x": 1,
+            "index_z": 0,
+            "level": 1,
+            "mismatch": 1.375470815216412,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.40799999237060547,
+            "index_x": 2,
+            "index_z": 0,
+            "level": 1,
+            "mismatch": 1.3289059156070668,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5460000038146973,
+            "center_z": 0.40799999237060547,
+            "index_x": 3,
+            "index_z": 0,
+            "level": 1,
+            "mismatch": 1.179249571190334,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5920000076293945,
+            "center_z": 0.40799999237060547,
+            "index_x": 4,
+            "index_z": 0,
+            "level": 1,
+            "mismatch": 1.2672446695207724,
+            "radius": 0.12
+          }
+        ],
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.40799999237060547,
+            "center_z": 0.45399999618530273,
+            "index_x": 0,
+            "index_z": 1,
+            "level": 1,
+            "mismatch": 1.9227514929425373,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.45399999618530273,
+            "center_z": 0.45399999618530273,
+            "index_x": 1,
+            "index_z": 1,
+            "level": 1,
+            "mismatch": 1.4918995337027376,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.45399999618530273,
+            "index_x": 2,
+            "index_z": 1,
+            "level": 1,
+            "mismatch": 1.4323440449874023,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5460000038146973,
+            "center_z": 0.45399999618530273,
+            "index_x": 3,
+            "index_z": 1,
+            "level": 1,
+            "mismatch": 0.9584620319816435,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5920000076293945,
+            "center_z": 0.45399999618530273,
+            "index_x": 4,
+            "index_z": 1,
+            "level": 1,
+            "mismatch": 1.2981795595565653,
+            "radius": 0.12
+          }
+        ],
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.40799999237060547,
+            "center_z": 0.5,
+            "index_x": 0,
+            "index_z": 2,
+            "level": 1,
+            "mismatch": 2.2046305041730294,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.45399999618530273,
+            "center_z": 0.5,
+            "index_x": 1,
+            "index_z": 2,
+            "level": 1,
+            "mismatch": 1.455437217361797,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "index_x": 2,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 1.1741185875375213,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5460000038146973,
+            "center_z": 0.5,
+            "index_x": 3,
+            "index_z": 2,
+            "level": 1,
+            "mismatch": 0.6874296113595344,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5920000076293945,
+            "center_z": 0.5,
+            "index_x": 4,
+            "index_z": 2,
+            "level": 1,
+            "mismatch": 1.339585151709019,
+            "radius": 0.12
+          }
+        ],
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.40799999237060547,
+            "center_z": 0.5460000038146973,
+            "index_x": 0,
+            "index_z": 3,
+            "level": 1,
+            "mismatch": 2.3661932819237315,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.45399999618530273,
+            "center_z": 0.5460000038146973,
+            "index_x": 1,
+            "index_z": 3,
+            "level": 1,
+            "mismatch": 1.95812812083551,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5460000038146973,
+            "index_x": 2,
+            "index_z": 3,
+            "level": 1,
+            "mismatch": 1.4667541195157097,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5460000038146973,
+            "center_z": 0.5460000038146973,
+            "index_x": 3,
+            "index_z": 3,
+            "level": 1,
+            "mismatch": 0.9970380505822152,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5920000076293945,
+            "center_z": 0.5460000038146973,
+            "index_x": 4,
+            "index_z": 3,
+            "level": 1,
+            "mismatch": 1.3693278200237606,
+            "radius": 0.12
+          }
+        ],
+        [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.40799999237060547,
+            "center_z": 0.5920000076293945,
+            "index_x": 0,
+            "index_z": 4,
+            "level": 1,
+            "mismatch": 3.1381065355339866,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.45399999618530273,
+            "center_z": 0.5920000076293945,
+            "index_x": 1,
+            "index_z": 4,
+            "level": 1,
+            "mismatch": 2.596168502600546,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5920000076293945,
+            "index_x": 2,
+            "index_z": 4,
+            "level": 1,
+            "mismatch": 1.8243165813146944,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5460000038146973,
+            "center_z": 0.5920000076293945,
+            "index_x": 3,
+            "index_z": 4,
+            "level": 1,
+            "mismatch": 1.6306216526374202,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5920000076293945,
+            "center_z": 0.5920000076293945,
+            "index_x": 4,
+            "index_z": 4,
+            "level": 1,
+            "mismatch": 2.0265374563005554,
+            "radius": 0.12
+          }
+        ]
+      ],
+      "evaluated_candidates_this_level": 25,
+      "grid_size": 5,
+      "level": 1,
+      "margin": 0.132,
+      "mismatch_map": [
+        [
+          1.8589147472974805,
+          1.375470815216412,
+          1.3289059156070668,
+          1.179249571190334,
+          1.2672446695207724
+        ],
+        [
+          1.9227514929425373,
+          1.4918995337027376,
+          1.4323440449874023,
+          0.9584620319816435,
+          1.2981795595565653
+        ],
+        [
+          2.2046305041730294,
+          1.455437217361797,
+          1.1741185875375213,
+          0.6874296113595344,
+          1.339585151709019
+        ],
+        [
+          2.3661932819237315,
+          1.95812812083551,
+          1.4667541195157097,
+          0.9970380505822152,
+          1.3693278200237606
+        ],
+        [
+          3.1381065355339866,
+          2.596168502600546,
+          1.8243165813146944,
+          1.6306216526374202,
+          2.0265374563005554
+        ]
+      ],
+      "radii": [
+        0.12
+      ],
+      "uncertainty_summary": {
+        "best_mismatch": 0.6874296113595344,
+        "entropy": 3.0535609825111902,
+        "max_probability": 0.10836916512530831,
+        "normalized_entropy": 0.9486420566211872,
+        "temperature": 0.773666057079219
+      },
+      "xs": [
+        0.40799999237060547,
+        0.45399999618530273,
+        0.5,
+        0.5460000038146973,
+        0.5920000076293945
+      ],
+      "zs": [
+        0.40799999237060547,
+        0.45399999618530273,
+        0.5,
+        0.5460000038146973,
+        0.5920000076293945
+      ]
+    }
+  ],
+  "true_center": {
+    "anomaly_velocity": 2.2,
+    "center_x": 0.55,
+    "center_z": 0.52,
+    "radius": 0.12
+  },
+  "uncertainty": {
+    "best_probability": 0.03782158761878907,
+    "center_probabilities": [
+      {
+        "center_x": 0.546,
+        "center_z": 0.5,
+        "probability": 0.03782158761878907
+      },
+      {
+        "center_x": 0.546,
+        "center_z": 0.454,
+        "probability": 0.03481415396539203
+      },
+      {
+        "center_x": 0.546,
+        "center_z": 0.546,
+        "probability": 0.0344060058823092
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.5,
+        "probability": 0.03259297265215177
+      },
+      {
+        "center_x": 0.546,
+        "center_z": 0.40799999,
+        "probability": 0.032541888425027955
+      },
+      {
+        "center_x": 0.59200001,
+        "center_z": 0.40799999,
+        "probability": 0.03167816293775334
+      },
+      {
+        "center_x": 0.59200001,
+        "center_z": 0.454,
+        "probability": 0.0313799960439885
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.40799999,
+        "probability": 0.031086617316351713
+      },
+      {
+        "center_x": 0.59200001,
+        "center_z": 0.5,
+        "probability": 0.03098529439158141
+      },
+      {
+        "center_x": 0.59200001,
+        "center_z": 0.546,
+        "probability": 0.03070483794203759
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.132,
+        "probability": 0.030696828159082142
+      },
+      {
+        "center_x": 0.454,
+        "center_z": 0.40799999,
+        "probability": 0.030647230041539495
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.454,
+        "probability": 0.030118989216714152
+      },
+      {
+        "center_x": 0.454,
+        "center_z": 0.5,
+        "probability": 0.029907106912657317
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.546,
+        "probability": 0.029803817996527537
+      },
+      {
+        "center_x": 0.454,
+        "center_z": 0.454,
+        "probability": 0.029575591887464305
+      },
+      {
+        "center_x": 0.31600001,
+        "center_z": 0.132,
+        "probability": 0.02929223057933187
+      },
+      {
+        "center_x": 0.546,
+        "center_z": 0.59200001,
+        "probability": 0.028347571162125346
+      },
+      {
+        "center_x": 0.68400002,
+        "center_z": 0.132,
+        "probability": 0.027402721044553154
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.31600001,
+        "probability": 0.027363436716491638
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.59200001,
+        "probability": 0.026717741256127758
+      },
+      {
+        "center_x": 0.40799999,
+        "center_z": 0.40799999,
+        "probability": 0.0264366412207682
+      },
+      {
+        "center_x": 0.40799999,
+        "center_z": 0.454,
+        "probability": 0.0259257257891069
+      },
+      {
+        "center_x": 0.86799997,
+        "center_z": 0.86799997,
+        "probability": 0.02576540193924689
+      },
+      {
+        "center_x": 0.454,
+        "center_z": 0.546,
+        "probability": 0.025646854467436527
+      },
+      {
+        "center_x": 0.59200001,
+        "center_z": 0.59200001,
+        "probability": 0.025116069073385188
+      },
+      {
+        "center_x": 0.40799999,
+        "center_z": 0.5,
+        "probability": 0.023785208055150827
+      },
+      {
+        "center_x": 0.40799999,
+        "center_z": 0.546,
+        "probability": 0.022638982280075392
+      },
+      {
+        "center_x": 0.68400002,
+        "center_z": 0.5,
+        "probability": 0.021591172217770446
+      },
+      {
+        "center_x": 0.454,
+        "center_z": 0.59200001,
+        "probability": 0.02110201819790251
+      },
+      {
+        "center_x": 0.68400002,
+        "center_z": 0.68400002,
+        "probability": 0.018484769427354913
+      },
+      {
+        "center_x": 0.40799999,
+        "center_z": 0.59200001,
+        "probability": 0.017880226264011957
+      },
+      {
+        "center_x": 0.68400002,
+        "center_z": 0.86799997,
+        "probability": 0.016765345600888232
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.68400002,
+        "probability": 0.016143855763538956
+      },
+      {
+        "center_x": 0.31600001,
+        "center_z": 0.5,
+        "probability": 0.015604215725580324
+      },
+      {
+        "center_x": 0.31600001,
+        "center_z": 0.31600001,
+        "probability": 0.011087943299355071
+      },
+      {
+        "center_x": 0.68400002,
+        "center_z": 0.31600001,
+        "probability": 0.0110801569216935
+      },
+      {
+        "center_x": 0.5,
+        "center_z": 0.86799997,
+        "probability": 0.010833360727007793
+      },
+      {
+        "center_x": 0.86799997,
+        "center_z": 0.68400002,
+        "probability": 0.008356738193032358
+      },
+      {
+        "center_x": 0.86799997,
+        "center_z": 0.5,
+        "probability": 0.0029126170210121084
+      },
+      {
+        "center_x": 0.31600001,
+        "center_z": 0.86799997,
+        "probability": 0.0016814361197217474
+      },
+      {
+        "center_x": 0.31600001,
+        "center_z": 0.68400002,
+        "probability": 0.0016710269514341918
+      },
+      {
+        "center_x": 0.132,
+        "center_z": 0.86799997,
+        "probability": 0.000665657077734213
+      },
+      {
+        "center_x": 0.132,
+        "center_z": 0.132,
+        "probability": 0.00040461134218513334
+      },
+      {
+        "center_x": 0.86799997,
+        "center_z": 0.132,
+        "probability": 0.00020804444973314943
+      },
+      {
+        "center_x": 0.132,
+        "center_z": 0.5,
+        "probability": 0.0001803776052995167
+      },
+      {
+        "center_x": 0.86799997,
+        "center_z": 0.31600001,
+        "probability": 7.962221414232173e-05
+      },
+      {
+        "center_x": 0.132,
+        "center_z": 0.31600001,
+        "probability": 6.713960640867201e-05
+      },
+      {
+        "center_x": 0.132,
+        "center_z": 0.68400002,
+        "probability": 3.010256355999883e-10
+      }
+    ],
+    "entropy": 3.6477083462908864,
+    "n_candidates": 49,
+    "normalized_entropy": 0.9372756363035956,
+    "notes": [
+      "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
+      "High entropy means many candidates explain the traces about equally well."
+    ],
+    "temperature": 3.271125528450567,
+    "top_candidates": [
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5460000038146973,
+        "center_z": 0.5,
+        "index_x": 3,
+        "index_z": 2,
+        "level": 1,
+        "mismatch": 0.6874296113595344,
+        "probability": 0.03782158761878907,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5460000038146973,
+        "center_z": 0.45399999618530273,
+        "index_x": 3,
+        "index_z": 1,
+        "level": 1,
+        "mismatch": 0.9584620319816435,
+        "probability": 0.03481415396539203,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5460000038146973,
+        "center_z": 0.5460000038146973,
+        "index_x": 3,
+        "index_z": 3,
+        "level": 1,
+        "mismatch": 0.9970380505822152,
+        "probability": 0.0344060058823092,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.5,
+        "index_x": 2,
+        "index_z": 2,
+        "level": 0,
+        "mismatch": 1.1741185875375213,
+        "probability": 0.03259297265215177,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5460000038146973,
+        "center_z": 0.40799999237060547,
+        "index_x": 3,
+        "index_z": 0,
+        "level": 1,
+        "mismatch": 1.179249571190334,
+        "probability": 0.032541888425027955,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5920000076293945,
+        "center_z": 0.40799999237060547,
+        "index_x": 4,
+        "index_z": 0,
+        "level": 1,
+        "mismatch": 1.2672446695207724,
+        "probability": 0.03167816293775334,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5920000076293945,
+        "center_z": 0.45399999618530273,
+        "index_x": 4,
+        "index_z": 1,
+        "level": 1,
+        "mismatch": 1.2981795595565653,
+        "probability": 0.0313799960439885,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.40799999237060547,
+        "index_x": 2,
+        "index_z": 0,
+        "level": 1,
+        "mismatch": 1.3289059156070668,
+        "probability": 0.031086617316351713,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5920000076293945,
+        "center_z": 0.5,
+        "index_x": 4,
+        "index_z": 2,
+        "level": 1,
+        "mismatch": 1.339585151709019,
+        "probability": 0.03098529439158141,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5920000076293945,
+        "center_z": 0.5460000038146973,
+        "index_x": 4,
+        "index_z": 3,
+        "level": 1,
+        "mismatch": 1.3693278200237606,
+        "probability": 0.03070483794203759,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.13199999928474426,
+        "index_x": 2,
+        "index_z": 0,
+        "level": 0,
+        "mismatch": 1.3701812498185932,
+        "probability": 0.030696828159082142,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.45399999618530273,
+        "center_z": 0.40799999237060547,
+        "index_x": 1,
+        "index_z": 0,
+        "level": 1,
+        "mismatch": 1.375470815216412,
+        "probability": 0.030647230041539495,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.45399999618530273,
+        "index_x": 2,
+        "index_z": 1,
+        "level": 1,
+        "mismatch": 1.4323440449874023,
+        "probability": 0.030118989216714152,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.45399999618530273,
+        "center_z": 0.5,
+        "index_x": 1,
+        "index_z": 2,
+        "level": 1,
+        "mismatch": 1.455437217361797,
+        "probability": 0.029907106912657317,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.5460000038146973,
+        "index_x": 2,
+        "index_z": 3,
+        "level": 1,
+        "mismatch": 1.4667541195157097,
+        "probability": 0.029803817996527537,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.45399999618530273,
+        "center_z": 0.45399999618530273,
+        "index_x": 1,
+        "index_z": 1,
+        "level": 1,
+        "mismatch": 1.4918995337027376,
+        "probability": 0.029575591887464305,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.3160000145435333,
+        "center_z": 0.13199999928474426,
+        "index_x": 1,
+        "index_z": 0,
+        "level": 0,
+        "mismatch": 1.5233910184864006,
+        "probability": 0.02929223057933187,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5460000038146973,
+        "center_z": 0.5920000076293945,
+        "index_x": 3,
+        "index_z": 4,
+        "level": 1,
+        "mismatch": 1.6306216526374202,
+        "probability": 0.028347571162125346,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.6840000152587891,
+        "center_z": 0.13199999928474426,
+        "index_x": 3,
+        "index_z": 0,
+        "level": 0,
+        "mismatch": 1.741509656490235,
+        "probability": 0.027402721044553154,
+        "radius": 0.12
+      },
+      {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.3160000145435333,
+        "index_x": 2,
+        "index_z": 1,
+        "level": 0,
+        "mismatch": 1.7462024812449182,
+        "probability": 0.027363436716491638,
+        "radius": 0.12
+      }
+    ]
+  },
+  "version": "0.3.0",
+  "world": {
+    "acquisition": {
+      "receivers": [
+        {
+          "x": 0.2,
+          "z": 0.84
+        },
+        {
+          "x": 0.4,
+          "z": 0.84
+        },
+        {
+          "x": 0.6,
+          "z": 0.84
+        },
+        {
+          "x": 0.8,
+          "z": 0.84
+        },
+        {
+          "x": 0.88,
+          "z": 0.3
+        },
+        {
+          "x": 0.88,
+          "z": 0.5
+        },
+        {
+          "x": 0.88,
+          "z": 0.7
+        },
+        {
+          "x": 0.12,
+          "z": 0.34
+        },
+        {
+          "x": 0.12,
+          "z": 0.54
+        },
+        {
+          "x": 0.12,
+          "z": 0.74
+        }
+      ],
+      "sources": [
+        {
+          "x": 0.18,
+          "z": 0.18
+        },
+        {
+          "x": 0.82,
+          "z": 0.18
+        },
+        {
+          "x": 0.18,
+          "z": 0.72
+        }
+      ]
+    },
+    "grid": {
+      "extent_x": 1.0,
+      "extent_z": 1.0,
+      "nx": 52,
+      "nz": 52
+    },
+    "medium": {
+      "anomaly": {
+        "center_x": 0.55,
+        "center_z": 0.52,
+        "kind": "circle",
+        "radius": 0.12
+      },
+      "anomaly_velocity": 2.2,
+      "background_velocity": 1.5
+    },
+    "name": "challenge_circle_noisy",
+    "simulation": {
+      "boundary": "sponge",
+      "dt": 0.0015,
+      "noise": {
+        "amplitude_jitter": 0.035,
+        "noise_level": 0.035,
+        "receiver_dropout": 0.0,
+        "seed": 20260203,
+        "time_jitter": 0.0015
+      },
+      "nt": 360,
+      "shot_mode": "sequential",
+      "source_frequency": 18.0,
+      "space_order": 4,
+      "sponge_strength": 12.0,
+      "sponge_width": 5
+    }
+  },
+  "world_name": "challenge_circle_noisy"
+}

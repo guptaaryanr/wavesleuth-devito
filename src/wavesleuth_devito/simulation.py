@@ -85,6 +85,115 @@ def _import_devito() -> dict[str, Any]:
     }
 
 
+def sponge_damping_model(world: dict[str, Any]) -> np.ndarray:
+    """Return a simple quadratic sponge damping field for optional edge damping.
+
+    This is not a full PML. It is a conservative MVP sponge that reduces some
+    boundary reflections without pretending to be a production absorbing layer.
+    """
+    validate_world(world)
+    nx, nz = grid_shape(world)
+    sim = world.get("simulation", {})
+    if str(sim.get("boundary", "none")) != "sponge":
+        return np.zeros((nx, nz), dtype=np.float32)
+    width = int(sim.get("sponge_width", 0))
+    strength = float(sim.get("sponge_strength", 0.0))
+    if width <= 0 or strength <= 0.0:
+        return np.zeros((nx, nz), dtype=np.float32)
+    width = min(width, max(1, min(nx, nz) // 2 - 1))
+    ix = np.minimum(np.arange(nx), nx - 1 - np.arange(nx))[:, None]
+    iz = np.minimum(np.arange(nz), nz - 1 - np.arange(nz))[None, :]
+    dist = np.minimum(ix, iz).astype(np.float32)
+    taper = np.clip((float(width) - dist) / float(width), 0.0, 1.0)
+    return (strength * taper * taper).astype(np.float32)
+
+
+def _shift_1d_with_zeros(trace: np.ndarray, shift: int) -> np.ndarray:
+    if shift == 0:
+        return trace.copy()
+    out = np.zeros_like(trace)
+    if shift > 0:
+        out[shift:] = trace[:-shift]
+    else:
+        out[:shift] = trace[-shift:]
+    return out
+
+
+def apply_trace_noise(
+    traces: np.ndarray,
+    *,
+    dt: float,
+    noise_level: float = 0.0,
+    receiver_dropout: float = 0.0,
+    amplitude_jitter: float = 0.0,
+    time_jitter: float = 0.0,
+    seed: int = 20260203,
+) -> np.ndarray:
+    """Apply deterministic synthetic observation imperfections to traces.
+
+    `noise_level` is relative to global trace RMS. `receiver_dropout` zeros a
+    fraction of receiver channels. `amplitude_jitter` applies multiplicative
+    per-channel gains. `time_jitter` shifts each shot/receiver trace by a small
+    integer number of samples derived from seconds.
+    """
+    arr = np.asarray(traces, dtype=np.float32).copy()
+    if arr.ndim not in {2, 3}:
+        raise ValidationError(f"Trace noise supports 2D or 3D trace arrays, got shape {arr.shape}.")
+    if noise_level < 0.0 or receiver_dropout < 0.0 or amplitude_jitter < 0.0 or time_jitter < 0.0:
+        raise ValidationError("Noise parameters must be non-negative.")
+    if receiver_dropout >= 1.0:
+        raise ValidationError("receiver_dropout must be less than 1.0.")
+    rng = np.random.default_rng(int(seed))
+
+    if amplitude_jitter > 0.0:
+        if arr.ndim == 2:
+            gains = rng.normal(loc=1.0, scale=float(amplitude_jitter), size=(1, arr.shape[1]))
+        else:
+            gains = rng.normal(loc=1.0, scale=float(amplitude_jitter), size=(arr.shape[0], 1, arr.shape[2]))
+        arr = (arr * gains.astype(np.float32)).astype(np.float32)
+
+    if time_jitter > 0.0:
+        max_shift = int(round(float(time_jitter) / float(dt)))
+        if max_shift > 0:
+            if arr.ndim == 2:
+                for irec in range(arr.shape[1]):
+                    shift = int(rng.integers(-max_shift, max_shift + 1))
+                    arr[:, irec] = _shift_1d_with_zeros(arr[:, irec], shift)
+            else:
+                for ishot in range(arr.shape[0]):
+                    for irec in range(arr.shape[2]):
+                        shift = int(rng.integers(-max_shift, max_shift + 1))
+                        arr[ishot, :, irec] = _shift_1d_with_zeros(arr[ishot, :, irec], shift)
+
+    if receiver_dropout > 0.0:
+        nrec = arr.shape[-1]
+        keep = rng.random(nrec) >= float(receiver_dropout)
+        if not bool(np.any(keep)):
+            keep[int(rng.integers(0, nrec))] = True
+        if arr.ndim == 2:
+            arr[:, ~keep] = 0.0
+        else:
+            arr[:, :, ~keep] = 0.0
+
+    if noise_level > 0.0:
+        rms = float(np.sqrt(np.mean(arr * arr))) if np.any(arr) else 1.0
+        scale = float(noise_level) * max(rms, 1.0e-12)
+        arr = (arr + rng.normal(0.0, scale, size=arr.shape).astype(np.float32)).astype(np.float32)
+    return arr.astype(np.float32)
+
+
+def noise_config_from_world(world: dict[str, Any]) -> dict[str, float | int]:
+    """Return normalized noise settings from world metadata."""
+    noise = world.get("simulation", {}).get("noise", {}) or {}
+    return {
+        "noise_level": float(noise.get("noise_level", 0.0)),
+        "receiver_dropout": float(noise.get("receiver_dropout", 0.0)),
+        "amplitude_jitter": float(noise.get("amplitude_jitter", 0.0)),
+        "time_jitter": float(noise.get("time_jitter", 0.0)),
+        "seed": int(noise.get("seed", 20260203)),
+    }
+
+
 class DevitoAcoustic2D:
     """Reusable tiny 2D acoustic solver built directly from Devito primitives."""
 
@@ -123,6 +232,8 @@ class DevitoAcoustic2D:
 
         self.grid = Grid(shape=self.velocity_shape, extent=self.extent, dtype=np.float32)
         self.m = Function(name="m", grid=self.grid, space_order=self.space_order)
+        self.damp = Function(name="damp", grid=self.grid, space_order=0)
+        self.damp.data[:, :] = sponge_damping_model(self.world)
         u_kwargs: dict[str, Any] = {
             "name": "u",
             "grid": self.grid,
@@ -141,7 +252,7 @@ class DevitoAcoustic2D:
         self.rec = SparseTimeFunction(name="rec", grid=self.grid, npoint=self.rec_coords.shape[0], nt=self.nt)
         self.rec.coordinates.data[:, :] = self.rec_coords
 
-        pde = self.m * self.u.dt2 - self.u.laplace
+        pde = self.m * self.u.dt2 + self.damp * self.u.dt - self.u.laplace
         stencil = Eq(self.u.forward, solve(pde, self.u.forward))
         src_term = self.src.inject(field=self.u.forward, expr=self.src * (self.dt**2) / self.m)
         rec_term = self.rec.interpolate(expr=self.u.forward)
@@ -200,15 +311,8 @@ def _single_source_world(world: dict[str, Any], source_coordinate: np.ndarray) -
     return single
 
 
-
 class ForwardTraceEngine:
-    """Reusable forward trace engine for repeated candidate simulations.
-
-    Inversion evaluates many velocity models with identical grid, time axis,
-    sources, and receivers. Reusing the same Devito operator matters a lot:
-    compiling a new operator for every candidate is much slower than updating the
-    model parameter and rerunning the compiled operator.
-    """
+    """Reusable forward trace engine for repeated candidate simulations."""
 
     def __init__(
         self,
@@ -269,6 +373,7 @@ class ForwardTraceEngine:
             shot_mode=self.mode,
         )
 
+
 def simulate_traces_for_velocity_model(
     world: dict[str, Any],
     velocity_model: np.ndarray,
@@ -276,25 +381,9 @@ def simulate_traces_for_velocity_model(
     shot_mode: str | None = None,
     quiet: bool = False,
 ) -> np.ndarray:
-    """Return receiver traces for a supplied velocity model.
-
-    `shot_mode='simultaneous'` fires all sources at once and returns `(nt, nrec)`.
-    `shot_mode='sequential'` fires each source separately and returns
-    `(nshot, nt, nrec)` when there is more than one source. With one source, it
-    returns `(nt, nrec)` for backward compatibility with the original MVP.
-    """
-    mode = shot_mode or str(world.get("simulation", {}).get("shot_mode", "simultaneous"))
-    if mode not in {"simultaneous", "sequential"}:
-        raise ValidationError("shot_mode must be 'simultaneous' or 'sequential'.")
-    src_coords = source_coordinates(world)
-    if mode == "simultaneous" or src_coords.shape[0] == 1:
-        solver = DevitoAcoustic2D(world, save_wavefield=False, quiet=quiet)
-        return solver.run(velocity_model).receiver_traces
-
-    single_world = _single_source_world(world, src_coords[0])
-    solver = DevitoAcoustic2D(single_world, save_wavefield=False, quiet=quiet)
-    traces = [solver.run_for_source(velocity_model, coord).receiver_traces for coord in src_coords]
-    return np.stack(traces, axis=0).astype(np.float32)
+    """Return receiver traces for a supplied velocity model."""
+    engine = ForwardTraceEngine(world, shot_mode=shot_mode, save_wavefield=False, quiet=quiet)
+    return engine.run(velocity_model).receiver_traces
 
 
 def simulate_velocity_model(
@@ -314,41 +403,27 @@ def simulate_velocity_model(
         raise ValidationError("shot_mode must be 'simultaneous' or 'sequential'.")
     world_for_metadata = json.loads(json.dumps(world))
     world_for_metadata.setdefault("simulation", {})["shot_mode"] = mode
-    src_coords = source_coordinates(world)
-    rec_coords = receiver_coordinates(world)
-    nt = int(world["simulation"]["nt"])
-    dt = float(world["simulation"]["dt"])
-    time = (np.arange(nt, dtype=np.float32) * dt).astype(np.float32)
+    engine = ForwardTraceEngine(world_for_metadata, shot_mode=mode, save_wavefield=save_wavefield, quiet=quiet)
+    return engine.run(vm)
 
-    if mode == "simultaneous" or src_coords.shape[0] == 1:
-        solver = DevitoAcoustic2D(world_for_metadata, save_wavefield=save_wavefield, quiet=quiet)
-        result = solver.run(vm)
-        result.source_coordinates = src_coords.copy()
-        result.shot_mode = mode
-        result.world = world_for_metadata
-        return result
 
-    single_world = _single_source_world(world_for_metadata, src_coords[0])
-    solver = DevitoAcoustic2D(single_world, save_wavefield=save_wavefield, quiet=quiet)
-    traces: list[np.ndarray] = []
-    final_wavefield: np.ndarray | None = None
-    snapshots: np.ndarray | None = None
-    for coord in src_coords:
-        result = solver.run_for_source(vm, coord)
-        traces.append(result.receiver_traces)
-        final_wavefield = result.final_wavefield
-        snapshots = result.snapshots
-    return SimulationResult(
-        receiver_traces=np.stack(traces, axis=0).astype(np.float32),
-        time=time,
-        velocity_model=vm.copy(),
-        source_coordinates=src_coords.copy(),
-        receiver_coordinates=rec_coords.copy(),
-        final_wavefield=final_wavefield,
-        snapshots=snapshots,
-        world=world_for_metadata,
-        shot_mode=mode,
-    )
+def _merge_noise_overrides(world: dict[str, Any], overrides: dict[str, Any]) -> dict[str, Any]:
+    merged = copy.deepcopy(world)
+    base = noise_config_from_world(merged)
+    explicitly_requested = False
+    for key, value in overrides.items():
+        if value is not None:
+            base[key] = value
+            explicitly_requested = True
+    if explicitly_requested or any(float(base[k]) > 0.0 for k in ("noise_level", "receiver_dropout", "amplitude_jitter", "time_jitter")):
+        merged.setdefault("simulation", {})["noise"] = {
+            "noise_level": float(base["noise_level"]),
+            "receiver_dropout": float(base["receiver_dropout"]),
+            "amplitude_jitter": float(base["amplitude_jitter"]),
+            "time_jitter": float(base["time_jitter"]),
+            "seed": int(base["seed"]),
+        }
+    return merged
 
 
 def simulate_world(
@@ -358,17 +433,44 @@ def simulate_world(
     save_wavefield: bool = True,
     quiet: bool = False,
     shot_mode: str | None = None,
+    noise_level: float | None = None,
+    receiver_dropout: float | None = None,
+    amplitude_jitter: float | None = None,
+    time_jitter: float | None = None,
+    noise_seed: int | None = None,
 ) -> SimulationResult:
-    """Create the velocity model, run Devito, and optionally save a `.npz` run."""
-    validate_world(world)
-    velocity_model = velocity_model_from_world(world)
-    result = simulate_velocity_model(
+    """Create the velocity model, run Devito, optionally add observation noise, and save a `.npz`."""
+    world_for_run = _merge_noise_overrides(
         world,
+        {
+            "noise_level": noise_level,
+            "receiver_dropout": receiver_dropout,
+            "amplitude_jitter": amplitude_jitter,
+            "time_jitter": time_jitter,
+            "seed": noise_seed,
+        },
+    )
+    validate_world(world_for_run)
+    velocity_model = velocity_model_from_world(world_for_run)
+    result = simulate_velocity_model(
+        world_for_run,
         velocity_model,
         shot_mode=shot_mode,
         save_wavefield=save_wavefield,
         quiet=quiet,
     )
+    noise = noise_config_from_world(world_for_run)
+    if any(float(noise[k]) > 0.0 for k in ("noise_level", "receiver_dropout", "amplitude_jitter", "time_jitter")):
+        result.receiver_traces = apply_trace_noise(
+            result.receiver_traces,
+            dt=float(result.time[1] - result.time[0]) if result.time.shape[0] > 1 else float(world_for_run["simulation"]["dt"]),
+            noise_level=float(noise["noise_level"]),
+            receiver_dropout=float(noise["receiver_dropout"]),
+            amplitude_jitter=float(noise["amplitude_jitter"]),
+            time_jitter=float(noise["time_jitter"]),
+            seed=int(noise["seed"]),
+        )
+        result.world = world_for_run
     if out_path is not None:
         save_simulation_result(result, out_path)
     return result

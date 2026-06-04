@@ -1,0 +1,87 @@
+{
+  "acquisition": {
+    "receivers": [
+      {
+        "x": 0.2,
+        "z": 0.84
+      },
+      {
+        "x": 0.4,
+        "z": 0.84
+      },
+      {
+        "x": 0.6,
+        "z": 0.84
+      },
+      {
+        "x": 0.8,
+        "z": 0.84
+      },
+      {
+        "x": 0.88,
+        "z": 0.3
+      },
+      {
+        "x": 0.88,
+        "z": 0.5
+      },
+      {
+        "x": 0.88,
+        "z": 0.7
+      },
+      {
+        "x": 0.12,
+        "z": 0.34
+      },
+      {
+        "x": 0.12,
+        "z": 0.54
+      },
+      {
+        "x": 0.12,
+        "z": 0.74
+      }
+    ],
+    "sources": [
+      {
+        "x": 0.18,
+        "z": 0.18
+      },
+      {
+        "x": 0.82,
+        "z": 0.18
+      },
+      {
+        "x": 0.18,
+        "z": 0.72
+      }
+    ]
+  },
+  "grid": {
+    "extent_x": 1.0,
+    "extent_z": 1.0,
+    "nx": 70,
+    "nz": 70
+  },
+  "medium": {
+    "anomaly": {
+      "center_x": 0.55,
+      "center_z": 0.52,
+      "kind": "circle",
+      "radius": 0.12
+    },
+    "anomaly_velocity": 2.2,
+    "background_velocity": 1.5
+  },
+  "name": "circle_demo_crossfire",
+  "simulation": {
+    "boundary": "none",
+    "dt": 0.0015,
+    "nt": 360,
+    "shot_mode": "sequential",
+    "source_frequency": 20.0,
+    "space_order": 4,
+    "sponge_strength": 0.0,
+    "sponge_width": 0
+  }
+}

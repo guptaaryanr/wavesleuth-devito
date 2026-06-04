@@ -1,0 +1,2012 @@
+{
+  "base_world": "circle_demo",
+  "candidate_grid_size": 5,
+  "kind": "circle",
+  "metric": "l2",
+  "mismatch_mode": "differential",
+  "presets": [
+    "single",
+    "crossfire",
+    "ring",
+    "top-only",
+    "left-right"
+  ],
+  "refine_levels": 0,
+  "results": [
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.3160000145435333,
+        "index_x": 2,
+        "index_z": 1,
+        "level": 0,
+        "mismatch": 0.3436511270053318,
+        "radius": 0.12
+      },
+      "challenge_score": {
+        "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+        "iou": 0.026128266033254157,
+        "n_forward_runs": 26,
+        "n_receivers": 6,
+        "n_sources": 1,
+        "normalized_center_error": 0.14851934901930897,
+        "runtime_seconds": null,
+        "score": -4.087560377060764,
+        "supported": true
+      },
+      "forward_runs": 26,
+      "n_receivers": 6,
+      "n_sources": 1,
+      "preset": "single",
+      "reconstruction_path": "acq_compare/runs/single_recon.json",
+      "run_path": "acq_compare/runs/single_obs.npz",
+      "score": {
+        "best_mismatch": 0.3436511270053318,
+        "center_error": 0.21003807765792998,
+        "iou": 0.026128266033254157,
+        "normalized_center_error": 0.14851934901930897,
+        "radius_error": 0.0,
+        "reconstruction_score": 0.026128266033254157,
+        "supported": true
+      },
+      "uncertainty": {
+        "best_probability": 0.05529768676552167,
+        "center_probabilities": [
+          {
+            "center_x": 0.5,
+            "center_z": 0.31600001,
+            "probability": 0.05529768676552167
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.132,
+            "probability": 0.054973208893548946
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.5,
+            "probability": 0.05497299811143131
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.31600001,
+            "probability": 0.05497290819510681
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.68400002,
+            "probability": 0.05497290771786255
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.5,
+            "probability": 0.05497290771786168
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.86799997,
+            "probability": 0.05497290771783868
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.132,
+            "probability": 0.054972907717838665
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.31600001,
+            "probability": 0.054972907717838665
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.132,
+            "probability": 0.0549729076030054
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.86799997,
+            "probability": 0.054969109574005755
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.68400002,
+            "probability": 0.054965922867331825
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.86799997,
+            "probability": 0.054286891695223674
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "probability": 0.05376445495134437
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.68400002,
+            "probability": 0.043330357920950247
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.132,
+            "probability": 0.03489249691950376
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.86799997,
+            "probability": 0.031394863230963195
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.86799997,
+            "probability": 0.026824377648655938
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.68400002,
+            "probability": 0.02022340257080776
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.5,
+            "probability": 0.018819076525162674
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.68400002,
+            "probability": 0.015861728823878176
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.31600001,
+            "probability": 0.014834869460338764
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.5,
+            "probability": 0.011959736097739012
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.31600001,
+            "probability": 0.01058590195540834
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.132,
+            "probability": 0.0032325616008319034
+          }
+        ],
+        "entropy": 3.0898675607768458,
+        "n_candidates": 25,
+        "normalized_entropy": 0.9599213293365745,
+        "notes": [
+          "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
+          "High entropy means many candidates explain the traces about equally well."
+        ],
+        "temperature": 51.690961981776304,
+        "top_candidates": [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.3160000145435333,
+            "index_x": 2,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 0.3436511270053318,
+            "probability": 0.05529768676552167,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.13199999928474426,
+            "index_x": 2,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 0.6478587178324908,
+            "probability": 0.054973208893548946,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.5,
+            "index_x": 3,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 0.648056915309711,
+            "probability": 0.05497299811143131,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.3160000145435333,
+            "index_x": 3,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 0.6481414634564754,
+            "probability": 0.05497290819510681,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.6840000152587891,
+            "index_x": 4,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 0.6481419122087044,
+            "probability": 0.05497290771786255,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.5,
+            "index_x": 4,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 0.6481419122095169,
+            "probability": 0.05497290771786168,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.8679999709129333,
+            "index_x": 4,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 0.6481419122311496,
+            "probability": 0.05497290771783868,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.13199999928474426,
+            "index_x": 4,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 0.6481419122311631,
+            "probability": 0.054972907717838665,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.3160000145435333,
+            "index_x": 4,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 0.6481419122311631,
+            "probability": 0.054972907717838665,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.13199999928474426,
+            "index_x": 3,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 0.6481420202087506,
+            "probability": 0.0549729076030054,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.8679999709129333,
+            "index_x": 3,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 0.6517134258959572,
+            "probability": 0.054969109574005755,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.6840000152587891,
+            "index_x": 3,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 0.6547101764297436,
+            "probability": 0.054965922867331825,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.8679999709129333,
+            "index_x": 2,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.2972606976225074,
+            "probability": 0.054286891695223674,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "index_x": 2,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 1.7971243115368118,
+            "probability": 0.05376445495134437,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.6840000152587891,
+            "index_x": 2,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 12.949917891812618,
+            "probability": 0.043330357920950247,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.13199999928474426,
+            "index_x": 1,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 24.145233172780394,
+            "probability": 0.03489249691950376,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.8679999709129333,
+            "index_x": 1,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 29.605221807873793,
+            "probability": 0.031394863230963195,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.8679999709129333,
+            "index_x": 0,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 37.737926284930964,
+            "probability": 0.026824377648655938,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.6840000152587891,
+            "index_x": 0,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 52.33910389400745,
+            "probability": 0.02022340257080776,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.5,
+            "index_x": 0,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 56.05927207340861,
+            "probability": 0.018819076525162674,
+            "radius": 0.12
+          }
+        ]
+      },
+      "world_path": "acq_compare/worlds/single.json"
+    },
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.5,
+        "index_x": 2,
+        "index_z": 2,
+        "level": 0,
+        "mismatch": 1.021480115916755,
+        "radius": 0.12
+      },
+      "challenge_score": {
+        "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+        "iou": 0.5555555555555556,
+        "n_forward_runs": 26,
+        "n_receivers": 10,
+        "n_sources": 3,
+        "normalized_center_error": 0.03807886552931957,
+        "runtime_seconds": null,
+        "score": 48.96397824496917,
+        "supported": true
+      },
+      "forward_runs": 26,
+      "n_receivers": 10,
+      "n_sources": 3,
+      "preset": "crossfire",
+      "reconstruction_path": "acq_compare/runs/crossfire_recon.json",
+      "run_path": "acq_compare/runs/crossfire_obs.npz",
+      "score": {
+        "best_mismatch": 1.021480115916755,
+        "center_error": 0.053851648071345085,
+        "iou": 0.5555555555555556,
+        "normalized_center_error": 0.03807886552931957,
+        "radius_error": 0.0,
+        "reconstruction_score": 0.5555555555555556,
+        "supported": true
+      },
+      "uncertainty": {
+        "best_probability": 0.059403674875266224,
+        "center_probabilities": [
+          {
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "probability": 0.059403674875266224
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.132,
+            "probability": 0.05804010743086042
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.31600001,
+            "probability": 0.05759241533077305
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.5,
+            "probability": 0.05587128384399543
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.86799997,
+            "probability": 0.05519904813321125
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.68400002,
+            "probability": 0.05405016081565444
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.68400002,
+            "probability": 0.05376049198845626
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.132,
+            "probability": 0.053696518987418784
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.86799997,
+            "probability": 0.05248440659802039
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.132,
+            "probability": 0.05186361175345846
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.5,
+            "probability": 0.051392663709093185
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.31600001,
+            "probability": 0.05100552990297953
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.31600001,
+            "probability": 0.04930016810324888
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.68400002,
+            "probability": 0.048281570251095085
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.86799997,
+            "probability": 0.045460110857385036
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.68400002,
+            "probability": 0.0366550163037668
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.5,
+            "probability": 0.030446457906932508
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.86799997,
+            "probability": 0.026951637108062167
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.31600001,
+            "probability": 0.019777379749815093
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.86799997,
+            "probability": 0.019683405255572477
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.132,
+            "probability": 0.018979384755222997
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.31600001,
+            "probability": 0.018772847078827554
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.5,
+            "probability": 0.015183796607523305
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.132,
+            "probability": 0.01451298148264959
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.68400002,
+            "probability": 0.0016353311707109559
+          }
+        ],
+        "entropy": 3.103185270711882,
+        "n_candidates": 25,
+        "normalized_entropy": 0.9640587085520593,
+        "notes": [
+          "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
+          "High entropy means many candidates explain the traces about equally well."
+        ],
+        "temperature": 24.544630049722997,
+        "top_candidates": [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "index_x": 2,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 1.021480115916755,
+            "probability": 0.059403674875266224,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.13199999928474426,
+            "index_x": 2,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.5914509017182301,
+            "probability": 0.05804010743086042,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.3160000145435333,
+            "index_x": 2,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 1.7815097470342638,
+            "probability": 0.05759241533077305,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.5,
+            "index_x": 3,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 2.5262021288721144,
+            "probability": 0.05587128384399543,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.8679999709129333,
+            "index_x": 4,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 2.8233107807519904,
+            "probability": 0.05519904813321125,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.6840000152587891,
+            "index_x": 3,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 3.3395626426004488,
+            "probability": 0.05405016081565444,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.6840000152587891,
+            "index_x": 2,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 3.471457425247115,
+            "probability": 0.05376049198845626,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.13199999928474426,
+            "index_x": 1,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 3.500682020550498,
+            "probability": 0.053696518987418784,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.8679999709129333,
+            "index_x": 3,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 4.061086677713639,
+            "probability": 0.05248440659802039,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.13199999928474426,
+            "index_x": 3,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 4.35313553132043,
+            "probability": 0.05186361175345846,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.5,
+            "index_x": 1,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 4.577031379279086,
+            "probability": 0.051392663709093185,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.3160000145435333,
+            "index_x": 3,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 4.762622569679002,
+            "probability": 0.05100552990297953,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.3160000145435333,
+            "index_x": 1,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 5.597301138436762,
+            "probability": 0.04930016810324888,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.6840000152587891,
+            "index_x": 4,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 6.109733402394041,
+            "probability": 0.048281570251095085,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.8679999709129333,
+            "index_x": 2,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 7.587680018283251,
+            "probability": 0.045460110857385036,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.6840000152587891,
+            "index_x": 1,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 12.87176990147815,
+            "probability": 0.0366550163037668,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.5,
+            "index_x": 4,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 17.426777734877085,
+            "probability": 0.030446457906932508,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.8679999709129333,
+            "index_x": 1,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 20.419396992453006,
+            "probability": 0.026951637108062167,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.3160000145435333,
+            "index_x": 4,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 28.01608747497011,
+            "probability": 0.019777379749815093,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.8679999709129333,
+            "index_x": 0,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 28.132992070530975,
+            "probability": 0.019683405255572477,
+            "radius": 0.12
+          }
+        ]
+      },
+      "world_path": "acq_compare/worlds/crossfire.json"
+    },
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.5,
+        "index_x": 2,
+        "index_z": 2,
+        "level": 0,
+        "mismatch": 1.249460227747562,
+        "radius": 0.12
+      },
+      "challenge_score": {
+        "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+        "iou": 0.5555555555555556,
+        "n_forward_runs": 26,
+        "n_receivers": 12,
+        "n_sources": 4,
+        "normalized_center_error": 0.03807886552931957,
+        "runtime_seconds": null,
+        "score": 47.91397824496917,
+        "supported": true
+      },
+      "forward_runs": 26,
+      "n_receivers": 12,
+      "n_sources": 4,
+      "preset": "ring",
+      "reconstruction_path": "acq_compare/runs/ring_recon.json",
+      "run_path": "acq_compare/runs/ring_obs.npz",
+      "score": {
+        "best_mismatch": 1.249460227747562,
+        "center_error": 0.053851648071345085,
+        "iou": 0.5555555555555556,
+        "normalized_center_error": 0.03807886552931957,
+        "radius_error": 0.0,
+        "reconstruction_score": 0.5555555555555556,
+        "supported": true
+      },
+      "uncertainty": {
+        "best_probability": 0.0834018738926923,
+        "center_probabilities": [
+          {
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "probability": 0.0834018738926923
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.5,
+            "probability": 0.07726951948149965
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.31600001,
+            "probability": 0.07726927041195068
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.68400002,
+            "probability": 0.07711349115812711
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.5,
+            "probability": 0.07707058499698949
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.68400002,
+            "probability": 0.0679363123955543
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.68400002,
+            "probability": 0.06770254793167363
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.31600001,
+            "probability": 0.06766057348003253
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.31600001,
+            "probability": 0.06760671046075417
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.31600001,
+            "probability": 0.02587487242402302
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.5,
+            "probability": 0.02587330178221096
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.68400002,
+            "probability": 0.02545118905167817
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.132,
+            "probability": 0.025145816974846514
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.5,
+            "probability": 0.025127444792447273
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.132,
+            "probability": 0.025125338813756847
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.68400002,
+            "probability": 0.02510533147687942
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.31600001,
+            "probability": 0.02507161761874649
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.86799997,
+            "probability": 0.024970804618084597
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.132,
+            "probability": 0.02490637549898688
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.86799997,
+            "probability": 0.024811572098987215
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.86799997,
+            "probability": 0.024661827992924622
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.132,
+            "probability": 0.008770959370870399
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.86799997,
+            "probability": 0.0087681506380454
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.132,
+            "probability": 0.008669730305225916
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.86799997,
+            "probability": 0.008634782333012406
+          }
+        ],
+        "entropy": 3.0049662147244818,
+        "n_candidates": 25,
+        "normalized_entropy": 0.9335452431898402,
+        "notes": [
+          "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
+          "High entropy means many candidates explain the traces about equally well."
+        ],
+        "temperature": 64.36430781681332,
+        "top_candidates": [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "index_x": 2,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 1.249460227747562,
+            "probability": 0.0834018738926923,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.5,
+            "index_x": 3,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 6.165040593741117,
+            "probability": 0.07726951948149965,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.3160000145435333,
+            "index_x": 2,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 6.165248065135568,
+            "probability": 0.07726927041195068,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.6840000152587891,
+            "index_x": 2,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 6.295141158710925,
+            "probability": 0.07711349115812711,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.5,
+            "index_x": 1,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 6.330963605527127,
+            "probability": 0.07707058499698949,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.6840000152587891,
+            "index_x": 1,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 14.450585808592994,
+            "probability": 0.0679363123955543,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.6840000152587891,
+            "index_x": 3,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 14.672441149611183,
+            "probability": 0.06770254793167363,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.3160000145435333,
+            "index_x": 1,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 14.712358323273945,
+            "probability": 0.06766057348003253,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.3160000145435333,
+            "index_x": 3,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 14.763617667514612,
+            "probability": 0.06760671046075417,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.3160000145435333,
+            "index_x": 4,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 76.58134676624817,
+            "probability": 0.02587487242402302,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.5,
+            "index_x": 4,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 76.5852538904953,
+            "probability": 0.02587330178221096,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.6840000152587891,
+            "index_x": 4,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 77.64399235553316,
+            "probability": 0.02545118905167817,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.13199999928474426,
+            "index_x": 2,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 78.42092769424355,
+            "probability": 0.025145816974846514,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.5,
+            "index_x": 0,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 78.4679711051655,
+            "probability": 0.025127444792447273,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.13199999928474426,
+            "index_x": 1,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 78.47336582565812,
+            "probability": 0.025125338813756847,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.6840000152587891,
+            "index_x": 0,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 78.5246396171494,
+            "probability": 0.02510533147687942,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.3160000145435333,
+            "index_x": 0,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 78.61113229987382,
+            "probability": 0.02507161761874649,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.8679999709129333,
+            "index_x": 2,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 78.87046298350366,
+            "probability": 0.024970804618084597,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.13199999928474426,
+            "index_x": 3,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 79.03674896642451,
+            "probability": 0.02490637549898688,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.8679999709129333,
+            "index_x": 1,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 79.28221214059029,
+            "probability": 0.024811572098987215,
+            "radius": 0.12
+          }
+        ]
+      },
+      "world_path": "acq_compare/worlds/ring.json"
+    },
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.8679999709129333,
+        "center_z": 0.13199999928474426,
+        "index_x": 4,
+        "index_z": 0,
+        "level": 0,
+        "mismatch": 0.9193068308331991,
+        "radius": 0.12
+      },
+      "challenge_score": {
+        "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+        "iou": 0.0,
+        "n_forward_runs": 26,
+        "n_receivers": 7,
+        "n_sources": 2,
+        "normalized_center_error": 0.3547308712641633,
+        "runtime_seconds": null,
+        "score": -11.724617425283267,
+        "supported": true
+      },
+      "forward_runs": 26,
+      "n_receivers": 7,
+      "n_sources": 2,
+      "preset": "top-only",
+      "reconstruction_path": "acq_compare/runs/top-only_recon.json",
+      "run_path": "acq_compare/runs/top-only_obs.npz",
+      "score": {
+        "best_mismatch": 0.9193068308331991,
+        "center_error": 0.5016652091342042,
+        "iou": 0.0,
+        "normalized_center_error": 0.3547308712641633,
+        "radius_error": 0.0,
+        "reconstruction_score": 0.0,
+        "supported": true
+      },
+      "uncertainty": {
+        "best_probability": 0.0969839685059485,
+        "center_probabilities": [
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.132,
+            "probability": 0.0969839685059485
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.132,
+            "probability": 0.09083213662285708
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "probability": 0.08637225977503792
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.31600001,
+            "probability": 0.07242782666909972
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.68400002,
+            "probability": 0.07129216651631459
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.132,
+            "probability": 0.06977860761060219
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.86799997,
+            "probability": 0.06063580647364621
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.86799997,
+            "probability": 0.040676466275449255
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.68400002,
+            "probability": 0.03549504192211203
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.5,
+            "probability": 0.03497641033759308
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.132,
+            "probability": 0.03362102192552477
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.5,
+            "probability": 0.03327294017885277
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.31600001,
+            "probability": 0.03304399650303919
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.68400002,
+            "probability": 0.028463870676015395
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.86799997,
+            "probability": 0.028418598162618772
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.86799997,
+            "probability": 0.026287879228653686
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.31600001,
+            "probability": 0.02557448583470835
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.5,
+            "probability": 0.023108942059648203
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.68400002,
+            "probability": 0.022306666600504694
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.68400002,
+            "probability": 0.02088377582679817
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.31600001,
+            "probability": 0.020014900566785985
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.132,
+            "probability": 0.01443681860051444
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.5,
+            "probability": 0.014043132772409948
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.86799997,
+            "probability": 0.00892706864184946
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.31600001,
+            "probability": 0.008125211713415719
+          }
+        ],
+        "entropy": 3.021038144687938,
+        "n_candidates": 25,
+        "normalized_entropy": 0.9385382689658855,
+        "notes": [
+          "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
+          "High entropy means many candidates explain the traces about equally well."
+        ],
+        "temperature": 1.1393611393590646,
+        "top_candidates": [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.13199999928474426,
+            "index_x": 4,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 0.9193068308331991,
+            "probability": 0.0969839685059485,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.13199999928474426,
+            "index_x": 2,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 0.9939720615892871,
+            "probability": 0.09083213662285708,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "index_x": 2,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 1.0513350139682578,
+            "probability": 0.08637225977503792,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.3160000145435333,
+            "index_x": 2,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 1.2519491488863068,
+            "probability": 0.07242782666909972,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.6840000152587891,
+            "index_x": 2,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 1.2699557455864032,
+            "probability": 0.07129216651631459,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.13199999928474426,
+            "index_x": 0,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.2944052658358651,
+            "probability": 0.06977860761060219,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.8679999709129333,
+            "index_x": 2,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.4544193057128332,
+            "probability": 0.06063580647364621,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.8679999709129333,
+            "index_x": 3,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.9092931567676437,
+            "probability": 0.040676466275449255,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.6840000152587891,
+            "index_x": 0,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 2.064538721183649,
+            "probability": 0.03549504192211203,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.5,
+            "index_x": 4,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 2.0813091813524105,
+            "probability": 0.03497641033759308,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.13199999928474426,
+            "index_x": 3,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 2.126339376927053,
+            "probability": 0.03362102192552477,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.5,
+            "index_x": 0,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 2.1381967817647625,
+            "probability": 0.03327294017885277,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.3160000145435333,
+            "index_x": 4,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 2.1460635674356032,
+            "probability": 0.03304399650303919,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.6840000152587891,
+            "index_x": 4,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 2.316061163928284,
+            "probability": 0.028463870676015395,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.8679999709129333,
+            "index_x": 4,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 2.3178747896161225,
+            "probability": 0.028418598162618772,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.8679999709129333,
+            "index_x": 0,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 2.40667184408204,
+            "probability": 0.026287879228653686,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.3160000145435333,
+            "index_x": 0,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 2.4380188133217615,
+            "probability": 0.02557448583470835,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.5,
+            "index_x": 3,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 2.5535221898841876,
+            "probability": 0.023108942059648203,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.6840000152587891,
+            "index_x": 1,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 2.5937804450718978,
+            "probability": 0.022306666600504694,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.6840000152587891,
+            "index_x": 3,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 2.6688791594985872,
+            "probability": 0.02088377582679817,
+            "radius": 0.12
+          }
+        ]
+      },
+      "world_path": "acq_compare/worlds/top-only.json"
+    },
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.5,
+        "index_x": 2,
+        "index_z": 2,
+        "level": 0,
+        "mismatch": 0.15048785515438234,
+        "radius": 0.12
+      },
+      "challenge_score": {
+        "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+        "iou": 0.5555555555555556,
+        "n_forward_runs": 26,
+        "n_receivers": 6,
+        "n_sources": 3,
+        "normalized_center_error": 0.03807886552931957,
+        "runtime_seconds": null,
+        "score": 49.56397824496917,
+        "supported": true
+      },
+      "forward_runs": 26,
+      "n_receivers": 6,
+      "n_sources": 3,
+      "preset": "left-right",
+      "reconstruction_path": "acq_compare/runs/left-right_recon.json",
+      "run_path": "acq_compare/runs/left-right_obs.npz",
+      "score": {
+        "best_mismatch": 0.15048785515438234,
+        "center_error": 0.053851648071345085,
+        "iou": 0.5555555555555556,
+        "normalized_center_error": 0.03807886552931957,
+        "radius_error": 0.0,
+        "reconstruction_score": 0.5555555555555556,
+        "supported": true
+      },
+      "uncertainty": {
+        "best_probability": 0.18943282607474787,
+        "center_probabilities": [
+          {
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "probability": 0.18943282607474787
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.5,
+            "probability": 0.135531679956284
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.5,
+            "probability": 0.10824462180102415
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.86799997,
+            "probability": 0.05343865628117571
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.132,
+            "probability": 0.04927734178983944
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.132,
+            "probability": 0.04212502560028775
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.86799997,
+            "probability": 0.04185568650972176
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.86799997,
+            "probability": 0.034105261617789526
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.132,
+            "probability": 0.03191497159600743
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.132,
+            "probability": 0.030607849252404642
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.132,
+            "probability": 0.030436267624616094
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.86799997,
+            "probability": 0.029673166325534107
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.86799997,
+            "probability": 0.028168843710033333
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.31600001,
+            "probability": 0.02725173823403307
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.68400002,
+            "probability": 0.02711986525024668
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.31600001,
+            "probability": 0.02336392893584989
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.5,
+            "probability": 0.0211170614102045
+          },
+          {
+            "center_x": 0.86799997,
+            "center_z": 0.68400002,
+            "probability": 0.018949542881988236
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.68400002,
+            "probability": 0.015397846563043514
+          },
+          {
+            "center_x": 0.132,
+            "center_z": 0.5,
+            "probability": 0.014716585362915096
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.68400002,
+            "probability": 0.012396935178079655
+          },
+          {
+            "center_x": 0.68400002,
+            "center_z": 0.31600001,
+            "probability": 0.01046215480741158
+          },
+          {
+            "center_x": 0.5,
+            "center_z": 0.31600001,
+            "probability": 0.010106420948840917
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.68400002,
+            "probability": 0.007482670480521824
+          },
+          {
+            "center_x": 0.31600001,
+            "center_z": 0.31600001,
+            "probability": 0.006823051807399029
+          }
+        ],
+        "entropy": 2.8268697322793734,
+        "n_candidates": 25,
+        "normalized_entropy": 0.878216460057176,
+        "notes": [
+          "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
+          "High entropy means many candidates explain the traces about equally well."
+        ],
+        "temperature": 0.6906900015121451,
+        "top_candidates": [
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.5,
+            "index_x": 2,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 0.15048785515438234,
+            "probability": 0.18943282607474787,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.5,
+            "index_x": 3,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 0.38175094495184014,
+            "probability": 0.135531679956284,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.5,
+            "index_x": 1,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 0.5370261597009917,
+            "probability": 0.10824462180102415,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.8679999709129333,
+            "index_x": 0,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.02455611933419,
+            "probability": 0.05343865628117571,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.13199999928474426,
+            "index_x": 0,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.0805503630445097,
+            "probability": 0.04927734178983944,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.13199999928474426,
+            "index_x": 4,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.18886601321612,
+            "probability": 0.04212502560028775,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.8679999709129333,
+            "index_x": 4,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.1932963270351962,
+            "probability": 0.04185568650972176,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.8679999709129333,
+            "index_x": 3,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.334733058671739,
+            "probability": 0.034105261617789526,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.13199999928474426,
+            "index_x": 3,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.3805786044016195,
+            "probability": 0.03191497159600743,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.13199999928474426,
+            "index_x": 2,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.4094623907810822,
+            "probability": 0.030607849252404642,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.13199999928474426,
+            "index_x": 1,
+            "index_z": 0,
+            "level": 0,
+            "mismatch": 1.4133451573085043,
+            "probability": 0.030436267624616094,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.5,
+            "center_z": 0.8679999709129333,
+            "index_x": 2,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.430882995246757,
+            "probability": 0.029673166325534107,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.3160000145435333,
+            "center_z": 0.8679999709129333,
+            "index_x": 1,
+            "index_z": 4,
+            "level": 0,
+            "mismatch": 1.4668172563154636,
+            "probability": 0.028168843710033333,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.3160000145435333,
+            "index_x": 0,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 1.489678561261096,
+            "probability": 0.02725173823403307,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.6840000152587891,
+            "index_x": 0,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 1.4930289693467915,
+            "probability": 0.02711986525024668,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.3160000145435333,
+            "index_x": 4,
+            "index_z": 1,
+            "level": 0,
+            "mismatch": 1.5959923103466478,
+            "probability": 0.02336392893584989,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.5,
+            "index_x": 4,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 1.6658293737907413,
+            "probability": 0.0211170614102045,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.8679999709129333,
+            "center_z": 0.6840000152587891,
+            "index_x": 4,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 1.74063213869422,
+            "probability": 0.018949542881988236,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.6840000152587891,
+            "center_z": 0.6840000152587891,
+            "index_x": 3,
+            "index_z": 3,
+            "level": 0,
+            "mismatch": 1.8839863285473413,
+            "probability": 0.015397846563043514,
+            "radius": 0.12
+          },
+          {
+            "anomaly_velocity": 2.2,
+            "center_x": 0.13199999928474426,
+            "center_z": 0.5,
+            "index_x": 0,
+            "index_z": 2,
+            "level": 0,
+            "mismatch": 1.9152418139711007,
+            "probability": 0.014716585362915096,
+            "radius": 0.12
+          }
+        ]
+      },
+      "world_path": "acq_compare/worlds/left-right.json"
+    }
+  ]
+}

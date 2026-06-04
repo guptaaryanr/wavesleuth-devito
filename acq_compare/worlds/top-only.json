@@ -1,0 +1,71 @@
+{
+  "acquisition": {
+    "receivers": [
+      {
+        "x": 0.14,
+        "z": 0.86
+      },
+      {
+        "x": 0.26,
+        "z": 0.86
+      },
+      {
+        "x": 0.38,
+        "z": 0.86
+      },
+      {
+        "x": 0.5,
+        "z": 0.86
+      },
+      {
+        "x": 0.62,
+        "z": 0.86
+      },
+      {
+        "x": 0.74,
+        "z": 0.86
+      },
+      {
+        "x": 0.86,
+        "z": 0.86
+      }
+    ],
+    "sources": [
+      {
+        "x": 0.25,
+        "z": 0.16
+      },
+      {
+        "x": 0.75,
+        "z": 0.16
+      }
+    ]
+  },
+  "grid": {
+    "extent_x": 1.0,
+    "extent_z": 1.0,
+    "nx": 70,
+    "nz": 70
+  },
+  "medium": {
+    "anomaly": {
+      "center_x": 0.55,
+      "center_z": 0.52,
+      "kind": "circle",
+      "radius": 0.12
+    },
+    "anomaly_velocity": 2.2,
+    "background_velocity": 1.5
+  },
+  "name": "circle_demo_top-only",
+  "simulation": {
+    "boundary": "none",
+    "dt": 0.0015,
+    "nt": 360,
+    "shot_mode": "sequential",
+    "source_frequency": 20.0,
+    "space_order": 4,
+    "sponge_strength": 0.0,
+    "sponge_width": 0
+  }
+}
