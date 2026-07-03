@@ -23,6 +23,35 @@ def _domain_extent(world: dict[str, Any]) -> list[float]:
     return [0.0, float(world["grid"]["extent_x"]), 0.0, float(world["grid"]["extent_z"])]
 
 
+def _safe_center_extent(xs: np.ndarray, zs: np.ndarray, world: dict[str, Any]) -> list[float]:
+    """Return an imshow extent that never has identical min/max limits."""
+    extent_x = float(world["grid"]["extent_x"])
+    extent_z = float(world["grid"]["extent_z"])
+    if xs.size == 0 or zs.size == 0:
+        return _domain_extent(world)
+    x0 = float(np.nanmin(xs))
+    x1 = float(np.nanmax(xs))
+    z0 = float(np.nanmin(zs))
+    z1 = float(np.nanmax(zs))
+
+    if not np.isfinite([x0, x1, z0, z1]).all():
+        return _domain_extent(world)
+
+    if abs(x1 - x0) <= 1.0e-12:
+        pad = max(1.0e-6, 0.025 * extent_x)
+        x0 = max(0.0, x0 - pad)
+        x1 = min(extent_x, x1 + pad)
+        if abs(x1 - x0) <= 1.0e-12:
+            x1 = x0 + pad
+    if abs(z1 - z0) <= 1.0e-12:
+        pad = max(1.0e-6, 0.025 * extent_z)
+        z0 = max(0.0, z0 - pad)
+        z1 = min(extent_z, z1 + pad)
+        if abs(z1 - z0) <= 1.0e-12:
+            z1 = z0 + pad
+    return [x0, x1, z0, z1]
+
+
 def _overlay_acquisition(ax: Any, world: dict[str, Any]) -> None:
     src = source_coordinates(world)
     rec = receiver_coordinates(world)
@@ -147,7 +176,7 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
         mismatch = np.asarray([[np.nan if value is None else float(value) for value in row] for row in mismatch_raw], dtype=np.float64)
         xs = np.asarray(xs_raw, dtype=float)
         zs = np.asarray(zs_raw, dtype=float)
-        extent = [float(xs.min()), float(xs.max()), float(zs.min()), float(zs.max())] if xs.size >= 2 and zs.size >= 2 else _domain_extent(world)
+        extent = _safe_center_extent(xs, zs, world) if xs.size and zs.size else _domain_extent(world)
         image1 = ax1.imshow(mismatch, origin="lower", aspect="auto", extent=extent)
         fig.colorbar(image1, ax=ax1, label="best mismatch at center")
         if true:
@@ -198,6 +227,18 @@ def _candidate_center_probabilities(reconstruction: dict[str, Any], temperature:
     return xs, zs, grid
 
 
+def _uncertainty_summary_for_title(reconstruction: dict[str, Any], temperature: float | None) -> dict[str, Any]:
+    summary = reconstruction.get("uncertainty") or {}
+    if temperature is None and summary.get("effective_candidates") is not None:
+        return summary
+    try:
+        from .uncertainty import candidate_probabilities
+
+        return candidate_probabilities(reconstruction, temperature=temperature)
+    except Exception:
+        return summary if isinstance(summary, dict) else {}
+
+
 def visualize_uncertainty(reconstruction_or_path: dict[str, Any] | str | Path, out_path: str | Path, *, temperature: float | None = None) -> Path:
     """Plot a pseudo-probability map from candidate mismatches."""
     reconstruction = load_json(reconstruction_or_path) if isinstance(reconstruction_or_path, (str, Path)) else reconstruction_or_path
@@ -206,13 +247,13 @@ def visualize_uncertainty(reconstruction_or_path: dict[str, Any] | str | Path, o
         raise ValueError("Reconstruction does not contain embedded world metadata.")
     best = reconstruction.get("best_candidate", {})
     true = reconstruction.get("true_center", {})
-    uncertainty = reconstruction.get("uncertainty") or {}
+    uncertainty = _uncertainty_summary_for_title(reconstruction, temperature)
     plt = _plt()
     out = ensure_parent(out_path)
     fig, ax = plt.subplots(figsize=(6.4, 5.4))
     xs, zs, grid = _candidate_center_probabilities(reconstruction, temperature=temperature)
     if xs.size and zs.size:
-        extent = [float(xs.min()), float(xs.max()), float(zs.min()), float(zs.max())]
+        extent = _safe_center_extent(xs, zs, world)
         image = ax.imshow(grid, origin="lower", aspect="auto", extent=extent)
         fig.colorbar(image, ax=ax, label="pseudo-probability by center")
     else:
@@ -225,12 +266,16 @@ def visualize_uncertainty(reconstruction_or_path: dict[str, Any] | str | Path, o
     ax.set_ylim(0.0, float(world["grid"]["extent_z"]))
     ax.set_xlabel("candidate center x")
     ax.set_ylabel("candidate center z")
+    effective = float(uncertainty.get("effective_candidates", 0.0) or 0.0)
+    center_effective = float(uncertainty.get("center_effective_candidates", 0.0) or 0.0)
     ax.set_title(
         "Uncertainty from mismatch surface\n"
-        f"entropy={float(uncertainty.get('normalized_entropy', 0.0)):.3f}, "
-        f"effective={float(uncertainty.get('effective_candidates', 0.0)):.1f}"
+        f"entropy={float(uncertainty.get('normalized_entropy', 0.0) or 0.0):.3f}, "
+        f"effective={effective:.1f}, centers={center_effective:.1f}"
     )
-    ax.legend(loc="upper right", fontsize=8)
+    handles, labels = ax.get_legend_handles_labels()
+    if handles:
+        ax.legend(loc="upper right", fontsize=8)
     fig.tight_layout()
     fig.savefig(out, dpi=160)
     plt.close(fig)

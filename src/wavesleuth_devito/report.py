@@ -54,6 +54,7 @@ def generate_html_report(reconstruction_path: str | Path, out_path: str | Path) 
     objective = reconstruction.get("objective", {})
     search = reconstruction.get("search", {})
     candidate_grid = reconstruction.get("candidate_grid", {})
+    uncertainty = reconstruction.get("uncertainty", {})
 
     html_text = f"""<!doctype html>
 <html lang="en">
@@ -86,6 +87,9 @@ def generate_html_report(reconstruction_path: str | Path, out_path: str | Path) 
 
   <h2>Candidate budget</h2>
   <pre>{_pretty(candidate_grid)}</pre>
+
+  <h2>Uncertainty summary</h2>
+  <pre>{_pretty(uncertainty)}</pre>
 
   {image_html}
 

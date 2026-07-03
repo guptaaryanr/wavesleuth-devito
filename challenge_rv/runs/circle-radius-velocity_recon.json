@@ -2295,7 +2295,7 @@
       "radius": 0.15
     }
   ],
-  "created_utc": "2026-06-04T00:47:12+00:00",
+  "created_utc": "2026-07-03T00:33:47+00:00",
   "method": "grid-search",
   "mismatch_map": [
     [
@@ -2717,7 +2717,9 @@
       ],
       "uncertainty_summary": {
         "best_mismatch": 1.1927447271071074,
+        "effective_candidates": 14.787451043359052,
         "entropy": 2.6937789186216996,
+        "inverse_participation_effective_candidates": 13.808333110130874,
         "max_probability": 0.09155081834570901,
         "normalized_entropy": 0.8368694740599378,
         "temperature": 3.3114588113012595
@@ -2746,6 +2748,7 @@
   },
   "uncertainty": {
     "best_probability": 0.006906916791830307,
+    "center_effective_candidates": 20.779975444907596,
     "center_probabilities": [
       {
         "center_x": 0.5,
@@ -2873,14 +2876,21 @@
         "probability": 0.0013143109028067692
       }
     ],
+    "effective_candidates": 194.68045850913055,
     "entropy": 5.271359540156288,
+    "inverse_participation_effective_candidates": 183.3353942131923,
     "n_candidates": 225,
+    "n_centers": 25,
     "normalized_entropy": 0.9732758163070203,
     "notes": [
       "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
+      "effective_candidates is exp(entropy): roughly how many candidates remain plausible under this soft weighting.",
+      "center_effective_candidates groups radius/velocity variants that share the same center.",
       "High entropy means many candidates explain the traces about equally well."
     ],
     "temperature": 28.049048710684623,
+    "top_3_probability_mass": 0.020704053307247238,
+    "top_5_probability_mass": 0.034484881051219635,
     "top_candidates": [
       {
         "anomaly_velocity": 1.99,
@@ -3104,7 +3114,7 @@
       }
     ]
   },
-  "version": "0.3.0",
+  "version": "0.3.1",
   "world": {
     "acquisition": {
       "receivers": [

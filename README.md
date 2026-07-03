@@ -317,3 +317,13 @@ wavesleuth-devito invert runs/circle_obs.npz \
   --anomaly-velocity-values 2.0,2.2,2.4 \
   --out runs/circle_recon_param_search.json
 ```
+## v0.3.1 cleanup
+
+v0.3.1 is a small polish release focused on diagnostics rather than new inversion behavior:
+
+- uncertainty summaries now include `effective_candidates`, `center_effective_candidates`, and top-candidate probability mass diagnostics
+- `visualize-uncertainty` handles single-center or degenerate candidate grids without Matplotlib identical-limit warnings
+- leaderboard rows are rounded and sorted on rounded scores so tiny runtime jitter does not imply a meaningful ranking difference
+- leaderboard rows include difficulty, experimental status, radius error, normalized center error, and a compact best-candidate summary
+- challenge summaries now label `circle-radius-velocity` as hard/experimental and document why naive joint radius/velocity search can fail
+- HTML reports include the uncertainty summary block

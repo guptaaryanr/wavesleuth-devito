@@ -531,7 +531,7 @@
       "radius": 0.12
     }
   ],
-  "created_utc": "2026-06-04T00:46:53+00:00",
+  "created_utc": "2026-07-03T00:33:39+00:00",
   "method": "grid-search",
   "mismatch_map": [
     [
@@ -945,7 +945,9 @@
       ],
       "uncertainty_summary": {
         "best_mismatch": 0.9912707196273312,
+        "effective_candidates": 20.68255431837095,
         "entropy": 3.0292905583749423,
+        "inverse_participation_effective_candidates": 18.253052154043864,
         "max_probability": 0.08045601374929857,
         "normalized_entropy": 0.9411020254249725,
         "temperature": 2.131516898994734
@@ -1287,7 +1289,9 @@
       ],
       "uncertainty_summary": {
         "best_mismatch": 0.013567479305254123,
+        "effective_candidates": 18.460033172561886,
         "entropy": 2.9156080260699433,
+        "inverse_participation_effective_candidates": 15.824362753758859,
         "max_probability": 0.10232655409393601,
         "normalized_entropy": 0.9057845610398236,
         "temperature": 1.0867510346544653
@@ -1316,6 +1320,7 @@
   },
   "uncertainty": {
     "best_probability": 0.04291300478741527,
+    "center_effective_candidates": 38.24434728170018,
     "center_probabilities": [
       {
         "center_x": 0.546,
@@ -1563,14 +1568,21 @@
         "probability": 0.002637917908714264
       }
     ],
+    "effective_candidates": 42.31476081344654,
     "entropy": 3.7451359805820843,
+    "inverse_participation_effective_candidates": 38.24434728170017,
     "n_candidates": 49,
+    "n_centers": 49,
     "normalized_entropy": 0.962309586185222,
     "notes": [
       "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
+      "effective_candidates is exp(entropy): roughly how many candidates remain plausible under this soft weighting.",
+      "center_effective_candidates groups radius/velocity variants that share the same center.",
       "High entropy means many candidates explain the traces about equally well."
     ],
     "temperature": 2.4489403005500097,
+    "top_3_probability_mass": 0.12672075145138734,
+    "top_5_probability_mass": 0.20287884244147508,
     "top_candidates": [
       {
         "anomaly_velocity": 2.2,
@@ -1794,7 +1806,7 @@
       }
     ]
   },
-  "version": "0.3.0",
+  "version": "0.3.1",
   "world": {
     "acquisition": {
       "receivers": [

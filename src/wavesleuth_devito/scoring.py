@@ -257,10 +257,14 @@ def probability_map_from_mismatch_map(
     p = prob[prob > 0.0]
     entropy = float(-np.sum(p * np.log(p)))
     max_entropy = float(np.log(p.size)) if p.size > 1 else 1.0
+    effective_candidates = float(math.exp(max(0.0, entropy)))
+    inverse_participation = float(1.0 / max(float(np.sum(p * p)), 1.0e-300))
     return prob, {
         "temperature": float(temperature),
         "entropy": entropy,
         "normalized_entropy": float(entropy / max_entropy) if max_entropy > 0 else 0.0,
+        "effective_candidates": effective_candidates,
+        "inverse_participation_effective_candidates": inverse_participation,
         "max_probability": float(np.max(prob)),
         "best_mismatch": best,
     }
