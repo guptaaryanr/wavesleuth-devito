@@ -336,3 +336,48 @@ v0.3.2 is the final v0.3 cleanup patch before v0.4 work:
 - default challenge scores no longer include wall-clock runtime, because first-run compilation and cache state make runtime too noisy for the main score
 - runtime remains reported as a diagnostic field
 - HTML reports backfill uncertainty diagnostics for older v0.3 reconstruction JSON files when candidate mismatches are available
+
+## v0.4 staged radius/velocity search
+
+v0.4 keeps the v0.3 joint grid search as a baseline, but adds a staged strategy for harder circle inversions where center, radius, and anomaly velocity are all uncertain.
+
+The staged strategy is center-first:
+
+1. search candidate centers using the reference radius and velocity
+2. keep the top-K plausible centers
+3. search radius and velocity only near those centers
+4. optionally perform a final local center polish
+
+This is designed to reduce the v0.3 failure mode where a small weak impostor anomaly can win the global joint objective before the center has been localized.
+
+Example:
+
+```bash
+wavesleuth-devito invert runs/circle_obs.npz \
+  --method staged-grid-search \
+  --search-radius \
+  --search-velocity \
+  --candidate-grid-size 5 \
+  --refine-levels 1 \
+  --top-k-refine 5 \
+  --out runs/circle_recon_staged.json
+```
+
+The old joint behavior is still available:
+
+```bash
+wavesleuth-devito invert runs/circle_obs.npz \
+  --method grid-search \
+  --search-strategy joint \
+  --search-radius \
+  --search-velocity \
+  --out runs/circle_recon_joint.json
+```
+
+A new challenge compares the v0.4 staged method against the old hard radius/velocity baseline:
+
+```bash
+wavesleuth-devito challenge circle-radius-velocity-staged --out-dir challenge_rv_staged --quiet
+wavesleuth-devito leaderboard challenge_rv challenge_rv_staged
+```
+

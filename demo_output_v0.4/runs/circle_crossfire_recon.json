@@ -1,0 +1,832 @@
+{
+  "best_candidate": {
+    "anomaly_velocity": 2.2,
+    "center_x": 0.5460000038146973,
+    "center_z": 0.5,
+    "index_x": 3,
+    "index_z": 2,
+    "level": 1,
+    "mismatch": 0.498601465052343,
+    "radius": 0.12
+  },
+  "best_mismatch": 0.498601465052343,
+  "candidate_grid": {
+    "evaluated_candidates": 49,
+    "grid_size": 5,
+    "margin": 0.132,
+    "possible_candidates_per_level": 25,
+    "refine_levels": 1,
+    "xs": [
+      0.40799999237060547,
+      0.45399999618530273,
+      0.5,
+      0.5460000038146973,
+      0.5920000076293945
+    ],
+    "zs": [
+      0.40799999237060547,
+      0.45399999618530273,
+      0.5,
+      0.5460000038146973,
+      0.5920000076293945
+    ]
+  },
+  "candidates": [
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.13199999928474426,
+      "index_x": 0,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 29.025715294961998,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.13199999928474426,
+      "index_x": 1,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 3.5006117526649034,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.13199999928474426,
+      "index_x": 2,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 1.5914619617131398,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.13199999928474426,
+      "index_x": 3,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 4.353077862823368,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.13199999928474426,
+      "index_x": 4,
+      "index_z": 0,
+      "level": 0,
+      "mismatch": 35.61091879025745,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.3160000145435333,
+      "index_x": 0,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 29.294172941921495,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.3160000145435333,
+      "index_x": 1,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 5.597168085370768,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.3160000145435333,
+      "index_x": 2,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 1.781541082082697,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.3160000145435333,
+      "index_x": 3,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 4.762461794018203,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.3160000145435333,
+      "index_x": 4,
+      "index_z": 1,
+      "level": 0,
+      "mismatch": 28.014783764831463,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.5,
+      "index_x": 0,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 34.501844347758514,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.5,
+      "index_x": 1,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 4.576915791372785,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.5,
+      "index_x": 2,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 1.0214786804010798,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.5,
+      "index_x": 3,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 2.526107293806299,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.5,
+      "index_x": 4,
+      "index_z": 2,
+      "level": 0,
+      "mismatch": 17.425962007037153,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.6840000152587891,
+      "index_x": 0,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 89.19368778888781,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.6840000152587891,
+      "index_x": 1,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 12.871252610647144,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.6840000152587891,
+      "index_x": 2,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 3.471347650443226,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.6840000152587891,
+      "index_x": 3,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 3.339467336006603,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.6840000152587891,
+      "index_x": 4,
+      "index_z": 3,
+      "level": 0,
+      "mismatch": 6.109532150517246,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.8679999709129333,
+      "index_x": 0,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 28.131563885832755,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.8679999709129333,
+      "index_x": 1,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 20.418677986405026,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.8679999709129333,
+      "index_x": 2,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 7.58738032613131,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.8679999709129333,
+      "index_x": 3,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 4.060970560356963,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.8679999709129333,
+      "index_x": 4,
+      "index_z": 4,
+      "level": 0,
+      "mismatch": 2.82321189757007,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.40799999237060547,
+      "index_x": 0,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 2.375727603276585,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.40799999237060547,
+      "index_x": 1,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.8350010321871595,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.40799999237060547,
+      "index_x": 2,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.6614254793271417,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.40799999237060547,
+      "index_x": 3,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.428758889187252,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.40799999237060547,
+      "index_x": 4,
+      "index_z": 0,
+      "level": 1,
+      "mismatch": 1.5366787908358157,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.45399999618530273,
+      "index_x": 0,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 2.406417092205003,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.45399999618530273,
+      "index_x": 1,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 1.9563291403670828,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.45399999618530273,
+      "index_x": 2,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 1.49797886851384,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.45399999618530273,
+      "index_x": 3,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 0.9290093146513051,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.45399999618530273,
+      "index_x": 4,
+      "index_z": 1,
+      "level": 1,
+      "mismatch": 1.2236373535723999,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.5,
+      "index_x": 0,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 2.1820816059120633,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.5,
+      "index_x": 1,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 1.6141371450271507,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.5,
+      "index_x": 3,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 0.498601465052343,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.5,
+      "index_x": 4,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 1.2482906658191213,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.5460000038146973,
+      "index_x": 0,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 2.5274309005708515,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.5460000038146973,
+      "index_x": 1,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 2.025602741308911,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.5460000038146973,
+      "index_x": 2,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 1.3999813509988246,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.5460000038146973,
+      "index_x": 3,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 0.7423407877986848,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.5460000038146973,
+      "index_x": 4,
+      "index_z": 3,
+      "level": 1,
+      "mismatch": 1.3124739703382275,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.40799999237060547,
+      "center_z": 0.5920000076293945,
+      "index_x": 0,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 3.3699382793815817,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.45399999618530273,
+      "center_z": 0.5920000076293945,
+      "index_x": 1,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 2.8587848427092886,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.5920000076293945,
+      "index_x": 2,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 2.1405827322344595,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.5920000076293945,
+      "index_x": 3,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 1.7547921336687595,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5920000076293945,
+      "center_z": 0.5920000076293945,
+      "index_x": 4,
+      "index_z": 4,
+      "level": 1,
+      "mismatch": 2.5744033848876215,
+      "radius": 0.12
+    }
+  ],
+  "created_utc": "2026-06-03T23:45:49+00:00",
+  "method": "grid-search",
+  "mismatch_map": [
+    [
+      2.375727603276585,
+      1.8350010321871595,
+      1.6614254793271417,
+      1.428758889187252,
+      1.5366787908358157
+    ],
+    [
+      2.406417092205003,
+      1.9563291403670828,
+      1.49797886851384,
+      0.9290093146513051,
+      1.2236373535723999
+    ],
+    [
+      2.1820816059120633,
+      1.6141371450271507,
+      1.0214786804010798,
+      0.498601465052343,
+      1.2482906658191213
+    ],
+    [
+      2.5274309005708515,
+      2.025602741308911,
+      1.3999813509988246,
+      0.7423407877986848,
+      1.3124739703382275
+    ],
+    [
+      3.3699382793815817,
+      2.8587848427092886,
+      2.1405827322344595,
+      1.7547921336687595,
+      2.5744033848876215
+    ]
+  ],
+  "nearest_true_candidate": {
+    "candidate": {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5460000038146973,
+      "center_z": 0.5,
+      "index_x": 3,
+      "index_z": 2,
+      "level": 1,
+      "mismatch": 0.498601465052343,
+      "radius": 0.12
+    },
+    "distance_to_true_center": 0.020396077306247824,
+    "rank_by_mismatch": 1
+  },
+  "notes": [
+    "Grid search assumes a circular anomaly.",
+    "Differential mode compares hidden-minus-background residual traces and is usually less fooled by direct arrivals.",
+    "Radius and anomaly velocity are fixed from metadata unless CLI overrides are supplied.",
+    "The forward model uses a simple Devito acoustic solver with crude zero-style boundaries, not a tuned PML."
+  ],
+  "objective": {
+    "background_subtracted": true,
+    "metric": "l2",
+    "mismatch_mode": "differential",
+    "normalize_traces": false,
+    "shot_mode": "sequential",
+    "time_max": null,
+    "time_min": null
+  },
+  "project": "WaveSleuth-Devito",
+  "run_path": "runs/circle_crossfire_obs.npz",
+  "score": {
+    "best_mismatch": 0.498601465052343,
+    "center_error": 0.020396077306247824,
+    "iou": 0.7916666666666666,
+    "normalized_center_error": 0.014422204572852888,
+    "radius_error": 0.0,
+    "reconstruction_score": 0.7916666666666666,
+    "supported": true
+  },
+  "search_levels": [
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5,
+        "center_z": 0.5,
+        "index_x": 2,
+        "index_z": 2,
+        "level": 0,
+        "mismatch": 1.0214786804010798,
+        "radius": 0.12
+      },
+      "evaluated_candidates_this_level": 25,
+      "grid_size": 5,
+      "level": 0,
+      "margin": 0.132,
+      "mismatch_map": [
+        [
+          29.025715294961998,
+          3.5006117526649034,
+          1.5914619617131398,
+          4.353077862823368,
+          35.61091879025745
+        ],
+        [
+          29.294172941921495,
+          5.597168085370768,
+          1.781541082082697,
+          4.762461794018203,
+          28.014783764831463
+        ],
+        [
+          34.501844347758514,
+          4.576915791372785,
+          1.0214786804010798,
+          2.526107293806299,
+          17.425962007037153
+        ],
+        [
+          89.19368778888781,
+          12.871252610647144,
+          3.471347650443226,
+          3.339467336006603,
+          6.109532150517246
+        ],
+        [
+          28.131563885832755,
+          20.418677986405026,
+          7.58738032613131,
+          4.060970560356963,
+          2.82321189757007
+        ]
+      ],
+      "xs": [
+        0.13199999928474426,
+        0.3160000145435333,
+        0.5,
+        0.6840000152587891,
+        0.8679999709129333
+      ],
+      "zs": [
+        0.13199999928474426,
+        0.3160000145435333,
+        0.5,
+        0.6840000152587891,
+        0.8679999709129333
+      ]
+    },
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.5460000038146973,
+        "center_z": 0.5,
+        "index_x": 3,
+        "index_z": 2,
+        "level": 1,
+        "mismatch": 0.498601465052343,
+        "radius": 0.12
+      },
+      "evaluated_candidates_this_level": 25,
+      "grid_size": 5,
+      "level": 1,
+      "margin": 0.132,
+      "mismatch_map": [
+        [
+          2.375727603276585,
+          1.8350010321871595,
+          1.6614254793271417,
+          1.428758889187252,
+          1.5366787908358157
+        ],
+        [
+          2.406417092205003,
+          1.9563291403670828,
+          1.49797886851384,
+          0.9290093146513051,
+          1.2236373535723999
+        ],
+        [
+          2.1820816059120633,
+          1.6141371450271507,
+          1.0214786804010798,
+          0.498601465052343,
+          1.2482906658191213
+        ],
+        [
+          2.5274309005708515,
+          2.025602741308911,
+          1.3999813509988246,
+          0.7423407877986848,
+          1.3124739703382275
+        ],
+        [
+          3.3699382793815817,
+          2.8587848427092886,
+          2.1405827322344595,
+          1.7547921336687595,
+          2.5744033848876215
+        ]
+      ],
+      "xs": [
+        0.40799999237060547,
+        0.45399999618530273,
+        0.5,
+        0.5460000038146973,
+        0.5920000076293945
+      ],
+      "zs": [
+        0.40799999237060547,
+        0.45399999618530273,
+        0.5,
+        0.5460000038146973,
+        0.5920000076293945
+      ]
+    }
+  ],
+  "true_center": {
+    "center_x": 0.55,
+    "center_z": 0.52,
+    "radius": 0.12
+  },
+  "version": "0.1.0",
+  "world": {
+    "acquisition": {
+      "receivers": [
+        {
+          "x": 0.2,
+          "z": 0.84
+        },
+        {
+          "x": 0.4,
+          "z": 0.84
+        },
+        {
+          "x": 0.6,
+          "z": 0.84
+        },
+        {
+          "x": 0.8,
+          "z": 0.84
+        },
+        {
+          "x": 0.88,
+          "z": 0.3
+        },
+        {
+          "x": 0.88,
+          "z": 0.5
+        },
+        {
+          "x": 0.88,
+          "z": 0.7
+        },
+        {
+          "x": 0.12,
+          "z": 0.34
+        },
+        {
+          "x": 0.12,
+          "z": 0.54
+        },
+        {
+          "x": 0.12,
+          "z": 0.74
+        }
+      ],
+      "sources": [
+        {
+          "x": 0.18,
+          "z": 0.18
+        },
+        {
+          "x": 0.82,
+          "z": 0.18
+        },
+        {
+          "x": 0.18,
+          "z": 0.72
+        }
+      ]
+    },
+    "grid": {
+      "extent_x": 1.0,
+      "extent_z": 1.0,
+      "nx": 70,
+      "nz": 70
+    },
+    "medium": {
+      "anomaly": {
+        "center_x": 0.55,
+        "center_z": 0.52,
+        "kind": "circle",
+        "radius": 0.12
+      },
+      "anomaly_velocity": 2.2,
+      "background_velocity": 1.5
+    },
+    "name": "circle_demo",
+    "simulation": {
+      "dt": 0.0015,
+      "nt": 360,
+      "shot_mode": "sequential",
+      "source_frequency": 20.0,
+      "space_order": 4
+    }
+  },
+  "world_name": "circle_demo"
+}

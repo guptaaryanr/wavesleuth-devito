@@ -17,7 +17,7 @@ from .simulation import simulate_world
 from .visualization import visualize_reconstruction, visualize_run, visualize_uncertainty, visualize_world
 from .world import acquisition_preset, make_demo_world, validate_world
 
-SUPPORTED_CHALLENGES = ("circle-easy", "circle-noisy", "circle-limited-angle", "circle-radius-velocity")
+SUPPORTED_CHALLENGES = ("circle-easy", "circle-noisy", "circle-limited-angle", "circle-radius-velocity", "circle-radius-velocity-staged")
 
 CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
     "circle-easy": {
@@ -41,10 +41,19 @@ CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
     "circle-radius-velocity": {
         "difficulty": "hard",
         "experimental": True,
-        "description": "Searches center, radius, and anomaly velocity with a naive joint grid objective.",
+        "description": "v0.3-style naive joint search over center, radius, and anomaly velocity.",
         "notes": [
-            "This is intentionally marked experimental because joint radius/velocity search can prefer weak impostor anomalies.",
+            "This remains as a diagnostic baseline because joint radius/velocity search can prefer weak impostor anomalies.",
             "A low score here is a useful failure mode, not evidence that the basic center-recovery pipeline is broken.",
+        ],
+    },
+    "circle-radius-velocity-staged": {
+        "difficulty": "hard",
+        "experimental": False,
+        "description": "v0.4 staged center-first search over center, radius, and anomaly velocity.",
+        "notes": [
+            "This is the v0.4 answer to the naive joint radius/velocity failure mode.",
+            "It localizes center first, keeps top-K centers, then searches radius/velocity and performs a final local center polish.",
         ],
     },
 }
@@ -70,6 +79,12 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
         "time_jitter": 0.0,
         "search_radius": False,
         "search_velocity": False,
+        "search_strategy": "joint",
+        "top_k_refine": 5,
+        "final_refine_top_k": 1,
+        "parameter_prior": "none",
+        "radius_prior_weight": 0.0,
+        "velocity_prior_weight": 0.0,
     }
     if challenge == "circle-noisy":
         world["name"] = "challenge_circle_noisy"
@@ -81,7 +96,20 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
         settings.update({"refine_levels": 1})
     elif challenge == "circle-radius-velocity":
         world["name"] = "challenge_circle_radius_velocity"
-        settings.update({"search_radius": True, "search_velocity": True, "refine_levels": 0})
+        settings.update({"search_radius": True, "search_velocity": True, "refine_levels": 0, "search_strategy": "joint"})
+    elif challenge == "circle-radius-velocity-staged":
+        world["name"] = "challenge_circle_radius_velocity_staged"
+        settings.update({
+            "search_radius": True,
+            "search_velocity": True,
+            "refine_levels": 1,
+            "search_strategy": "staged",
+            "top_k_refine": 5,
+            "final_refine_top_k": 1,
+            "parameter_prior": "none",
+            "radius_prior_weight": 0.0,
+            "velocity_prior_weight": 0.0,
+        })
     else:
         world["name"] = "challenge_circle_easy"
     validate_world(world)
@@ -238,6 +266,12 @@ def run_challenge(
         metric=str(settings["metric"]),
         search_radius=bool(settings.get("search_radius", False)),
         search_velocity=bool(settings.get("search_velocity", False)),
+        search_strategy=str(settings.get("search_strategy", "joint")),
+        top_k_refine=int(settings.get("top_k_refine", 5)),
+        final_refine_top_k=int(settings.get("final_refine_top_k", 1)),
+        parameter_prior=str(settings.get("parameter_prior", "none")),
+        radius_prior_weight=float(settings.get("radius_prior_weight", 0.0)),
+        velocity_prior_weight=float(settings.get("velocity_prior_weight", 0.0)),
         quiet=quiet,
     )
     runtime = perf_counter() - t0

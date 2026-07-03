@@ -1,0 +1,380 @@
+{
+  "best_candidate": {
+    "anomaly_velocity": 2.2,
+    "center_x": 0.5,
+    "center_z": 0.3160000145435333,
+    "index_x": 2,
+    "index_z": 1,
+    "mismatch": 0.015477746502637366,
+    "radius": 0.12
+  },
+  "best_mismatch": 0.015477746502637366,
+  "candidate_grid": {
+    "evaluated_candidates": 25,
+    "grid_size": 5,
+    "margin": 0.132,
+    "possible_candidates": 25,
+    "xs": [
+      0.13199999928474426,
+      0.3160000145435333,
+      0.5,
+      0.6840000152587891,
+      0.8679999709129333
+    ],
+    "zs": [
+      0.13199999928474426,
+      0.3160000145435333,
+      0.5,
+      0.6840000152587891,
+      0.8679999709129333
+    ]
+  },
+  "candidates": [
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.13199999928474426,
+      "index_x": 0,
+      "index_z": 0,
+      "mismatch": 6.6256546584771865,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.13199999928474426,
+      "index_x": 1,
+      "index_z": 0,
+      "mismatch": 1.0874306371680071,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.13199999928474426,
+      "index_x": 2,
+      "index_z": 0,
+      "mismatch": 0.029178816335356045,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.13199999928474426,
+      "index_x": 3,
+      "index_z": 0,
+      "mismatch": 0.029191551386201785,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.13199999928474426,
+      "index_x": 4,
+      "index_z": 0,
+      "mismatch": 0.02919155459489628,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.3160000145435333,
+      "index_x": 0,
+      "index_z": 1,
+      "mismatch": 3.0786400045032387,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.3160000145435333,
+      "index_x": 1,
+      "index_z": 1,
+      "mismatch": 3.8641286974214197,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.3160000145435333,
+      "index_x": 2,
+      "index_z": 1,
+      "mismatch": 0.015477746502637366,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.3160000145435333,
+      "index_x": 3,
+      "index_z": 1,
+      "mismatch": 0.02919156161372065,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.3160000145435333,
+      "index_x": 4,
+      "index_z": 1,
+      "mismatch": 0.029191554594896287,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.5,
+      "index_x": 0,
+      "index_z": 2,
+      "mismatch": 2.5247378166200947,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.5,
+      "index_x": 1,
+      "index_z": 2,
+      "mismatch": 3.5800523489330938,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.5,
+      "index_x": 2,
+      "index_z": 2,
+      "mismatch": 0.08094294532204448,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.5,
+      "index_x": 3,
+      "index_z": 2,
+      "mismatch": 0.02918774891211716,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.5,
+      "index_x": 4,
+      "index_z": 2,
+      "mismatch": 0.029191554594896203,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.6840000152587891,
+      "index_x": 0,
+      "index_z": 3,
+      "mismatch": 2.357227926922152,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.6840000152587891,
+      "index_x": 1,
+      "index_z": 3,
+      "mismatch": 2.922659744907142,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.6840000152587891,
+      "index_x": 2,
+      "index_z": 3,
+      "mismatch": 0.5831949395761623,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.6840000152587891,
+      "index_x": 3,
+      "index_z": 3,
+      "mismatch": 0.029487311038818086,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.6840000152587891,
+      "index_x": 4,
+      "index_z": 3,
+      "mismatch": 0.029191554594859614,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.13199999928474426,
+      "center_z": 0.8679999709129333,
+      "index_x": 0,
+      "index_z": 4,
+      "mismatch": 1.6995305238939333,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.3160000145435333,
+      "center_z": 0.8679999709129333,
+      "index_x": 1,
+      "index_z": 4,
+      "mismatch": 1.3332458224002457,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.5,
+      "center_z": 0.8679999709129333,
+      "index_x": 2,
+      "index_z": 4,
+      "mismatch": 0.058429657874168005,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.6840000152587891,
+      "center_z": 0.8679999709129333,
+      "index_x": 3,
+      "index_z": 4,
+      "mismatch": 0.0293524008596835,
+      "radius": 0.12
+    },
+    {
+      "anomaly_velocity": 2.2,
+      "center_x": 0.8679999709129333,
+      "center_z": 0.8679999709129333,
+      "index_x": 4,
+      "index_z": 4,
+      "mismatch": 0.029191554594895672,
+      "radius": 0.12
+    }
+  ],
+  "created_utc": "2026-06-03T23:11:53+00:00",
+  "method": "grid-search",
+  "mismatch_map": [
+    [
+      6.6256546584771865,
+      1.0874306371680071,
+      0.029178816335356045,
+      0.029191551386201785,
+      0.02919155459489628
+    ],
+    [
+      3.0786400045032387,
+      3.8641286974214197,
+      0.015477746502637366,
+      0.02919156161372065,
+      0.029191554594896287
+    ],
+    [
+      2.5247378166200947,
+      3.5800523489330938,
+      0.08094294532204448,
+      0.02918774891211716,
+      0.029191554594896203
+    ],
+    [
+      2.357227926922152,
+      2.922659744907142,
+      0.5831949395761623,
+      0.029487311038818086,
+      0.029191554594859614
+    ],
+    [
+      1.6995305238939333,
+      1.3332458224002457,
+      0.058429657874168005,
+      0.0293524008596835,
+      0.029191554594895672
+    ]
+  ],
+  "notes": [
+    "MVP grid search assumes a circular anomaly.",
+    "Radius and anomaly velocity are fixed from metadata unless CLI overrides are supplied.",
+    "The forward model uses a simple Devito acoustic solver with crude zero-style boundaries, not a tuned PML."
+  ],
+  "project": "WaveSleuth-Devito",
+  "run_path": "runs/circle_obs.npz",
+  "score": {
+    "best_mismatch": 0.015477746502637366,
+    "center_error": 0.21003807765792998,
+    "iou": 0.026128266033254157,
+    "normalized_center_error": 0.14851934901930897,
+    "radius_error": 0.0,
+    "reconstruction_score": 0.026128266033254157,
+    "supported": true
+  },
+  "true_center": {
+    "center_x": 0.55,
+    "center_z": 0.52,
+    "radius": 0.12
+  },
+  "version": "0.1.0",
+  "world": {
+    "acquisition": {
+      "receivers": [
+        {
+          "x": 0.15,
+          "z": 0.82
+        },
+        {
+          "x": 0.3,
+          "z": 0.82
+        },
+        {
+          "x": 0.45,
+          "z": 0.82
+        },
+        {
+          "x": 0.6,
+          "z": 0.82
+        },
+        {
+          "x": 0.75,
+          "z": 0.82
+        },
+        {
+          "x": 0.9,
+          "z": 0.82
+        }
+      ],
+      "sources": [
+        {
+          "x": 0.2,
+          "z": 0.12
+        }
+      ]
+    },
+    "grid": {
+      "extent_x": 1.0,
+      "extent_z": 1.0,
+      "nx": 70,
+      "nz": 70
+    },
+    "medium": {
+      "anomaly": {
+        "center_x": 0.55,
+        "center_z": 0.52,
+        "kind": "circle",
+        "radius": 0.12
+      },
+      "anomaly_velocity": 2.2,
+      "background_velocity": 1.5
+    },
+    "name": "circle_demo",
+    "simulation": {
+      "dt": 0.0015,
+      "nt": 360,
+      "source_frequency": 20.0,
+      "space_order": 4
+    }
+  },
+  "world_name": "circle_demo"
+}

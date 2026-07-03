@@ -87,7 +87,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_invert = subparsers.add_parser("invert", help="Invert observed traces with a simple search method.")
     p_invert.add_argument("run", help="Input observed run .npz path.")
-    p_invert.add_argument("--method", choices=["grid-search"], default="grid-search")
+    p_invert.add_argument("--method", choices=["grid-search", "staged-grid-search"], default="grid-search", help="Use grid-search with optional search strategy; staged-grid-search is an alias for --search-strategy staged.")
     p_invert.add_argument("--out", required=True, help="Output reconstruction JSON path.")
     p_invert.add_argument("--candidate-grid-size", type=int, default=5)
     p_invert.add_argument("--radius", type=float, default=None)
@@ -105,6 +105,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_invert.add_argument("--normalize-traces", action="store_true")
     p_invert.add_argument("--refine-levels", type=int, default=0)
     p_invert.add_argument("--shot-mode", choices=["simultaneous", "sequential"], default=None)
+    p_invert.add_argument("--search-strategy", choices=["auto", "joint", "staged"], default="auto", help="v0.4 strategy: auto uses staged when radius/velocity axes are searched.")
+    p_invert.add_argument("--top-k-refine", type=int, default=5, help="For staged search, keep this many center candidates for refinement.")
+    p_invert.add_argument("--final-refine-top-k", type=int, default=1, help="For staged search, final center polish around this many parameter candidates.")
+    p_invert.add_argument("--center-metric", choices=["l2", "correlation"], default=None, help="Metric for staged center screening. Defaults to --metric.")
+    p_invert.add_argument("--final-metric", choices=["l2", "correlation"], default=None, help="Metric for final staged center polish. Defaults to --metric.")
+    p_invert.add_argument("--parameter-prior", choices=["none", "reference"], default="none", help="Optional weak reference prior for radius/velocity search.")
+    p_invert.add_argument("--radius-prior-weight", type=float, default=0.0)
+    p_invert.add_argument("--velocity-prior-weight", type=float, default=0.0)
     p_invert.set_defaults(func=cmd_invert)
 
     p_vworld = subparsers.add_parser("visualize-world", help="Plot a world velocity model.")
@@ -181,6 +189,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_demo.add_argument("--refine-levels", type=int, default=1)
     p_demo.add_argument("--mismatch-mode", choices=["raw", "differential"], default="differential")
     p_demo.add_argument("--metric", choices=["l2", "correlation"], default="l2")
+    p_demo.add_argument("--search-strategy", choices=["auto", "joint", "staged"], default="auto")
+    p_demo.add_argument("--top-k-refine", type=int, default=5)
+    p_demo.add_argument("--final-refine-top-k", type=int, default=1)
     p_demo.add_argument("--search-radius", action="store_true")
     p_demo.add_argument("--search-velocity", action="store_true")
     p_demo.add_argument("--noise-level", type=float, default=0.0)
@@ -231,7 +242,10 @@ def cmd_simulate(args: argparse.Namespace) -> int:
 
 
 def cmd_invert(args: argparse.Namespace) -> int:
-    if args.method != "grid-search":
+    search_strategy = args.search_strategy
+    if args.method == "staged-grid-search":
+        search_strategy = "staged"
+    elif args.method != "grid-search":
         raise WaveSleuthError(f"Unsupported inversion method {args.method!r}")
     reconstruction = grid_search_circle(
         args.run,
@@ -252,6 +266,14 @@ def cmd_invert(args: argparse.Namespace) -> int:
         normalize_traces=args.normalize_traces,
         refine_levels=args.refine_levels,
         shot_mode=args.shot_mode,
+        search_strategy=search_strategy,
+        top_k_refine=args.top_k_refine,
+        final_refine_top_k=args.final_refine_top_k,
+        center_metric=args.center_metric,
+        final_metric=args.final_metric,
+        parameter_prior=args.parameter_prior,
+        radius_prior_weight=args.radius_prior_weight,
+        velocity_prior_weight=args.velocity_prior_weight,
     )
     print(f"wrote {args.out}")
     _json_print(
@@ -345,6 +367,9 @@ def cmd_demo(args: argparse.Namespace) -> int:
         refine_levels=args.refine_levels,
         mismatch_mode=args.mismatch_mode,
         metric=args.metric,
+        search_strategy=args.search_strategy,
+        top_k_refine=args.top_k_refine,
+        final_refine_top_k=args.final_refine_top_k,
         search_radius=args.search_radius,
         search_velocity=args.search_velocity,
         noise_level=args.noise_level,

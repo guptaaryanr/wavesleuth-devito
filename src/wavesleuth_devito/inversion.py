@@ -1,4 +1,12 @@
-"""Simple search-based inversion routines."""
+"""Simple search-based inversion routines.
+
+v0.4 keeps the original joint grid search but adds a staged search strategy for
+circle inversions where radius and anomaly velocity are unknown. The staged path
+first searches for plausible centers with nominal physics, keeps a small top-K
+set, then searches radius/velocity locally. This avoids the v0.3 failure mode
+where weak, small impostor anomalies could win globally before the center was
+well localized.
+"""
 
 from __future__ import annotations
 
@@ -22,9 +30,12 @@ from .world import (
     world_with_circle_candidate,
 )
 
+SUPPORTED_SEARCH_STRATEGIES = ("auto", "joint", "staged")
+SUPPORTED_PARAMETER_PRIORS = ("none", "reference")
+
 
 def select_best_candidate(candidate_records: list[dict[str, Any]]) -> dict[str, Any]:
-    """Select the candidate with the smallest mismatch."""
+    """Select the candidate with the smallest objective mismatch."""
     if not candidate_records:
         raise ValidationError("No candidate records were provided.")
     return min(candidate_records, key=lambda record: float(record["mismatch"]))
@@ -96,6 +107,34 @@ def default_velocity_values(background_velocity: float, base_velocity: float) ->
     return [max(0.05, float(v)) for v in values]
 
 
+def _candidate_key(center_x: float, center_z: float, radius: float, velocity: float) -> tuple[float, float, float, float]:
+    return (round(float(center_x), 8), round(float(center_z), 8), round(float(radius), 8), round(float(velocity), 8))
+
+
+def _parameter_penalty(
+    *,
+    radius: float,
+    velocity: float,
+    reference_radius: float,
+    reference_velocity: float,
+    parameter_prior: str,
+    radius_prior_weight: float,
+    velocity_prior_weight: float,
+) -> float:
+    if parameter_prior == "none":
+        return 0.0
+    if parameter_prior != "reference":
+        raise ValidationError("parameter_prior must be 'none' or 'reference'.")
+    penalty = 0.0
+    if radius_prior_weight:
+        scale = max(abs(float(reference_radius)), 1.0e-12)
+        penalty += float(radius_prior_weight) * ((float(radius) - float(reference_radius)) / scale) ** 2
+    if velocity_prior_weight:
+        scale = max(abs(float(reference_velocity)), 1.0e-12)
+        penalty += float(velocity_prior_weight) * ((float(velocity) - float(reference_velocity)) / scale) ** 2
+    return float(penalty)
+
+
 def _nearest_true_summary(candidates: list[dict[str, Any]], true_params: dict[str, float], true_velocity: float) -> dict[str, Any]:
     if not candidates:
         return {}
@@ -123,6 +162,71 @@ def _nearest_true_summary(candidates: list[dict[str, Any]], true_params: dict[st
     }
 
 
+def _unique_top_centers(records: list[dict[str, Any]], top_k: int) -> list[dict[str, Any]]:
+    """Return the best unique center records by mismatch."""
+    seen: set[tuple[float, float]] = set()
+    selected: list[dict[str, Any]] = []
+    for record in sorted(records, key=lambda c: float(c["mismatch"])):
+        key = (round(float(record["center_x"]), 8), round(float(record["center_z"]), 8))
+        if key in seen:
+            continue
+        seen.add(key)
+        selected.append(record)
+        if len(selected) >= int(top_k):
+            break
+    return selected
+
+
+def _level_summary(
+    *,
+    level: int,
+    stage: str,
+    xs: np.ndarray,
+    zs: np.ndarray,
+    radii: Sequence[float],
+    velocities: Sequence[float],
+    margin: float,
+    records_by_cell: list[list[dict[str, Any] | None]],
+    level_records: list[dict[str, Any]],
+    notes: list[str] | None = None,
+) -> dict[str, Any]:
+    mismatch_map: list[list[float | None]] = []
+    best_parameter_map: list[list[dict[str, Any] | None]] = []
+    for row in records_by_cell:
+        mismatch_row: list[float | None] = []
+        param_row: list[dict[str, Any] | None] = []
+        for record in row:
+            if record is None:
+                mismatch_row.append(None)
+                param_row.append(None)
+            else:
+                mismatch_row.append(float(record["mismatch"]))
+                param_row.append(record)
+        mismatch_map.append(mismatch_row)
+        best_parameter_map.append(param_row)
+    try:
+        _prob, uncertainty_summary = probability_map_from_mismatch_map(mismatch_map)
+    except ValidationError:
+        uncertainty_summary = {}
+    return {
+        "level": int(level),
+        "stage": stage,
+        "grid_size_x": int(len(xs)),
+        "grid_size_z": int(len(zs)),
+        "xs": [float(v) for v in xs],
+        "zs": [float(v) for v in zs],
+        "radii": [float(v) for v in radii],
+        "anomaly_velocities": [float(v) for v in velocities],
+        "margin": float(margin),
+        "mismatch_map": mismatch_map,
+        "best_parameter_map": best_parameter_map,
+        "best_candidate": select_best_candidate(level_records) if level_records else None,
+        "uncertainty_summary": uncertainty_summary,
+        "evaluated_records_this_level": int(len(level_records)),
+        "notes": notes or [],
+    }
+
+
 def grid_search_circle(
     run_path: str | Path,
     *,
@@ -143,12 +247,21 @@ def grid_search_circle(
     normalize_traces: bool = False,
     refine_levels: int = 0,
     shot_mode: str | None = None,
+    search_strategy: str = "auto",
+    top_k_refine: int = 5,
+    final_refine_top_k: int = 1,
+    center_metric: str | None = None,
+    final_metric: str | None = None,
+    parameter_prior: str = "none",
+    radius_prior_weight: float = 0.0,
+    velocity_prior_weight: float = 0.0,
 ) -> dict[str, Any]:
     """Run a grid-search inversion for a circular anomaly.
 
-    v0.3 can search radius and anomaly velocity as small parameter axes in
-    addition to center location. The mismatch map shown in visualizations is the
-    best mismatch at each center after minimizing over radius/velocity values.
+    ``search_strategy='joint'`` reproduces the v0.3 style: every center is
+    evaluated with every radius/velocity value. ``search_strategy='staged'`` is
+    designed for unknown radius/velocity cases: center first, top-K parameter
+    search second, optional local center refinement third.
     """
     run = load_run_npz(run_path)
     world = world_from_run(run)
@@ -184,9 +297,30 @@ def grid_search_circle(
         raise ValidationError("max_candidates must be positive when supplied.")
     if refine_levels < 0:
         raise ValidationError("refine_levels must be non-negative.")
+    if top_k_refine < 1:
+        raise ValidationError("top_k_refine must be at least 1.")
+    if final_refine_top_k < 0:
+        raise ValidationError("final_refine_top_k must be non-negative.")
     mismatch_mode = mismatch_mode.lower()
     if mismatch_mode not in {"raw", "differential"}:
         raise ValidationError("mismatch_mode must be 'raw' or 'differential'.")
+    metric = metric.lower()
+    center_metric = (center_metric or metric).lower()
+    final_metric = (final_metric or metric).lower()
+    search_strategy = search_strategy.lower()
+    if search_strategy not in SUPPORTED_SEARCH_STRATEGIES:
+        raise ValidationError(f"search_strategy must be one of {SUPPORTED_SEARCH_STRATEGIES}.")
+    parameter_prior = parameter_prior.lower()
+    if parameter_prior not in SUPPORTED_PARAMETER_PRIORS:
+        raise ValidationError("parameter_prior must be 'none' or 'reference'.")
+    if radius_prior_weight < 0.0 or velocity_prior_weight < 0.0:
+        raise ValidationError("parameter prior weights must be non-negative.")
+
+    axis_searching = len(radii) > 1 or len(velocities) > 1
+    if search_strategy == "auto":
+        used_strategy = "staged" if axis_searching else "joint"
+    else:
+        used_strategy = search_strategy
 
     used_shot_mode = shot_mode or _shot_mode_from_run(run, observed)
     if used_shot_mode not in {"simultaneous", "sequential"}:
@@ -212,136 +346,325 @@ def grid_search_circle(
 
     candidate_records: list[dict[str, Any]] = []
     search_levels: list[dict[str, Any]] = []
-    total_possible_per_level = candidate_grid_size * candidate_grid_size * len(radii) * len(velocities)
-    evaluated_total = 0
-    previous_best: dict[str, Any] | None = None
-    previous_dx: float | None = None
-    previous_dz: float | None = None
-    cache: dict[tuple[float, float, float, float], dict[str, Any]] = {}
+    trace_cache: dict[tuple[float, float, float, float], np.ndarray] = {}
+    forward_candidate_runs = 0
+    scored_candidates = 0
     stop = False
 
-    for level in range(int(refine_levels) + 1):
-        if level == 0 or previous_best is None or previous_dx is None or previous_dz is None:
-            xs, zs, used_margin = _candidate_grid_around(world, grid_size=candidate_grid_size, margin=margin)
-        else:
-            xs, zs, used_margin = _candidate_grid_around(
+    def evaluate_candidate(
+        *,
+        center_x: float,
+        center_z: float,
+        cand_radius: float,
+        cand_velocity: float,
+        level: int,
+        stage: str,
+        ix: int,
+        iz: int,
+        used_metric: str,
+        center_rank: int | None = None,
+    ) -> dict[str, Any] | None:
+        nonlocal forward_candidate_runs, scored_candidates, stop
+        if max_candidates is not None and scored_candidates >= int(max_candidates):
+            stop = True
+            return None
+        key = _candidate_key(center_x, center_z, cand_radius, cand_velocity)
+        simulated_target = trace_cache.get(key)
+        if simulated_target is None:
+            candidate_world = world_with_circle_candidate(
                 world,
-                grid_size=candidate_grid_size,
-                margin=margin,
-                center_x=float(previous_best["center_x"]),
-                center_z=float(previous_best["center_z"]),
-                span_x=previous_dx,
-                span_z=previous_dz,
+                center_x=float(center_x),
+                center_z=float(center_z),
+                radius=float(cand_radius),
+                anomaly_velocity=float(cand_velocity),
             )
-        dx = float(xs[1] - xs[0]) if len(xs) > 1 else previous_dx or 0.0
-        dz = float(zs[1] - zs[0]) if len(zs) > 1 else previous_dz or 0.0
-        mismatch_map: list[list[float | None]] = [[None for _ in range(len(xs))] for _ in range(len(zs))]
-        best_parameter_map: list[list[dict[str, Any] | None]] = [[None for _ in range(len(xs))] for _ in range(len(zs))]
-        level_records: list[dict[str, Any]] = []
+            velocity_model = velocity_model_from_world(candidate_world)
+            simulated = engine.run(velocity_model).receiver_traces
+            if simulated.shape != observed.shape:
+                raise ValidationError(f"Candidate traces shape {simulated.shape} does not match observed shape {observed.shape}.")
+            simulated_target = simulated - background_traces if background_traces is not None else simulated
+            trace_cache[key] = simulated_target
+            forward_candidate_runs += 1
+        data_mismatch = trace_mismatch(
+            observed_target,
+            simulated_target,
+            metric=used_metric,
+            time=time,
+            time_min=time_min,
+            time_max=time_max,
+            normalize_traces=normalize_traces,
+        )
+        prior_penalty = _parameter_penalty(
+            radius=float(cand_radius),
+            velocity=float(cand_velocity),
+            reference_radius=reference_radius,
+            reference_velocity=reference_velocity,
+            parameter_prior=parameter_prior,
+            radius_prior_weight=radius_prior_weight,
+            velocity_prior_weight=velocity_prior_weight,
+        )
+        mismatch = float(data_mismatch) + float(prior_penalty)
+        scored_candidates += 1
+        record = {
+            "level": int(level),
+            "stage": stage,
+            "index_x": int(ix),
+            "index_z": int(iz),
+            "center_x": float(center_x),
+            "center_z": float(center_z),
+            "radius": float(cand_radius),
+            "anomaly_velocity": float(cand_velocity),
+            "metric": used_metric,
+            "data_mismatch": float(data_mismatch),
+            "prior_penalty": float(prior_penalty),
+            "mismatch": mismatch,
+        }
+        if center_rank is not None:
+            record["center_rank"] = int(center_rank)
+        candidate_records.append(record)
+        if not quiet:
+            limit_text = "?" if max_candidates is None else str(max_candidates)
+            print(
+                f"{stage} candidate {scored_candidates}/{limit_text}: "
+                f"center=({float(center_x):.3f}, {float(center_z):.3f}) "
+                f"r={float(cand_radius):.3f} v={float(cand_velocity):.3f} "
+                f"metric={used_metric} mismatch={mismatch:.6g}"
+            )
+        return record
 
+    def evaluate_grid_level(
+        *,
+        level: int,
+        stage: str,
+        xs: np.ndarray,
+        zs: np.ndarray,
+        level_radii: Sequence[float],
+        level_velocities: Sequence[float],
+        level_metric: str,
+        used_margin: float,
+        center_rank: int | None = None,
+        notes: list[str] | None = None,
+    ) -> list[dict[str, Any]]:
+        records_by_cell: list[list[dict[str, Any] | None]] = [[None for _ in range(len(xs))] for _ in range(len(zs))]
+        level_records: list[dict[str, Any]] = []
         for iz, z in enumerate(zs):
             for ix, x in enumerate(xs):
                 center_best: dict[str, Any] | None = None
-                for cand_radius in radii:
-                    for cand_velocity in velocities:
-                        if max_candidates is not None and evaluated_total >= int(max_candidates):
-                            stop = True
-                            break
-                        key = (
-                            round(float(x), 8),
-                            round(float(z), 8),
-                            round(float(cand_radius), 8),
-                            round(float(cand_velocity), 8),
+                for cand_radius in level_radii:
+                    for cand_velocity in level_velocities:
+                        record = evaluate_candidate(
+                            center_x=float(x),
+                            center_z=float(z),
+                            cand_radius=float(cand_radius),
+                            cand_velocity=float(cand_velocity),
+                            level=level,
+                            stage=stage,
+                            ix=ix,
+                            iz=iz,
+                            used_metric=level_metric,
+                            center_rank=center_rank,
                         )
-                        cached = cache.get(key)
-                        if cached is not None:
-                            record = cached
-                        else:
-                            candidate_world = world_with_circle_candidate(
-                                world,
-                                center_x=float(x),
-                                center_z=float(z),
-                                radius=float(cand_radius),
-                                anomaly_velocity=float(cand_velocity),
-                            )
-                            velocity_model = velocity_model_from_world(candidate_world)
-                            simulated = engine.run(velocity_model).receiver_traces
-                            if simulated.shape != observed.shape:
-                                raise ValidationError(
-                                    f"Candidate traces shape {simulated.shape} does not match observed shape {observed.shape}."
-                                )
-                            simulated_target = simulated - background_traces if background_traces is not None else simulated
-                            mismatch = trace_mismatch(
-                                observed_target,
-                                simulated_target,
-                                metric=metric,
-                                time=time,
-                                time_min=time_min,
-                                time_max=time_max,
-                                normalize_traces=normalize_traces,
-                            )
-                            evaluated_total += 1
-                            record = {
-                                "level": int(level),
-                                "index_x": int(ix),
-                                "index_z": int(iz),
-                                "center_x": float(x),
-                                "center_z": float(z),
-                                "radius": float(cand_radius),
-                                "anomaly_velocity": float(cand_velocity),
-                                "mismatch": float(mismatch),
-                            }
-                            candidate_records.append(record)
-                            cache[key] = record
-                            if not quiet:
-                                limit_text = "?" if max_candidates is None else str(max_candidates)
-                                print(
-                                    f"level {level} candidate {evaluated_total}/{limit_text}: "
-                                    f"center=({float(x):.3f}, {float(z):.3f}) "
-                                    f"r={float(cand_radius):.3f} v={float(cand_velocity):.3f} mismatch={mismatch:.6g}"
-                                )
+                        if record is None:
+                            break
                         level_records.append(record)
                         if center_best is None or float(record["mismatch"]) < float(center_best["mismatch"]):
                             center_best = record
                     if stop:
                         break
-                if center_best is not None:
-                    mismatch_map[iz][ix] = float(center_best["mismatch"])
-                    best_parameter_map[iz][ix] = center_best
+                records_by_cell[iz][ix] = center_best
                 if stop:
                     break
             if stop:
                 break
-
-        if level_records:
-            previous_best = select_best_candidate(level_records)
-            previous_dx = abs(dx) if dx else previous_dx
-            previous_dz = abs(dz) if dz else previous_dz
-        uncertainty_summary: dict[str, Any]
-        try:
-            _prob, uncertainty_summary = probability_map_from_mismatch_map(mismatch_map)
-        except ValidationError:
-            uncertainty_summary = {}
         search_levels.append(
-            {
-                "level": int(level),
-                "grid_size": int(candidate_grid_size),
-                "xs": [float(v) for v in xs],
-                "zs": [float(v) for v in zs],
-                "radii": [float(v) for v in radii],
-                "anomaly_velocities": [float(v) for v in velocities],
-                "margin": float(used_margin),
-                "mismatch_map": mismatch_map,
-                "best_parameter_map": best_parameter_map,
-                "best_candidate": previous_best,
-                "uncertainty_summary": uncertainty_summary,
-                "evaluated_candidates_this_level": int(len({id(r) for r in level_records})),
-            }
+            _level_summary(
+                level=level,
+                stage=stage,
+                xs=xs,
+                zs=zs,
+                radii=level_radii,
+                velocities=level_velocities,
+                margin=used_margin,
+                records_by_cell=records_by_cell,
+                level_records=level_records,
+                notes=notes,
+            )
         )
-        if stop:
-            break
+        return level_records
 
-    best = select_best_candidate(candidate_records)
+    if used_strategy == "joint":
+        previous_best: dict[str, Any] | None = None
+        previous_dx: float | None = None
+        previous_dz: float | None = None
+        for level in range(int(refine_levels) + 1):
+            if level == 0 or previous_best is None or previous_dx is None or previous_dz is None:
+                xs, zs, used_margin = _candidate_grid_around(world, grid_size=candidate_grid_size, margin=margin)
+            else:
+                xs, zs, used_margin = _candidate_grid_around(
+                    world,
+                    grid_size=candidate_grid_size,
+                    margin=margin,
+                    center_x=float(previous_best["center_x"]),
+                    center_z=float(previous_best["center_z"]),
+                    span_x=previous_dx,
+                    span_z=previous_dz,
+                )
+            dx = abs(float(xs[1] - xs[0])) if len(xs) > 1 else previous_dx or 0.0
+            dz = abs(float(zs[1] - zs[0])) if len(zs) > 1 else previous_dz or 0.0
+            level_records = evaluate_grid_level(
+                level=level,
+                stage="joint",
+                xs=xs,
+                zs=zs,
+                level_radii=radii,
+                level_velocities=velocities,
+                level_metric=metric,
+                used_margin=used_margin,
+                notes=["v0.3-compatible joint center/radius/velocity search."],
+            )
+            if level_records:
+                previous_best = select_best_candidate(level_records)
+                previous_dx = dx
+                previous_dz = dz
+            if stop:
+                break
+    else:
+        xs, zs, used_margin = _candidate_grid_around(world, grid_size=candidate_grid_size, margin=margin)
+        dx0 = abs(float(xs[1] - xs[0])) if len(xs) > 1 else 0.0
+        dz0 = abs(float(zs[1] - zs[0])) if len(zs) > 1 else 0.0
+        center_records = evaluate_grid_level(
+            level=0,
+            stage="coarse-center",
+            xs=xs,
+            zs=zs,
+            level_radii=[reference_radius],
+            level_velocities=[reference_velocity],
+            level_metric=center_metric,
+            used_margin=used_margin,
+            notes=["Center-only pass with nominal radius and velocity."],
+        )
+        center_pool = list(center_records)
+        current_dx, current_dz = dx0, dz0
+
+        for refine in range(int(refine_levels)):
+            if stop:
+                break
+            parents = _unique_top_centers(center_pool, top_k_refine)
+            refined_records: list[dict[str, Any]] = []
+            for rank, parent in enumerate(parents, start=1):
+                local_xs, local_zs, local_margin = _candidate_grid_around(
+                    world,
+                    grid_size=candidate_grid_size,
+                    margin=margin,
+                    center_x=float(parent["center_x"]),
+                    center_z=float(parent["center_z"]),
+                    span_x=current_dx,
+                    span_z=current_dz,
+                )
+                local_records = evaluate_grid_level(
+                    level=1 + refine,
+                    stage="topk-center-refine",
+                    xs=local_xs,
+                    zs=local_zs,
+                    level_radii=[reference_radius],
+                    level_velocities=[reference_velocity],
+                    level_metric=center_metric,
+                    used_margin=local_margin,
+                    center_rank=rank,
+                    notes=[f"Local center refinement around top-K parent rank {rank} from the previous center pool."],
+                )
+                refined_records.extend(local_records)
+                if stop:
+                    break
+            if refined_records:
+                center_pool.extend(refined_records)
+                current_dx = current_dx / max(candidate_grid_size - 1, 1)
+                current_dz = current_dz / max(candidate_grid_size - 1, 1)
+
+        if not stop:
+            top_centers = _unique_top_centers(center_pool, top_k_refine)
+            parameter_records: list[dict[str, Any]] = []
+            for rank, center in enumerate(top_centers, start=1):
+                records_by_cell = [[None]]
+                local_records: list[dict[str, Any]] = []
+                for cand_radius in radii:
+                    for cand_velocity in velocities:
+                        record = evaluate_candidate(
+                            center_x=float(center["center_x"]),
+                            center_z=float(center["center_z"]),
+                            cand_radius=float(cand_radius),
+                            cand_velocity=float(cand_velocity),
+                            level=100,
+                            stage="topk-parameter",
+                            ix=0,
+                            iz=0,
+                            used_metric=metric,
+                            center_rank=rank,
+                        )
+                        if record is None:
+                            break
+                        local_records.append(record)
+                        parameter_records.append(record)
+                        if records_by_cell[0][0] is None or float(record["mismatch"]) < float(records_by_cell[0][0]["mismatch"]):
+                            records_by_cell[0][0] = record
+                    if stop:
+                        break
+                search_levels.append(
+                    _level_summary(
+                        level=100,
+                        stage="topk-parameter",
+                        xs=np.asarray([float(center["center_x"])], dtype=np.float32),
+                        zs=np.asarray([float(center["center_z"])], dtype=np.float32),
+                        radii=radii,
+                        velocities=velocities,
+                        margin=margin,
+                        records_by_cell=records_by_cell,
+                        level_records=local_records,
+                        notes=[f"Radius/velocity search at refined center rank {rank}."]
+                    )
+                )
+                if stop:
+                    break
+
+            if parameter_records and final_refine_top_k > 0 and refine_levels > 0 and not stop:
+                final_parents = sorted(parameter_records, key=lambda c: float(c["mismatch"]))[: int(final_refine_top_k)]
+                final_span_x = max(current_dx, dx0 / max(candidate_grid_size - 1, 1))
+                final_span_z = max(current_dz, dz0 / max(candidate_grid_size - 1, 1))
+                for rank, parent in enumerate(final_parents, start=1):
+                    final_xs, final_zs, final_margin = _candidate_grid_around(
+                        world,
+                        grid_size=candidate_grid_size,
+                        margin=margin,
+                        center_x=float(parent["center_x"]),
+                        center_z=float(parent["center_z"]),
+                        span_x=final_span_x,
+                        span_z=final_span_z,
+                    )
+                    evaluate_grid_level(
+                        level=200,
+                        stage="final-center-refine",
+                        xs=final_xs,
+                        zs=final_zs,
+                        level_radii=[float(parent["radius"])],
+                        level_velocities=[float(parent["anomaly_velocity"])],
+                        level_metric=final_metric,
+                        used_margin=final_margin,
+                        center_rank=rank,
+                        notes=["Final local center refinement using the best radius/velocity candidate."],
+                    )
+                    if stop:
+                        break
+
+    if not candidate_records:
+        raise ValidationError("No candidates were evaluated.")
+
+    if used_strategy == "staged" and axis_searching:
+        preferred = [r for r in candidate_records if r.get("stage") in {"topk-parameter", "final-center-refine"}]
+        best_pool = preferred or candidate_records
+    else:
+        best_pool = candidate_records
+    best = select_best_candidate(best_pool)
+
     score = score_circle_reconstruction(
         world,
         predicted_center_x=float(best["center_x"]),
@@ -354,6 +677,7 @@ def grid_search_circle(
     final_level = search_levels[-1]
     uncertainty = candidate_probabilities({"candidates": candidate_records})
 
+    total_possible_per_joint_level = candidate_grid_size * candidate_grid_size * len(radii) * len(velocities)
     reconstruction: dict[str, Any] = {
         **base_metadata(),
         "method": "grid-search",
@@ -363,17 +687,28 @@ def grid_search_circle(
         "objective": {
             "mismatch_mode": mismatch_mode,
             "metric": metric,
+            "center_metric": center_metric,
+            "final_metric": final_metric,
             "time_min": None if time_min is None else float(time_min),
             "time_max": None if time_max is None else float(time_max),
             "normalize_traces": bool(normalize_traces),
             "shot_mode": used_shot_mode,
             "background_subtracted": bool(mismatch_mode == "differential"),
+            "parameter_prior": parameter_prior,
+            "radius_prior_weight": float(radius_prior_weight),
+            "velocity_prior_weight": float(velocity_prior_weight),
+            "mismatch_includes_prior_penalty": bool(parameter_prior != "none" and (radius_prior_weight > 0.0 or velocity_prior_weight > 0.0)),
         },
         "search": {
+            "search_strategy": used_strategy,
+            "requested_search_strategy": search_strategy,
             "search_radius": bool(search_radius or (radius_values is not None)),
             "search_velocity": bool(search_velocity or (anomaly_velocity_values is not None)),
             "radii": [float(v) for v in radii],
             "anomaly_velocities": [float(v) for v in velocities],
+            "top_k_refine": int(top_k_refine),
+            "final_refine_top_k": int(final_refine_top_k),
+            "staged_axis_search": bool(axis_searching and used_strategy == "staged"),
         },
         "true_center": {
             "center_x": float(true_params["center_x"]),
@@ -388,10 +723,11 @@ def grid_search_circle(
             "radii": [float(v) for v in radii],
             "anomaly_velocities": [float(v) for v in velocities],
             "margin": float(final_level["margin"]),
-            "evaluated_candidates": int(len(candidate_records)),
-            "forward_runs": int(evaluated_total + background_forward_runs),
+            "evaluated_candidates": int(scored_candidates),
+            "unique_forward_candidates": int(forward_candidate_runs),
+            "forward_runs": int(forward_candidate_runs + background_forward_runs),
             "background_forward_runs": int(background_forward_runs),
-            "possible_candidates_per_level": int(total_possible_per_level),
+            "possible_candidates_per_joint_level": int(total_possible_per_joint_level),
             "refine_levels": int(refine_levels),
         },
         "search_levels": search_levels,
@@ -405,8 +741,9 @@ def grid_search_circle(
         "notes": [
             "Grid search assumes a circular anomaly.",
             "Differential mode compares hidden-minus-background residual traces and is usually less fooled by direct arrivals.",
-            "v0.3 can scan radius and anomaly velocity, but local refinements currently refine center position only.",
-            "The mismatch map minimizes over searched radius/velocity at each candidate center.",
+            "v0.4 adds staged search: center first, top-K radius/velocity search second, optional final local center refinement.",
+            "Joint strategy remains available for v0.3-style behavior and for diagnosing impostor solutions.",
+            "The mismatch map is taken from the final displayed search level; inspect search_levels for the full multi-stage trajectory.",
             "The optional sponge boundary is a simple damping layer, not a production PML.",
         ],
     }
