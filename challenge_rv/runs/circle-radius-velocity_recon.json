@@ -3200,7 +3200,7 @@
       "stage": "joint"
     }
   ],
-  "created_utc": "2026-07-03T01:30:49+00:00",
+  "created_utc": "2026-07-03T03:09:59+00:00",
   "method": "grid-search",
   "mismatch_map": [
     [
@@ -3284,13 +3284,21 @@
   "project": "WaveSleuth-Devito",
   "run_path": "challenge_rv/runs/circle-radius-velocity_obs.npz",
   "score": {
+    "anomaly_velocity_error": 0.2100000000000002,
     "best_mismatch": 1.1927447271071074,
     "center_error": 0.19405217333667407,
+    "contrast_error": 0.2100000000000002,
     "iou": 0.011111111111111112,
     "normalized_center_error": 0.13721560767034957,
+    "predicted_anomaly_velocity": 1.99,
     "radius_error": 0.03,
     "reconstruction_score": 0.011111111111111112,
-    "supported": true
+    "relative_anomaly_velocity_error": 0.09545454545454553,
+    "relative_contrast_error": 0.3000000000000002,
+    "relative_velocity_error": 0.09545454545454553,
+    "supported": true,
+    "true_anomaly_velocity": 2.2,
+    "velocity_error": 0.2100000000000002
   },
   "search": {
     "anomaly_velocities": [
@@ -4224,7 +4232,7 @@
       }
     ]
   },
-  "version": "0.4.0",
+  "version": "0.4.1",
   "world": {
     "acquisition": {
       "receivers": [

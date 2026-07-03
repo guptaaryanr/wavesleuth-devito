@@ -268,11 +268,21 @@ def visualize_uncertainty(reconstruction_or_path: dict[str, Any] | str | Path, o
     ax.set_ylabel("candidate center z")
     effective = float(uncertainty.get("effective_candidates", 0.0) or 0.0)
     center_effective = float(uncertainty.get("center_effective_candidates", 0.0) or 0.0)
-    ax.set_title(
-        "Uncertainty from mismatch surface\n"
-        f"entropy={float(uncertainty.get('normalized_entropy', 0.0) or 0.0):.3f}, "
-        f"effective={effective:.1f}, centers={center_effective:.1f}"
-    )
+    search = reconstruction.get("search", {})
+    strategy = str(search.get("search_strategy", "unknown")) if isinstance(search, dict) else "unknown"
+    if strategy == "staged":
+        title = (
+            "Uncertainty by candidate center, staged search\n"
+            f"entropy={float(uncertainty.get('normalized_entropy', 0.0) or 0.0):.3f}, "
+            f"center-effective={center_effective:.1f}, raw-effective={effective:.1f}"
+        )
+    else:
+        title = (
+            "Uncertainty from mismatch surface\n"
+            f"entropy={float(uncertainty.get('normalized_entropy', 0.0) or 0.0):.3f}, "
+            f"effective={effective:.1f}, centers={center_effective:.1f}"
+        )
+    ax.set_title(title)
     handles, labels = ax.get_legend_handles_labels()
     if handles:
         ax.legend(loc="upper right", fontsize=8)

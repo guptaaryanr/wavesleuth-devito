@@ -164,6 +164,58 @@ def _rounded(value: Any, digits: int = 3) -> float | None:
     return round(number, digits)
 
 
+def _backfill_velocity_score_fields(data: dict[str, Any], summary_path: Path | None = None) -> dict[str, Any]:
+    """Return reconstruction score with velocity diagnostics when recoverable.
+
+    v0.4 challenge summaries saved before v0.4.1 may not include velocity-error
+    fields. When a reconstruction JSON is available, derive those fields from its
+    embedded true_center and best_candidate entries so old summaries display
+    cleaner leaderboards without forcing an immediate rerun.
+    """
+    score = data.get("score", {})
+    result: dict[str, Any] = dict(score) if isinstance(score, dict) else {}
+    if result.get("velocity_error") is not None and result.get("relative_velocity_error") is not None:
+        return result
+
+    recon: dict[str, Any] = {}
+    reconstruction_path = data.get("reconstruction_path")
+    if isinstance(reconstruction_path, str):
+        candidates = [Path(reconstruction_path)]
+        if summary_path is not None:
+            candidates.append(summary_path.parent / reconstruction_path)
+            candidates.append(summary_path.parent.parent / reconstruction_path)
+        for path in candidates:
+            try:
+                if path.exists():
+                    recon = load_json(path)
+                    break
+            except Exception:
+                recon = {}
+
+    if not recon:
+        recon = data.get("reconstruction", {}) if isinstance(data.get("reconstruction"), dict) else {}
+
+    true = recon.get("true_center", {}) if isinstance(recon.get("true_center"), dict) else {}
+    best = recon.get("best_candidate", data.get("best_candidate", {}))
+    if not isinstance(best, dict):
+        best = {}
+    try:
+        true_velocity = float(true["anomaly_velocity"] if "anomaly_velocity" in true else true["velocity"])
+        predicted_velocity = float(best["anomaly_velocity"] if "anomaly_velocity" in best else best["velocity"])
+    except (KeyError, TypeError, ValueError):
+        return result
+
+    velocity_error = abs(predicted_velocity - true_velocity)
+    relative_velocity_error = velocity_error / max(abs(true_velocity), 1.0e-12)
+    result.setdefault("true_anomaly_velocity", true_velocity)
+    result.setdefault("predicted_anomaly_velocity", predicted_velocity)
+    result.setdefault("velocity_error", velocity_error)
+    result.setdefault("anomaly_velocity_error", velocity_error)
+    result.setdefault("relative_velocity_error", relative_velocity_error)
+    result.setdefault("relative_anomaly_velocity_error", relative_velocity_error)
+    return result
+
+
 def _remove_generated_path(path: Path, root: Path) -> str | None:
     """Remove one known generated challenge artifact, returning its relative path."""
     if not path.exists():
@@ -311,6 +363,8 @@ def run_challenge(
             "center_error": _rounded(score.get("center_error"), 4),
             "normalized_center_error": _rounded(score.get("normalized_center_error"), 4),
             "radius_error": _rounded(score.get("radius_error"), 4),
+            "velocity_error": _rounded(score.get("velocity_error"), 4),
+            "relative_velocity_error": _rounded(score.get("relative_velocity_error"), 4),
             "forward_runs": n_forward_runs,
         },
         "best_candidate": reconstruction.get("best_candidate", {}),
@@ -346,7 +400,7 @@ def collect_leaderboard(paths: Iterable[str | Path]) -> list[dict[str, Any]]:
                 continue
             data = load_json(candidate)
             score = _stable_challenge_score_from_summary(data)
-            reconstruction_score = data.get("score", {})
+            reconstruction_score = _backfill_velocity_score_fields(data, candidate)
             supported = bool(score.get("supported", False))
             raw_score = float(score.get("score", float("nan"))) if supported else float("nan")
             rounded_score = _rounded(raw_score, 3)
@@ -362,6 +416,8 @@ def collect_leaderboard(paths: Iterable[str | Path]) -> list[dict[str, Any]]:
                 "center_error": _rounded(reconstruction_score.get("center_error"), 4),
                 "normalized_center_error": _rounded(reconstruction_score.get("normalized_center_error"), 4),
                 "radius_error": _rounded(reconstruction_score.get("radius_error"), 4),
+                "velocity_error": _rounded(reconstruction_score.get("velocity_error"), 4),
+                "relative_velocity_error": _rounded(reconstruction_score.get("relative_velocity_error"), 4),
                 "forward_runs": score.get("n_forward_runs"),
                 "runtime_seconds": _rounded(data.get("runtime_seconds"), 3),
                 "best_candidate": data.get("best_candidate_summary") or _compact_candidate(data.get("best_candidate", {})),

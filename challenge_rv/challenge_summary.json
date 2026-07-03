@@ -66,7 +66,7 @@
       "runtime_seconds is reported for diagnostics but is not part of the default v0.3.2 score."
     ],
     "runtime_scored": false,
-    "runtime_seconds": 4.915416616000584,
+    "runtime_seconds": 2.3398298990068724,
     "score": -23.463201042295882,
     "supported": true
   },
@@ -109,15 +109,23 @@
   "reconstruction_path": "challenge_rv/runs/circle-radius-velocity_recon.json",
   "report_path": "challenge_rv/reports/report.html",
   "run_path": "challenge_rv/runs/circle-radius-velocity_obs.npz",
-  "runtime_seconds": 4.915416616000584,
+  "runtime_seconds": 2.3398298990068724,
   "score": {
+    "anomaly_velocity_error": 0.2100000000000002,
     "best_mismatch": 1.1927447271071074,
     "center_error": 0.19405217333667407,
+    "contrast_error": 0.2100000000000002,
     "iou": 0.011111111111111112,
     "normalized_center_error": 0.13721560767034957,
+    "predicted_anomaly_velocity": 1.99,
     "radius_error": 0.03,
     "reconstruction_score": 0.011111111111111112,
-    "supported": true
+    "relative_anomaly_velocity_error": 0.09545454545454553,
+    "relative_contrast_error": 0.3000000000000002,
+    "relative_velocity_error": 0.09545454545454553,
+    "supported": true,
+    "true_anomaly_velocity": 2.2,
+    "velocity_error": 0.2100000000000002
   },
   "score_summary": {
     "center_error": 0.1941,
@@ -125,7 +133,9 @@
     "iou": 0.011,
     "normalized_center_error": 0.1372,
     "radius_error": 0.03,
-    "score": -23.463
+    "relative_velocity_error": 0.0955,
+    "score": -23.463,
+    "velocity_error": 0.21
   },
   "search": {
     "anomaly_velocities": [

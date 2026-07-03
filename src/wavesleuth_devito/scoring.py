@@ -33,6 +33,26 @@ def normalized_center_error(
     return center_error(true_center, predicted_center) / diagonal
 
 
+def scalar_error(true_value: float, predicted_value: float) -> float:
+    """Absolute error between two scalar physical parameters."""
+    return abs(float(predicted_value) - float(true_value))
+
+
+def relative_scalar_error(true_value: float, predicted_value: float, *, eps: float = 1.0e-12) -> float:
+    """Absolute scalar error normalized by the magnitude of the true value."""
+    return scalar_error(true_value, predicted_value) / max(abs(float(true_value)), float(eps))
+
+
+def velocity_error(true_velocity: float, predicted_velocity: float) -> float:
+    """Absolute anomaly-velocity error."""
+    return scalar_error(true_velocity, predicted_velocity)
+
+
+def relative_velocity_error(true_velocity: float, predicted_velocity: float) -> float:
+    """Anomaly-velocity error normalized by the true anomaly velocity."""
+    return relative_scalar_error(true_velocity, predicted_velocity)
+
+
 def iou_score(true_mask: np.ndarray, predicted_mask: np.ndarray) -> float:
     """Intersection-over-union for two boolean masks."""
     t = np.asarray(true_mask, dtype=bool)
@@ -148,6 +168,7 @@ def score_circle_reconstruction(
     predicted_center_x: float,
     predicted_center_z: float,
     predicted_radius: float,
+    predicted_anomaly_velocity: float | None = None,
     best_mismatch: float | None = None,
 ) -> dict[str, Any]:
     """Score a predicted circular anomaly against a true circular world."""
@@ -192,6 +213,30 @@ def score_circle_reconstruction(
         "iou": iou,
         "reconstruction_score": iou,
     }
+
+    if predicted_anomaly_velocity is not None and "anomaly_velocity" in true_world.get("medium", {}):
+        true_velocity = float(true_world["medium"]["anomaly_velocity"])
+        predicted_velocity = float(predicted_anomaly_velocity)
+        background_velocity = float(true_world["medium"].get("background_velocity", 0.0))
+        vel_err = velocity_error(true_velocity, predicted_velocity)
+        rel_vel_err = relative_velocity_error(true_velocity, predicted_velocity)
+        true_contrast = true_velocity - background_velocity
+        predicted_contrast = predicted_velocity - background_velocity
+        contrast_err = scalar_error(true_contrast, predicted_contrast)
+        rel_contrast_err = relative_scalar_error(true_contrast, predicted_contrast)
+        result.update(
+            {
+                "true_anomaly_velocity": true_velocity,
+                "predicted_anomaly_velocity": predicted_velocity,
+                "velocity_error": vel_err,
+                "relative_velocity_error": rel_vel_err,
+                "anomaly_velocity_error": vel_err,
+                "relative_anomaly_velocity_error": rel_vel_err,
+                "contrast_error": contrast_err,
+                "relative_contrast_error": rel_contrast_err,
+            }
+        )
+
     if best_mismatch is not None:
         result["best_mismatch"] = float(best_mismatch)
     return result
@@ -212,11 +257,14 @@ def score_reconstruction(true_world: dict[str, Any], reconstruction: dict[str, A
         }
     radius = float(best.get("radius", reconstruction.get("radius", 0.0)))
     mismatch = best.get("mismatch", reconstruction.get("best_mismatch"))
+    predicted_velocity_raw = best.get("anomaly_velocity", reconstruction.get("anomaly_velocity"))
+    predicted_velocity = None if predicted_velocity_raw is None else float(predicted_velocity_raw)
     return score_circle_reconstruction(
         true_world,
         predicted_center_x=float(best["center_x"]),
         predicted_center_z=float(best["center_z"]),
         predicted_radius=radius,
+        predicted_anomaly_velocity=predicted_velocity,
         best_mismatch=None if mismatch is None else float(mismatch),
     )
 

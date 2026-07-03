@@ -381,3 +381,14 @@ wavesleuth-devito challenge circle-radius-velocity-staged --out-dir challenge_rv
 wavesleuth-devito leaderboard challenge_rv challenge_rv_staged
 ```
 
+## v0.4.1 reporting polish
+
+v0.4.1 keeps the staged-search numerics unchanged and improves diagnostics around the hard radius/velocity challenge:
+
+- circle scoring now reports anomaly-velocity error and relative velocity error when the true velocity is known
+- challenge leaderboards display velocity-error fields
+- reports backfill velocity diagnostics for older v0.4 reconstruction JSONs when possible
+- staged uncertainty plots emphasize center-effective candidates because staged searches contain candidates from multiple phases
+
+The staged radius/velocity method should be read as strong localization plus approximate contrast recovery, not perfect velocity inversion.
+

@@ -665,14 +665,16 @@ def grid_search_circle(
         best_pool = candidate_records
     best = select_best_candidate(best_pool)
 
+    true_velocity = float(world["medium"].get("anomaly_velocity", background_velocity))
+    predicted_velocity = float(best.get("anomaly_velocity", true_velocity))
     score = score_circle_reconstruction(
         world,
         predicted_center_x=float(best["center_x"]),
         predicted_center_z=float(best["center_z"]),
         predicted_radius=float(best["radius"]),
+        predicted_anomaly_velocity=predicted_velocity,
         best_mismatch=float(best["mismatch"]),
     )
-    true_velocity = float(world["medium"].get("anomaly_velocity", background_velocity))
     nearest = _nearest_true_summary(candidate_records, true_params, true_velocity)
     final_level = search_levels[-1]
     uncertainty = candidate_probabilities({"candidates": candidate_records})

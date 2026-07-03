@@ -53,6 +53,43 @@ def _report_uncertainty_summary(reconstruction: dict[str, Any]) -> dict[str, Any
     return summary
 
 
+def _report_score_summary(reconstruction: dict[str, Any]) -> dict[str, Any]:
+    """Return score diagnostics, backfilling v0.4.1 velocity errors when possible."""
+    raw = reconstruction.get("score", {})
+    score: dict[str, Any] = dict(raw) if isinstance(raw, dict) else {}
+    if score.get("velocity_error") is not None and score.get("relative_velocity_error") is not None:
+        return score
+    true = reconstruction.get("true_center", {})
+    best = reconstruction.get("best_candidate", {})
+    if not isinstance(true, dict) or not isinstance(best, dict):
+        return score
+    try:
+        true_velocity = float(true["anomaly_velocity"] if "anomaly_velocity" in true else true["velocity"])
+        predicted_velocity = float(best["anomaly_velocity"] if "anomaly_velocity" in best else best["velocity"])
+    except (KeyError, TypeError, ValueError):
+        return score
+    velocity_error = abs(predicted_velocity - true_velocity)
+    relative_velocity_error = velocity_error / max(abs(true_velocity), 1.0e-12)
+    score.setdefault("true_anomaly_velocity", true_velocity)
+    score.setdefault("predicted_anomaly_velocity", predicted_velocity)
+    score.setdefault("velocity_error", velocity_error)
+    score.setdefault("relative_velocity_error", relative_velocity_error)
+    score.setdefault("anomaly_velocity_error", velocity_error)
+    score.setdefault("relative_anomaly_velocity_error", relative_velocity_error)
+    return score
+
+
+def _staged_uncertainty_note(reconstruction: dict[str, Any]) -> str:
+    search = reconstruction.get("search", {})
+    if not isinstance(search, dict) or search.get("search_strategy") != "staged":
+        return ""
+    return (
+        "<p><strong>Staged-search note:</strong> this reconstruction contains candidates from multiple search stages. "
+        "For location ambiguity, <code>center_effective_candidates</code> is usually more interpretable than raw "
+        "<code>effective_candidates</code>, because it groups radius/velocity variants by center.</p>"
+    )
+
+
 def generate_html_report(reconstruction_path: str | Path, out_path: str | Path) -> Path:
     """Generate a small self-contained-ish HTML report with local PNG assets."""
     recon_path = Path(reconstruction_path)
@@ -82,7 +119,7 @@ def generate_html_report(reconstruction_path: str | Path, out_path: str | Path) 
         f"<section><h2>{html.escape(label.title())}</h2><img src='{html.escape(_rel(path, out.parent))}' alt='{html.escape(label)}'></section>"
         for label, path in image_paths.items()
     )
-    score = reconstruction.get("score", {})
+    score = _report_score_summary(reconstruction)
     best = reconstruction.get("best_candidate", {})
     objective = reconstruction.get("objective", {})
     search = reconstruction.get("search", {})
@@ -122,6 +159,7 @@ def generate_html_report(reconstruction_path: str | Path, out_path: str | Path) 
   <pre>{_pretty(candidate_grid)}</pre>
 
   <h2>Uncertainty summary</h2>
+  {_staged_uncertainty_note(reconstruction)}
   <pre>{_pretty(uncertainty)}</pre>
 
   {image_html}
