@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .io import ensure_parent, load_json
+from .uncertainty import candidate_probabilities
 from .visualization import visualize_reconstruction, visualize_run, visualize_uncertainty, visualize_world
 
 
@@ -18,6 +19,38 @@ def _rel(path: Path, start: Path) -> str:
 
 def _pretty(data: Any) -> str:
     return html.escape(json.dumps(data, indent=2, sort_keys=True))
+
+
+_REPORT_UNCERTAINTY_KEYS = (
+    "temperature",
+    "n_candidates",
+    "n_centers",
+    "entropy",
+    "normalized_entropy",
+    "effective_candidates",
+    "inverse_participation_effective_candidates",
+    "center_effective_candidates",
+    "best_probability",
+    "top_3_probability_mass",
+    "top_5_probability_mass",
+    "max_probability",
+    "best_mismatch",
+    "notes",
+)
+
+
+def _report_uncertainty_summary(reconstruction: dict[str, Any]) -> dict[str, Any]:
+    """Return uncertainty diagnostics, backfilling old v0.3 JSON when possible."""
+    raw = reconstruction.get("uncertainty", {})
+    summary: dict[str, Any] = dict(raw) if isinstance(raw, dict) else {}
+    try:
+        computed = candidate_probabilities(reconstruction)
+    except Exception:
+        computed = {}
+    for key in _REPORT_UNCERTAINTY_KEYS:
+        if key not in summary and key in computed:
+            summary[key] = computed[key]
+    return summary
 
 
 def generate_html_report(reconstruction_path: str | Path, out_path: str | Path) -> Path:
@@ -54,7 +87,7 @@ def generate_html_report(reconstruction_path: str | Path, out_path: str | Path) 
     objective = reconstruction.get("objective", {})
     search = reconstruction.get("search", {})
     candidate_grid = reconstruction.get("candidate_grid", {})
-    uncertainty = reconstruction.get("uncertainty", {})
+    uncertainty = _report_uncertainty_summary(reconstruction)
 
     html_text = f"""<!doctype html>
 <html lang="en">

@@ -531,7 +531,7 @@
       "radius": 0.12
     }
   ],
-  "created_utc": "2026-07-03T00:33:05+00:00",
+  "created_utc": "2026-07-03T01:03:09+00:00",
   "method": "grid-search",
   "mismatch_map": [
     [
@@ -1806,7 +1806,7 @@
       }
     ]
   },
-  "version": "0.3.1",
+  "version": "0.3.2",
   "world": {
     "acquisition": {
       "receivers": [

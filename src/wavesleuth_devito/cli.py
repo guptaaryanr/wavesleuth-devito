@@ -154,6 +154,20 @@ def build_parser() -> argparse.ArgumentParser:
     p_challenge.add_argument("--out-dir", required=True)
     p_challenge.add_argument("--candidate-grid-size", type=int, default=None)
     p_challenge.add_argument("--refine-levels", type=int, default=None)
+    p_challenge.add_argument(
+        "--clean",
+        dest="clean",
+        action="store_true",
+        default=True,
+        help="Clean challenge-owned outputs before running. This is the default in v0.3.2.",
+    )
+    p_challenge.add_argument(
+        "--no-clean",
+        "--keep-existing",
+        dest="clean",
+        action="store_false",
+        help="Preserve existing files in the challenge output directory.",
+    )
     p_challenge.add_argument("--quiet", action="store_true")
     p_challenge.set_defaults(func=cmd_challenge)
 
@@ -313,6 +327,7 @@ def cmd_challenge(args: argparse.Namespace) -> int:
         candidate_grid_size=args.candidate_grid_size,
         refine_levels=args.refine_levels,
         quiet=args.quiet,
+        clean=args.clean,
     )
     _json_print(summary)
     return 0

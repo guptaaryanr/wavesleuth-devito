@@ -327,3 +327,12 @@ v0.3.1 is a small polish release focused on diagnostics rather than new inversio
 - leaderboard rows include difficulty, experimental status, radius error, normalized center error, and a compact best-candidate summary
 - challenge summaries now label `circle-radius-velocity` as hard/experimental and document why naive joint radius/velocity search can fail
 - HTML reports include the uncertainty summary block
+## v0.3.2 final cleanup
+
+v0.3.2 is the final v0.3 cleanup patch before v0.4 work:
+
+- challenge runs clean known challenge-owned outputs by default so stale files from a previous challenge do not linger in reused output directories
+- challenge supports `--no-clean` / `--keep-existing` when you intentionally want to preserve old generated files
+- default challenge scores no longer include wall-clock runtime, because first-run compilation and cache state make runtime too noisy for the main score
+- runtime remains reported as a diagnostic field
+- HTML reports backfill uncertainty diagnostics for older v0.3 reconstruction JSON files when candidate mismatches are available

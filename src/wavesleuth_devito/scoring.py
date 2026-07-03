@@ -278,7 +278,13 @@ def budgeted_challenge_score(
     n_receivers: int,
     runtime_seconds: float | None = None,
 ) -> dict[str, Any]:
-    """Return a lightweight game-style score for budgeted challenge runs."""
+    """Return a lightweight game-style score for budgeted challenge runs.
+
+    v0.3.2 deliberately reports runtime but does not include it in the default
+    score. Wall-clock time is too dependent on first-run compilation, CPU load,
+    and cache state to be a stable scientific/game score. Performance can still
+    be compared using the returned ``runtime_seconds`` field.
+    """
     if not reconstruction_score.get("supported", False):
         return {
             "supported": False,
@@ -287,8 +293,6 @@ def budgeted_challenge_score(
     iou = float(reconstruction_score.get("iou", 0.0))
     norm_err = float(reconstruction_score.get("normalized_center_error", 1.0))
     raw = 100.0 * iou - 20.0 * norm_err - 0.08 * int(n_forward_runs) - 0.75 * int(n_sources) - 0.15 * int(n_receivers)
-    if runtime_seconds is not None:
-        raw -= 0.01 * max(0.0, float(runtime_seconds))
     return {
         "supported": True,
         "score": float(raw),
@@ -298,5 +302,7 @@ def budgeted_challenge_score(
         "n_sources": int(n_sources),
         "n_receivers": int(n_receivers),
         "runtime_seconds": None if runtime_seconds is None else float(runtime_seconds),
-        "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+        "runtime_scored": False,
+        "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers",
+        "notes": ["runtime_seconds is reported for diagnostics but is not part of the default v0.3.2 score."],
     }

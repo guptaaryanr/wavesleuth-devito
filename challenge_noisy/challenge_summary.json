@@ -47,16 +47,33 @@
   },
   "challenge": "circle-noisy",
   "challenge_score": {
-    "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers - 0.01*seconds",
+    "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers",
     "iou": 0.8,
     "n_forward_runs": 50,
     "n_receivers": 10,
     "n_sources": 3,
     "normalized_center_error": 0.014422204572852888,
-    "runtime_seconds": 2.6188698149999254,
-    "score": 71.93536721039295,
+    "notes": [
+      "runtime_seconds is reported for diagnostics but is not part of the default v0.3.2 score."
+    ],
+    "runtime_scored": false,
+    "runtime_seconds": 2.7488036069989903,
+    "score": 71.96155590854295,
     "supported": true
   },
+  "cleaned_before_run": true,
+  "cleaned_paths": [
+    "challenge_summary.json",
+    "worlds/circle-noisy.json",
+    "runs/circle-noisy_obs.npz",
+    "runs/circle-noisy_recon.json",
+    "figures/world.png",
+    "figures/traces.png",
+    "figures/reconstruction.png",
+    "figures/uncertainty.png",
+    "reports/report.html",
+    "reports/report_assets"
+  ],
   "description": "Same hidden circle with mild deterministic noise and timing/amplitude perturbations.",
   "difficulty": "medium",
   "experimental": false,
@@ -76,7 +93,7 @@
   "reconstruction_path": "challenge_noisy/runs/circle-noisy_recon.json",
   "report_path": "challenge_noisy/reports/report.html",
   "run_path": "challenge_noisy/runs/circle-noisy_obs.npz",
-  "runtime_seconds": 2.6188698149999254,
+  "runtime_seconds": 2.7488036069989903,
   "score": {
     "best_mismatch": 0.6874296113595344,
     "center_error": 0.020396077306247824,
@@ -92,7 +109,7 @@
     "iou": 0.8,
     "normalized_center_error": 0.0144,
     "radius_error": 0.0,
-    "score": 71.935
+    "score": 71.962
   },
   "search": {
     "anomaly_velocities": [

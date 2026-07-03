@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import shutil
 from pathlib import Path
 from time import perf_counter
 from typing import Any, Iterable
@@ -96,6 +97,33 @@ def _compact_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
     return compact
 
 
+def _stable_challenge_score_from_summary(data: dict[str, Any]) -> dict[str, Any]:
+    """Return a v0.3.2-style challenge score from a saved summary.
+
+    Older v0.3.1 summaries stored a runtime-penalized score. Leaderboards should
+    display the stable v0.3.2 score when the required reconstruction and budget
+    fields are available, without forcing users to rerun every challenge just to
+    get the cleaned scoring formula.
+    """
+    stored = data.get("challenge_score", {})
+    reconstruction_score = data.get("score", {})
+    if not isinstance(stored, dict) or not isinstance(reconstruction_score, dict):
+        return stored if isinstance(stored, dict) else {}
+    required = ("n_forward_runs", "n_sources", "n_receivers")
+    if reconstruction_score.get("supported", False) and all(key in stored for key in required):
+        try:
+            return budgeted_challenge_score(
+                reconstruction_score,
+                n_forward_runs=int(stored["n_forward_runs"]),
+                n_sources=int(stored["n_sources"]),
+                n_receivers=int(stored["n_receivers"]),
+                runtime_seconds=data.get("runtime_seconds", stored.get("runtime_seconds")),
+            )
+        except (TypeError, ValueError):
+            return stored
+    return stored
+
+
 def _rounded(value: Any, digits: int = 3) -> float | None:
     if value is None:
         return None
@@ -108,6 +136,56 @@ def _rounded(value: Any, digits: int = 3) -> float | None:
     return round(number, digits)
 
 
+def _remove_generated_path(path: Path, root: Path) -> str | None:
+    """Remove one known generated challenge artifact, returning its relative path."""
+    if not path.exists():
+        return None
+    if path.is_dir():
+        shutil.rmtree(path)
+    else:
+        path.unlink()
+    try:
+        return str(path.relative_to(root))
+    except ValueError:
+        return str(path)
+
+
+def clean_challenge_output(root: str | Path) -> list[str]:
+    """Remove challenge-owned artifacts from an output directory.
+
+    The cleanup is intentionally narrow. It removes files that WaveSleuth's
+    challenge command is known to generate, while leaving unrelated user files
+    alone. This keeps reruns deterministic and prevents stale files from an old
+    challenge from lingering beside a fresh one.
+    """
+    root_path = Path(root)
+    targets: list[Path] = [root_path / "challenge_summary.json"]
+    for name in SUPPORTED_CHALLENGES:
+        targets.extend(
+            [
+                root_path / "worlds" / f"{name}.json",
+                root_path / "runs" / f"{name}_obs.npz",
+                root_path / "runs" / f"{name}_recon.json",
+            ]
+        )
+    targets.extend(
+        [
+            root_path / "figures" / "world.png",
+            root_path / "figures" / "traces.png",
+            root_path / "figures" / "reconstruction.png",
+            root_path / "figures" / "uncertainty.png",
+            root_path / "reports" / "report.html",
+            root_path / "reports" / "report_assets",
+        ]
+    )
+    removed: list[str] = []
+    for target in targets:
+        item = _remove_generated_path(target, root_path)
+        if item is not None:
+            removed.append(item)
+    return removed
+
+
 def run_challenge(
     challenge: str,
     *,
@@ -115,9 +193,11 @@ def run_challenge(
     candidate_grid_size: int | None = None,
     refine_levels: int | None = None,
     quiet: bool = False,
+    clean: bool = True,
 ) -> dict[str, Any]:
     """Run a named challenge and write a summary JSON."""
     root = Path(out_dir)
+    cleaned_paths: list[str] = clean_challenge_output(root) if clean else []
     worlds = root / "worlds"
     runs = root / "runs"
     figures = root / "figures"
@@ -206,6 +286,8 @@ def run_challenge(
         "candidate_grid": reconstruction.get("candidate_grid", {}),
         "uncertainty": reconstruction.get("uncertainty", {}),
         "runtime_seconds": runtime,
+        "cleaned_before_run": bool(clean),
+        "cleaned_paths": cleaned_paths,
     }
     save_json(summary, root / "challenge_summary.json")
     return summary
@@ -229,7 +311,7 @@ def collect_leaderboard(paths: Iterable[str | Path]) -> list[dict[str, Any]]:
             if not candidate.exists():
                 continue
             data = load_json(candidate)
-            score = data.get("challenge_score", {})
+            score = _stable_challenge_score_from_summary(data)
             reconstruction_score = data.get("score", {})
             supported = bool(score.get("supported", False))
             raw_score = float(score.get("score", float("nan"))) if supported else float("nan")
