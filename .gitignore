@@ -34,6 +34,8 @@ worlds/*.json
 acq_compare/
 challenge_easy/
 challenge_ellipse/
+challenge_ellipse_blind/
+challenge_ellipse_open/
 challenge_limited/
 challenge_noisy/
 challenge_rv/

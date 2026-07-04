@@ -71,7 +71,7 @@ def _report_uncertainty_summary(reconstruction: dict[str, Any]) -> dict[str, Any
     return summary
 def _report_score_summary(reconstruction: dict[str, Any]) -> dict[str, Any]:
     """Return score diagnostics, backfilling v0.4.1 velocity errors when possible."""
-    raw = reconstruction.get("score", {})
+    raw = reconstruction.get("physical_score", reconstruction.get("score", {}))
     score: dict[str, Any] = dict(raw) if isinstance(raw, dict) else {}
     if score.get("velocity_error") is not None and score.get("relative_velocity_error") is not None:
         return score

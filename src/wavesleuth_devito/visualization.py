@@ -7,9 +7,10 @@ from typing import Any
 
 import numpy as np
 
+from .blind import is_blind_public_world
 from .geometry import receiver_coordinates, source_coordinates
 from .io import ensure_parent, load_json, load_run_npz, world_from_run
-from .world import anomaly_kind, velocity_model_from_world
+from .world import anomaly_kind, background_velocity_model_from_world, velocity_model_from_world
 
 
 def _plt():
@@ -142,13 +143,17 @@ def _overlay_anomaly(ax: Any, world: dict[str, Any], *, label: str = "true anoma
 def visualize_world(world_or_path: dict[str, Any] | str | Path, out_path: str | Path) -> Path:
     """Plot a velocity model and overlay acquisition geometry."""
     world = load_json(world_or_path) if isinstance(world_or_path, (str, Path)) else world_or_path
-    velocity_model = velocity_model_from_world(world)
+    blind_public = is_blind_public_world(world)
+    velocity_model = background_velocity_model_from_world(world) if blind_public else velocity_model_from_world(world)
     plt = _plt()
     out = ensure_parent(out_path)
     fig, ax = plt.subplots(figsize=(6.5, 5.5))
     image = ax.imshow(velocity_model.T, origin="lower", extent=_domain_extent(world), aspect="equal")
     fig.colorbar(image, ax=ax, label="velocity")
-    _overlay_anomaly(ax, world)
+    if not blind_public:
+        _overlay_anomaly(ax, world)
+    else:
+        ax.text(0.02, 0.02, "blind public world: answer hidden", transform=ax.transAxes, fontsize=8, va="bottom")
     _overlay_acquisition(ax, world)
     ax.set_xlabel("x")
     ax.set_ylabel("z")
@@ -209,9 +214,10 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
     world = reconstruction.get("world")
     if not isinstance(world, dict):
         raise ValueError("Reconstruction does not contain embedded world metadata.")
-    velocity_model = velocity_model_from_world(world)
+    blind_public = bool(reconstruction.get("answer_hidden", False)) or is_blind_public_world(world)
+    velocity_model = background_velocity_model_from_world(world) if blind_public else velocity_model_from_world(world)
     best = reconstruction.get("best_candidate", {})
-    true = reconstruction.get("true_center", {})
+    true = {} if blind_public else (reconstruction.get("true_center", {}) or {})
     objective = reconstruction.get("objective", {})
     plt = _plt()
     out = ensure_parent(out_path)
@@ -220,7 +226,10 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
     ax0 = axes[0]
     image0 = ax0.imshow(velocity_model.T, origin="lower", extent=_domain_extent(world), aspect="equal")
     fig.colorbar(image0, ax=ax0, label="velocity")
-    _overlay_anomaly(ax0, world, label="true")
+    if not blind_public:
+        _overlay_anomaly(ax0, world, label="true")
+    else:
+        ax0.text(0.02, 0.02, "true anomaly hidden", transform=ax0.transAxes, fontsize=8, va="bottom")
     if best:
         pred_kind = str(best.get("kind") or reconstruction.get("target_kind") or anomaly_kind(world))
         if pred_kind == "ellipse" and "radius_x" in best and "radius_z" in best:
@@ -241,7 +250,7 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
             ax0.add_patch(plt.Circle((float(best["center_x"]), float(best["center_z"])), float(best["radius"]), fill=False, linestyle="--", linewidth=2.0, label=label))
         else:
             ax0.scatter([float(best["center_x"])], [float(best["center_z"])], marker="x", s=90, label="best center")
-    ax0.set_title("True and reconstructed anomaly")
+    ax0.set_title("Reconstructed anomaly" if blind_public else "True and reconstructed anomaly")
     ax0.set_xlabel("x")
     ax0.set_ylabel("z")
     ax0.legend(loc="upper right", fontsize=8)
@@ -346,7 +355,8 @@ def visualize_uncertainty(reconstruction_or_path: dict[str, Any] | str | Path, o
     if not isinstance(world, dict):
         raise ValueError("Reconstruction does not contain embedded world metadata.")
     best = reconstruction.get("best_candidate", {})
-    true = reconstruction.get("true_center", {})
+    blind_public = bool(reconstruction.get("answer_hidden", False)) or is_blind_public_world(world)
+    true = {} if blind_public else (reconstruction.get("true_center", {}) or {})
     uncertainty = _uncertainty_summary_for_title(reconstruction, temperature)
     plt = _plt()
     out = ensure_parent(out_path)

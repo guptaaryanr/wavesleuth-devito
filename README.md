@@ -419,3 +419,28 @@ wavesleuth-devito leaderboard challenge_ellipse
 
 Circle and ellipse reconstructions are scored parametrically. Other v0.5 shapes can be generated, simulated, visualized, and mask-scored manually in future versions, but they do not yet have dedicated inversion methods.
 
+## v0.6 blind challenges
+
+
+v0.6 adds optional blind challenge bundles. In blind mode, observed traces are
+written with public/redacted metadata while the true answer is stored separately
+under `secret/` for local scoring.
+
+```bash
+wavesleuth-devito challenge ellipse-easy --blind --out-dir challenge_ellipse_blind --quiet
+wavesleuth-devito score-challenge challenge_ellipse_blind
+```
+
+The public observed `.npz` keeps traces and acquisition geometry but replaces the
+saved velocity model with a background model and omits wavefield snapshots.
+Known-shape hints remain public for the current baseline inversions; fully
+unknown-shape challenges are later work.
+
+## v0.6.1 blind challenge cleanup
+
+
+v0.6.1 clarifies blind challenge integrity artifacts. Challenge manifests now
+report both file-byte and canonical secret-world SHA-256 digests. Public files
+still hide the answer, while private files under `secret/` can show the true
+answer for local inspection.
+

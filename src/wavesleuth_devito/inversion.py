@@ -15,6 +15,7 @@ from typing import Any, Sequence
 
 import numpy as np
 
+from .blind import is_blind_public_world
 from .exceptions import UnsupportedWorldError, ValidationError
 from .geometry import candidate_axes, grid_extent
 from .io import array_string, load_run_npz, save_json, world_from_run
@@ -267,6 +268,7 @@ def grid_search_circle(
     """
     run = load_run_npz(run_path)
     world = world_from_run(run)
+    answer_hidden = is_blind_public_world(world)
     if anomaly_kind(world) != "circle":
         raise UnsupportedWorldError("The grid-search inversion currently supports circle worlds only.")
 
@@ -667,15 +669,21 @@ def grid_search_circle(
         best_pool = candidate_records
     best = select_best_candidate(best_pool)
 
-    score = score_circle_reconstruction(
-        world,
-        predicted_center_x=float(best["center_x"]),
-        predicted_center_z=float(best["center_z"]),
-        predicted_radius=float(best["radius"]),
-        best_mismatch=float(best["mismatch"]),
-    )
     true_velocity = float(world["medium"].get("anomaly_velocity", background_velocity))
-    nearest = _nearest_true_summary(candidate_records, true_params, true_velocity)
+    if answer_hidden:
+        score = {"supported": False, "answer_hidden": True, "message": "Blind public metadata hides the answer; score with the secret world or score-challenge."}
+        nearest = {}
+        true_center_payload = None
+    else:
+        score = score_circle_reconstruction(
+            world,
+            predicted_center_x=float(best["center_x"]),
+            predicted_center_z=float(best["center_z"]),
+            predicted_radius=float(best["radius"]),
+            best_mismatch=float(best["mismatch"]),
+        )
+        nearest = _nearest_true_summary(candidate_records, true_params, true_velocity)
+        true_center_payload = {"center_x": float(true_params["center_x"]), "center_z": float(true_params["center_z"]), "radius": float(true_params["radius"]), "anomaly_velocity": true_velocity}
     final_level = search_levels[-1]
     uncertainty = candidate_probabilities({"candidates": candidate_records})
 
@@ -712,12 +720,8 @@ def grid_search_circle(
             "final_refine_top_k": int(final_refine_top_k),
             "staged_axis_search": bool(axis_searching and used_strategy == "staged"),
         },
-        "true_center": {
-            "center_x": float(true_params["center_x"]),
-            "center_z": float(true_params["center_z"]),
-            "radius": float(true_params["radius"]),
-            "anomaly_velocity": true_velocity,
-        },
+        "true_center": true_center_payload,
+        "answer_hidden": bool(answer_hidden),
         "candidate_grid": {
             "grid_size": int(candidate_grid_size),
             "xs": final_level["xs"],
@@ -902,6 +906,7 @@ def grid_search_ellipse(
     """
     run = load_run_npz(run_path)
     world = world_from_run(run)
+    answer_hidden = is_blind_public_world(world)
     if anomaly_kind(world) != "ellipse":
         raise UnsupportedWorldError("ellipse-grid-search currently supports ellipse worlds only.")
 
@@ -1134,17 +1139,23 @@ def grid_search_ellipse(
 
     best = select_best_candidate(candidate_records)
     true_velocity = float(world["medium"].get("anomaly_velocity", background_velocity))
-    score = score_ellipse_reconstruction(
-        world,
-        predicted_center_x=float(best["center_x"]),
-        predicted_center_z=float(best["center_z"]),
-        predicted_radius_x=float(best["radius_x"]),
-        predicted_radius_z=float(best["radius_z"]),
-        predicted_angle_degrees=float(best["angle_degrees"]),
-        predicted_anomaly_velocity=float(best["anomaly_velocity"]),
-        best_mismatch=float(best["mismatch"]),
-    )
-    nearest = _nearest_true_ellipse_summary(candidate_records, true_params, true_velocity)
+    if answer_hidden:
+        score = {"supported": False, "answer_hidden": True, "message": "Blind public metadata hides the answer; score with the secret world or score-challenge."}
+        nearest = {}
+        true_center_payload = None
+    else:
+        score = score_ellipse_reconstruction(
+            world,
+            predicted_center_x=float(best["center_x"]),
+            predicted_center_z=float(best["center_z"]),
+            predicted_radius_x=float(best["radius_x"]),
+            predicted_radius_z=float(best["radius_z"]),
+            predicted_angle_degrees=float(best["angle_degrees"]),
+            predicted_anomaly_velocity=float(best["anomaly_velocity"]),
+            best_mismatch=float(best["mismatch"]),
+        )
+        nearest = _nearest_true_ellipse_summary(candidate_records, true_params, true_velocity)
+        true_center_payload = {"center_x": float(true_params["center_x"]), "center_z": float(true_params["center_z"]), "radius_x": float(true_params["radius_x"]), "radius_z": float(true_params["radius_z"]), "angle_degrees": float(true_params["angle_degrees"]), "anomaly_velocity": true_velocity}
     final_level = search_levels[-1]
     uncertainty = candidate_probabilities({"candidates": candidate_records})
 
@@ -1174,14 +1185,8 @@ def grid_search_ellipse(
             "angle_values": [float(v) for v in angles],
             "anomaly_velocities": [float(v) for v in velocities],
         },
-        "true_center": {
-            "center_x": float(true_params["center_x"]),
-            "center_z": float(true_params["center_z"]),
-            "radius_x": float(true_params["radius_x"]),
-            "radius_z": float(true_params["radius_z"]),
-            "angle_degrees": float(true_params["angle_degrees"]),
-            "anomaly_velocity": true_velocity,
-        },
+        "true_center": true_center_payload,
+        "answer_hidden": bool(answer_hidden),
         "candidate_grid": {
             "grid_size": int(candidate_grid_size),
             "xs": final_level["xs"],

@@ -7,7 +7,7 @@ import json
 import sys
 from typing import Any
 
-from .challenge import SUPPORTED_CHALLENGES, collect_leaderboard, run_challenge
+from .challenge import SUPPORTED_CHALLENGES, collect_leaderboard, run_challenge, score_challenge_directory
 from .exceptions import DevitoUnavailableError, WaveSleuthError
 from .examples import run_demo
 from .experiments import compare_acquisitions
@@ -149,6 +149,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_score.add_argument("reconstruction", help="Reconstruction JSON path.")
     p_score.set_defaults(func=cmd_score)
 
+    p_score_challenge = subparsers.add_parser("score-challenge", help="Score a challenge folder using its secret answer when present.")
+    p_score_challenge.add_argument("challenge_dir", help="Challenge output directory.")
+    p_score_challenge.add_argument("--reconstruction", default=None, help="Optional reconstruction JSON override.")
+    p_score_challenge.add_argument("--update-reconstruction", action="store_true", help="Write physical_score back into the reconstruction JSON.")
+    p_score_challenge.add_argument("--out", default=None, help="Optional output JSON score report.")
+    p_score_challenge.set_defaults(func=cmd_score_challenge)
+
     p_report = subparsers.add_parser("report", help="Generate a lightweight HTML experiment report.")
     p_report.add_argument("reconstruction", help="Input reconstruction JSON path.")
     p_report.add_argument("--out", required=True, help="Output HTML path.")
@@ -184,6 +191,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Preserve existing files in the challenge output directory.",
     )
+    p_challenge.add_argument("--blind", action="store_true", help="Write public observations and secret answer metadata separately.")
     p_challenge.add_argument("--quiet", action="store_true")
     p_challenge.set_defaults(func=cmd_challenge)
 
@@ -385,6 +393,7 @@ def cmd_challenge(args: argparse.Namespace) -> int:
         refine_levels=args.refine_levels,
         quiet=args.quiet,
         clean=args.clean,
+        blind=args.blind,
     )
     _json_print(summary)
     return 0
@@ -392,6 +401,11 @@ def cmd_challenge(args: argparse.Namespace) -> int:
 
 def cmd_leaderboard(args: argparse.Namespace) -> int:
     _json_print({"leaderboard": collect_leaderboard(args.paths)})
+    return 0
+
+
+def cmd_score_challenge(args: argparse.Namespace) -> int:
+    _json_print(score_challenge_directory(args.challenge_dir, reconstruction_path=args.reconstruction, update_reconstruction=args.update_reconstruction, out_path=args.out))
     return 0
 
 
