@@ -444,3 +444,18 @@ report both file-byte and canonical secret-world SHA-256 digests. Public files
 still hide the answer, while private files under `secret/` can show the true
 answer for local inspection.
 
+## v0.7 active sensing
+
+
+v0.7 adds a deterministic active-sensing demo. The loop starts with one source,
+inverts the current observations, chooses a new source based on uncertainty and
+geometric spread, and repeats with cumulative sequential shots.
+
+```bash
+wavesleuth-devito active-demo --out-dir active_demo --quiet
+```
+
+Outputs include `active_summary.json`, `reports/active_report.html`, per-round
+trace/reconstruction/uncertainty figures, and a progress plot. The strategy is a
+simple heuristic, not an optimal experimental-design solver.
+

@@ -8,6 +8,7 @@ import sys
 from typing import Any
 
 from .challenge import SUPPORTED_CHALLENGES, collect_leaderboard, run_challenge, score_challenge_directory
+from .active import run_active_demo
 from .exceptions import DevitoUnavailableError, WaveSleuthError
 from .examples import run_demo
 from .experiments import compare_acquisitions
@@ -213,6 +214,19 @@ def build_parser() -> argparse.ArgumentParser:
     p_demo.add_argument("--noise-level", type=float, default=0.0)
     p_demo.add_argument("--quiet", action="store_true")
     p_demo.set_defaults(func=cmd_demo)
+
+
+    p_active = subparsers.add_parser("active-demo", help="Run a multi-round active-sensing demo.")
+    p_active.add_argument("--out-dir", required=True, help="Output directory for active-sensing files.")
+    p_active.add_argument("--kind", choices=["circle", "ellipse"], default="circle")
+    p_active.add_argument("--rounds", type=int, default=3, help="Number of active sensing rounds.")
+    p_active.add_argument("--candidate-grid-size", type=int, default=5)
+    p_active.add_argument("--refine-levels", type=int, default=1)
+    p_active.add_argument("--strategy", choices=["uncertainty", "spread", "opposite-best"], default="uncertainty")
+    p_active.add_argument("--pool-preset", choices=["boundary-8", "boundary-12"], default="boundary-8")
+    p_active.add_argument("--noise-level", type=float, default=0.0)
+    p_active.add_argument("--quiet", action="store_true")
+    p_active.set_defaults(func=cmd_active_demo)
 
     p_self = subparsers.add_parser("self-test", help="Run lightweight sanity checks.")
     p_self.add_argument("--try-devito", action="store_true", help="Run a tiny Devito simulation when Devito is installed.")
@@ -427,6 +441,22 @@ def cmd_demo(args: argparse.Namespace) -> int:
     _json_print(summary)
     return 0
 
+
+
+def cmd_active_demo(args: argparse.Namespace) -> int:
+    summary = run_active_demo(
+        args.out_dir,
+        kind=args.kind,
+        rounds=args.rounds,
+        candidate_grid_size=args.candidate_grid_size,
+        refine_levels=args.refine_levels,
+        strategy=args.strategy,
+        pool_preset=args.pool_preset,
+        noise_level=args.noise_level,
+        quiet=args.quiet,
+    )
+    _json_print(summary)
+    return 0
 
 def cmd_self_test(args: argparse.Namespace) -> int:
     circle = make_default_world("circle")

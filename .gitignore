@@ -32,6 +32,12 @@ worlds/*.json
 
 # Output folders
 acq_compare/
+active_demo/
+active_demo_fast/
+active_ellipse/
+active_opposite/
+active_spread/
+active_uncertainty/
 challenge_easy/
 challenge_ellipse/
 challenge_ellipse_blind/
@@ -45,4 +51,6 @@ demo_output_v0.2/
 demo_output_v0.3/
 demo_output_v0.4/
 demo_output_v0.5/
+demo_output_v0.6/
+demo_output_v0.7/
 reports/
