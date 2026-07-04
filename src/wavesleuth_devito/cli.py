@@ -8,7 +8,7 @@ import sys
 from typing import Any
 
 from .challenge import SUPPORTED_CHALLENGES, collect_leaderboard, run_challenge, score_challenge_directory
-from .active import run_active_demo
+from .active import collect_active_leaderboard, run_active_demo
 from .exceptions import DevitoUnavailableError, WaveSleuthError
 from .examples import run_demo
 from .experiments import compare_acquisitions
@@ -227,6 +227,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_active.add_argument("--noise-level", type=float, default=0.0)
     p_active.add_argument("--quiet", action="store_true")
     p_active.set_defaults(func=cmd_active_demo)
+
+
+    p_active_leaderboard = subparsers.add_parser("active-leaderboard", help="Compare active-demo output directories.")
+    p_active_leaderboard.add_argument("paths", nargs="+", help="Active demo directories or active_summary.json files.")
+    p_active_leaderboard.set_defaults(func=cmd_active_leaderboard)
 
     p_self = subparsers.add_parser("self-test", help="Run lightweight sanity checks.")
     p_self.add_argument("--try-devito", action="store_true", help="Run a tiny Devito simulation when Devito is installed.")
@@ -456,6 +461,11 @@ def cmd_active_demo(args: argparse.Namespace) -> int:
         quiet=args.quiet,
     )
     _json_print(summary)
+    return 0
+
+
+def cmd_active_leaderboard(args: argparse.Namespace) -> int:
+    _json_print(collect_active_leaderboard(args.paths))
     return 0
 
 def cmd_self_test(args: argparse.Namespace) -> int:

@@ -459,3 +459,14 @@ Outputs include `active_summary.json`, `reports/active_report.html`, per-round
 trace/reconstruction/uncertainty figures, and a progress plot. The strategy is a
 simple heuristic, not an optimal experimental-design solver.
 
+## v0.7.1 active sensing cleanup
+
+
+v0.7.1 tightens active-sensing artifacts. Sequential active traces are stored as
+`(shot, time, receiver)` even for one-shot rounds, active summaries include
+per-round uncertainty diagnostics, and active runs can be compared directly:
+
+```bash
+wavesleuth-devito active-leaderboard active_uncertainty active_spread active_opposite
+```
+
