@@ -1,0 +1,99 @@
+{
+  "acquisition": {
+    "receivers": [
+      {
+        "x": 0.25,
+        "z": 0.12
+      },
+      {
+        "x": 0.5,
+        "z": 0.12
+      },
+      {
+        "x": 0.75,
+        "z": 0.12
+      },
+      {
+        "x": 0.88,
+        "z": 0.25
+      },
+      {
+        "x": 0.88,
+        "z": 0.5
+      },
+      {
+        "x": 0.88,
+        "z": 0.75
+      },
+      {
+        "x": 0.75,
+        "z": 0.88
+      },
+      {
+        "x": 0.5,
+        "z": 0.88
+      },
+      {
+        "x": 0.25,
+        "z": 0.88
+      },
+      {
+        "x": 0.12,
+        "z": 0.75
+      },
+      {
+        "x": 0.12,
+        "z": 0.5
+      },
+      {
+        "x": 0.12,
+        "z": 0.25
+      }
+    ],
+    "sources": [
+      {
+        "x": 0.18,
+        "z": 0.18
+      },
+      {
+        "x": 0.82,
+        "z": 0.18
+      },
+      {
+        "x": 0.82,
+        "z": 0.82
+      },
+      {
+        "x": 0.18,
+        "z": 0.82
+      }
+    ]
+  },
+  "grid": {
+    "extent_x": 1.0,
+    "extent_z": 1.0,
+    "nx": 70,
+    "nz": 70
+  },
+  "medium": {
+    "anomaly": {
+      "center_x": 0.55,
+      "center_z": 0.52,
+      "kind": "circle",
+      "radius": 0.12
+    },
+    "anomaly_velocity": 2.2,
+    "background_velocity": 1.5
+  },
+  "name": "circle_demo",
+  "simulation": {
+    "boundary": "sponge",
+    "dt": 0.0015,
+    "nt": 360,
+    "shot_mode": "sequential",
+    "source_frequency": 20.0,
+    "space_order": 4,
+    "sponge_strength": 12.0,
+    "sponge_width": 5
+  }
+}

@@ -11,7 +11,7 @@ from .challenge import SUPPORTED_CHALLENGES, collect_leaderboard, run_challenge
 from .exceptions import DevitoUnavailableError, WaveSleuthError
 from .examples import run_demo
 from .experiments import compare_acquisitions
-from .inversion import grid_search_circle
+from .inversion import grid_search_circle, grid_search_ellipse
 from .io import load_json, load_world, save_world
 from .metadata import PROJECT_NAME, __version__
 from .report import generate_html_report
@@ -87,14 +87,22 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_invert = subparsers.add_parser("invert", help="Invert observed traces with a simple search method.")
     p_invert.add_argument("run", help="Input observed run .npz path.")
-    p_invert.add_argument("--method", choices=["grid-search", "staged-grid-search"], default="grid-search", help="Use grid-search with optional search strategy; staged-grid-search is an alias for --search-strategy staged.")
+    p_invert.add_argument("--method", choices=["grid-search", "staged-grid-search", "ellipse-grid-search"], default="grid-search", help="Use grid-search for circles, staged-grid-search for v0.4 circles, or ellipse-grid-search for the v0.5 ellipse baseline.")
     p_invert.add_argument("--out", required=True, help="Output reconstruction JSON path.")
     p_invert.add_argument("--candidate-grid-size", type=int, default=5)
-    p_invert.add_argument("--radius", type=float, default=None)
+    p_invert.add_argument("--radius", type=float, default=None, help="Circle radius override for circle inversion.")
+    p_invert.add_argument("--radius-x", type=float, default=None, help="Ellipse x semi-axis override for ellipse-grid-search.")
+    p_invert.add_argument("--radius-z", type=float, default=None, help="Ellipse z semi-axis override for ellipse-grid-search.")
+    p_invert.add_argument("--angle-degrees", type=float, default=None, help="Ellipse angle override for ellipse-grid-search.")
     p_invert.add_argument("--anomaly-velocity", type=float, default=None)
-    p_invert.add_argument("--radius-values", type=_parse_float_csv, default=None, help="Comma-separated radius values, e.g. 0.09,0.12,0.15")
+    p_invert.add_argument("--radius-values", type=_parse_float_csv, default=None, help="Comma-separated circle radius values, e.g. 0.09,0.12,0.15")
+    p_invert.add_argument("--radius-x-values", type=_parse_float_csv, default=None, help="Comma-separated ellipse x semi-axis values.")
+    p_invert.add_argument("--radius-z-values", type=_parse_float_csv, default=None, help="Comma-separated ellipse z semi-axis values.")
+    p_invert.add_argument("--angle-values", type=_parse_float_csv, default=None, help="Comma-separated ellipse angle values in degrees.")
     p_invert.add_argument("--anomaly-velocity-values", type=_parse_float_csv, default=None, help="Comma-separated anomaly velocities.")
     p_invert.add_argument("--search-radius", action="store_true", help="Search a tiny default radius axis around the metadata radius.")
+    p_invert.add_argument("--search-axes", action="store_true", help="Search tiny default ellipse semi-axis axes around metadata axes.")
+    p_invert.add_argument("--search-angle", action="store_true", help="Search a tiny default ellipse orientation axis around metadata angle.")
     p_invert.add_argument("--search-velocity", action="store_true", help="Search a tiny default velocity axis around the metadata velocity.")
     p_invert.add_argument("--max-candidates", type=int, default=None)
     p_invert.add_argument("--quiet", action="store_true")
@@ -242,39 +250,66 @@ def cmd_simulate(args: argparse.Namespace) -> int:
 
 
 def cmd_invert(args: argparse.Namespace) -> int:
-    search_strategy = args.search_strategy
-    if args.method == "staged-grid-search":
-        search_strategy = "staged"
-    elif args.method != "grid-search":
-        raise WaveSleuthError(f"Unsupported inversion method {args.method!r}")
-    reconstruction = grid_search_circle(
-        args.run,
-        out_path=args.out,
-        candidate_grid_size=args.candidate_grid_size,
-        radius=args.radius,
-        anomaly_velocity=args.anomaly_velocity,
-        radius_values=args.radius_values,
-        anomaly_velocity_values=args.anomaly_velocity_values,
-        search_radius=args.search_radius,
-        search_velocity=args.search_velocity,
-        max_candidates=args.max_candidates,
-        quiet=args.quiet,
-        mismatch_mode=args.mismatch_mode,
-        metric=args.metric,
-        time_min=args.time_min,
-        time_max=args.time_max,
-        normalize_traces=args.normalize_traces,
-        refine_levels=args.refine_levels,
-        shot_mode=args.shot_mode,
-        search_strategy=search_strategy,
-        top_k_refine=args.top_k_refine,
-        final_refine_top_k=args.final_refine_top_k,
-        center_metric=args.center_metric,
-        final_metric=args.final_metric,
-        parameter_prior=args.parameter_prior,
-        radius_prior_weight=args.radius_prior_weight,
-        velocity_prior_weight=args.velocity_prior_weight,
-    )
+    if args.method == "ellipse-grid-search":
+        reconstruction = grid_search_ellipse(
+            args.run,
+            out_path=args.out,
+            candidate_grid_size=args.candidate_grid_size,
+            radius_x=args.radius_x,
+            radius_z=args.radius_z,
+            angle_degrees=args.angle_degrees,
+            anomaly_velocity=args.anomaly_velocity,
+            radius_x_values=args.radius_x_values,
+            radius_z_values=args.radius_z_values,
+            angle_values=args.angle_values,
+            anomaly_velocity_values=args.anomaly_velocity_values,
+            search_axes=args.search_axes,
+            search_angle=args.search_angle,
+            search_velocity=args.search_velocity,
+            max_candidates=args.max_candidates,
+            quiet=args.quiet,
+            mismatch_mode=args.mismatch_mode,
+            metric=args.metric,
+            time_min=args.time_min,
+            time_max=args.time_max,
+            normalize_traces=args.normalize_traces,
+            refine_levels=args.refine_levels,
+            shot_mode=args.shot_mode,
+        )
+    else:
+        search_strategy = args.search_strategy
+        if args.method == "staged-grid-search":
+            search_strategy = "staged"
+        elif args.method != "grid-search":
+            raise WaveSleuthError(f"Unsupported inversion method {args.method!r}")
+        reconstruction = grid_search_circle(
+            args.run,
+            out_path=args.out,
+            candidate_grid_size=args.candidate_grid_size,
+            radius=args.radius,
+            anomaly_velocity=args.anomaly_velocity,
+            radius_values=args.radius_values,
+            anomaly_velocity_values=args.anomaly_velocity_values,
+            search_radius=args.search_radius,
+            search_velocity=args.search_velocity,
+            max_candidates=args.max_candidates,
+            quiet=args.quiet,
+            mismatch_mode=args.mismatch_mode,
+            metric=args.metric,
+            time_min=args.time_min,
+            time_max=args.time_max,
+            normalize_traces=args.normalize_traces,
+            refine_levels=args.refine_levels,
+            shot_mode=args.shot_mode,
+            search_strategy=search_strategy,
+            top_k_refine=args.top_k_refine,
+            final_refine_top_k=args.final_refine_top_k,
+            center_metric=args.center_metric,
+            final_metric=args.final_metric,
+            parameter_prior=args.parameter_prior,
+            radius_prior_weight=args.radius_prior_weight,
+            velocity_prior_weight=args.velocity_prior_weight,
+        )
     print(f"wrote {args.out}")
     _json_print(
         {
@@ -385,6 +420,11 @@ def cmd_self_test(args: argparse.Namespace) -> int:
     if model.shape != (circle["grid"]["nx"], circle["grid"]["nz"]):
         raise WaveSleuthError("velocity model shape check failed")
 
+    ellipse = make_default_world("ellipse")
+    ellipse_model = velocity_model_from_world(ellipse)
+    if ellipse_model.shape != (ellipse["grid"]["nx"], ellipse["grid"]["nz"]):
+        raise WaveSleuthError("ellipse velocity model shape check failed")
+
     ring = make_default_world("circle", acquisition="ring")
     if len(ring["acquisition"]["sources"]) < 4 or len(ring["acquisition"]["receivers"]) < 8:
         raise WaveSleuthError("ring acquisition check failed")
@@ -401,6 +441,7 @@ def cmd_self_test(args: argparse.Namespace) -> int:
     messages = [
         "world generation: ok",
         "velocity model: ok",
+        "ellipse world: ok",
         "ring acquisition: ok",
         "noise helper: ok",
         "sponge damping helper: ok",

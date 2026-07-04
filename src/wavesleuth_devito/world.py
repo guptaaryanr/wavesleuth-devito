@@ -19,7 +19,7 @@ from .geometry import (
 )
 
 DEFAULT_SEED = 20260203
-SUPPORTED_WORLD_KINDS = ("circle", "rectangle", "layered", "blobs")
+SUPPORTED_WORLD_KINDS = ("circle", "rectangle", "ellipse", "ring", "two-circles", "crack", "layered", "circle-layered", "blobs")
 SUPPORTED_ACQUISITION_PRESETS = ("single", "crossfire", "ring", "top-only", "left-right")
 SUPPORTED_BOUNDARIES = ("none", "sponge")
 
@@ -188,6 +188,35 @@ def make_default_world(
 
     if kind == "circle":
         anomaly.update({"center_x": 0.55, "center_z": 0.52, "radius": 0.12})
+    elif kind == "ellipse":
+        anomaly.update({"center_x": 0.54, "center_z": 0.52, "radius_x": 0.17, "radius_z": 0.095, "angle_degrees": 25.0})
+    elif kind == "ring":
+        anomaly.update({"center_x": 0.55, "center_z": 0.52, "inner_radius": 0.075, "outer_radius": 0.15})
+    elif kind == "two-circles":
+        anomaly.update(
+            {
+                "circles": [
+                    {"center_x": 0.43, "center_z": 0.48, "radius": 0.09, "velocity": 2.15},
+                    {"center_x": 0.66, "center_z": 0.58, "radius": 0.075, "velocity": 2.35},
+                ]
+            }
+        )
+    elif kind == "crack":
+        world["medium"]["anomaly_velocity"] = 0.95
+        anomaly.update({"center_x": 0.55, "center_z": 0.52, "length": 0.33, "width": 0.035, "angle_degrees": -28.0})
+    elif kind == "circle-layered":
+        anomaly.update(
+            {
+                "center_x": 0.56,
+                "center_z": 0.56,
+                "radius": 0.105,
+                "layers": [
+                    {"z_min": 0.00, "z_max": 0.36, "velocity": 1.35},
+                    {"z_min": 0.36, "z_max": 0.70, "velocity": 1.62},
+                    {"z_min": 0.70, "z_max": 1.00, "velocity": 1.90},
+                ],
+            }
+        )
     elif kind == "rectangle":
         anomaly.update({"center_x": 0.56, "center_z": 0.53, "width": 0.24, "height": 0.16})
     elif kind == "layered":
@@ -249,7 +278,7 @@ def validate_world(world: dict[str, Any]) -> None:
     if kind not in SUPPORTED_WORLD_KINDS:
         raise UnsupportedWorldError(f"Unsupported anomaly kind {kind!r}.")
 
-    if kind in {"circle", "rectangle", "blobs"}:
+    if kind in {"circle", "rectangle", "ellipse", "ring", "two-circles", "crack", "circle-layered", "blobs"}:
         anomaly_velocity = float(medium.get("anomaly_velocity", background_velocity))
         if anomaly_velocity <= 0.0:
             raise ValidationError("medium.anomaly_velocity must be positive.")
@@ -260,6 +289,53 @@ def validate_world(world: dict[str, Any]) -> None:
                 raise ValidationError(f"Circle anomaly missing {key!r}.")
         if float(anomaly["radius"]) <= 0.0:
             raise ValidationError("Circle radius must be positive.")
+    elif kind == "ellipse":
+        for key in ("center_x", "center_z", "radius_x", "radius_z", "angle_degrees"):
+            if key not in anomaly:
+                raise ValidationError(f"Ellipse anomaly missing {key!r}.")
+        if float(anomaly["radius_x"]) <= 0.0 or float(anomaly["radius_z"]) <= 0.0:
+            raise ValidationError("Ellipse radii must be positive.")
+    elif kind == "ring":
+        for key in ("center_x", "center_z", "inner_radius", "outer_radius"):
+            if key not in anomaly:
+                raise ValidationError(f"Ring anomaly missing {key!r}.")
+        if float(anomaly["inner_radius"]) < 0.0 or float(anomaly["outer_radius"]) <= 0.0:
+            raise ValidationError("Ring radii must be non-negative/positive.")
+        if float(anomaly["inner_radius"]) >= float(anomaly["outer_radius"]):
+            raise ValidationError("Ring inner_radius must be smaller than outer_radius.")
+    elif kind == "two-circles":
+        circles = anomaly.get("circles", [])
+        if not isinstance(circles, list) or len(circles) != 2:
+            raise ValidationError("two-circles world requires exactly two circle dictionaries.")
+        for idx, circle in enumerate(circles):
+            for key in ("center_x", "center_z", "radius"):
+                if key not in circle:
+                    raise ValidationError(f"two-circles circle {idx} missing {key!r}.")
+            if float(circle["radius"]) <= 0.0:
+                raise ValidationError(f"two-circles circle {idx} radius must be positive.")
+            if "velocity" in circle and float(circle["velocity"]) <= 0.0:
+                raise ValidationError(f"two-circles circle {idx} velocity must be positive.")
+    elif kind == "crack":
+        for key in ("center_x", "center_z", "length", "width", "angle_degrees"):
+            if key not in anomaly:
+                raise ValidationError(f"Crack anomaly missing {key!r}.")
+        if float(anomaly["length"]) <= 0.0 or float(anomaly["width"]) <= 0.0:
+            raise ValidationError("Crack length and width must be positive.")
+    elif kind == "circle-layered":
+        for key in ("center_x", "center_z", "radius", "layers"):
+            if key not in anomaly:
+                raise ValidationError(f"circle-layered anomaly missing {key!r}.")
+        if float(anomaly["radius"]) <= 0.0:
+            raise ValidationError("circle-layered radius must be positive.")
+        layers = anomaly.get("layers", [])
+        if not isinstance(layers, list) or not layers:
+            raise ValidationError("circle-layered world requires a non-empty layers list.")
+        for idx, layer in enumerate(layers):
+            for key in ("z_min", "z_max", "velocity"):
+                if key not in layer:
+                    raise ValidationError(f"circle-layered layer {idx} missing {key!r}.")
+            if float(layer["velocity"]) <= 0.0:
+                raise ValidationError(f"circle-layered layer {idx} velocity must be positive.")
     elif kind == "rectangle":
         for key in ("center_x", "center_z", "width", "height"):
             if key not in anomaly:
@@ -341,6 +417,25 @@ def anomaly_kind(world: dict[str, Any]) -> str:
     return str(world["medium"]["anomaly"]["kind"])
 
 
+def _rotated_coordinates(
+    xmesh: np.ndarray,
+    zmesh: np.ndarray,
+    *,
+    center_x: float,
+    center_z: float,
+    angle_degrees: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return coordinates rotated into an anomaly-local frame."""
+    theta = np.deg2rad(float(angle_degrees))
+    dx = xmesh - float(center_x)
+    dz = zmesh - float(center_z)
+    c = np.cos(theta)
+    s = np.sin(theta)
+    local_x = c * dx + s * dz
+    local_z = -s * dx + c * dz
+    return local_x, local_z
+
+
 def anomaly_mask_from_world(world: dict[str, Any], *, circle_override: dict[str, float] | None = None) -> np.ndarray:
     """Return a boolean anomaly mask with shape `(nx, nz)`."""
     validate_world(world)
@@ -355,6 +450,47 @@ def anomaly_mask_from_world(world: dict[str, Any], *, circle_override: dict[str,
         return ((xmesh - center_x) ** 2 + (zmesh - center_z) ** 2) <= radius**2
 
     if kind == "circle":
+        center_x = float(anomaly["center_x"])
+        center_z = float(anomaly["center_z"])
+        radius = float(anomaly["radius"])
+        return ((xmesh - center_x) ** 2 + (zmesh - center_z) ** 2) <= radius**2
+
+    if kind == "ellipse":
+        local_x, local_z = _rotated_coordinates(
+            xmesh,
+            zmesh,
+            center_x=float(anomaly["center_x"]),
+            center_z=float(anomaly["center_z"]),
+            angle_degrees=float(anomaly["angle_degrees"]),
+        )
+        return (local_x / float(anomaly["radius_x"])) ** 2 + (local_z / float(anomaly["radius_z"])) ** 2 <= 1.0
+
+    if kind == "ring":
+        center_x = float(anomaly["center_x"])
+        center_z = float(anomaly["center_z"])
+        dist2 = (xmesh - center_x) ** 2 + (zmesh - center_z) ** 2
+        return (dist2 <= float(anomaly["outer_radius"]) ** 2) & (dist2 >= float(anomaly["inner_radius"]) ** 2)
+
+    if kind == "two-circles":
+        mask = np.zeros(grid_shape(world), dtype=bool)
+        for circle in anomaly["circles"]:
+            center_x = float(circle["center_x"])
+            center_z = float(circle["center_z"])
+            radius = float(circle["radius"])
+            mask |= ((xmesh - center_x) ** 2 + (zmesh - center_z) ** 2) <= radius**2
+        return mask
+
+    if kind == "crack":
+        local_x, local_z = _rotated_coordinates(
+            xmesh,
+            zmesh,
+            center_x=float(anomaly["center_x"]),
+            center_z=float(anomaly["center_z"]),
+            angle_degrees=float(anomaly["angle_degrees"]),
+        )
+        return (np.abs(local_x) <= float(anomaly["length"]) / 2.0) & (np.abs(local_z) <= float(anomaly["width"]) / 2.0)
+
+    if kind == "circle-layered":
         center_x = float(anomaly["center_x"])
         center_z = float(anomaly["center_z"])
         radius = float(anomaly["radius"])
@@ -384,6 +520,24 @@ def anomaly_mask_from_world(world: dict[str, Any], *, circle_override: dict[str,
     raise UnsupportedWorldError(f"Unsupported anomaly kind {kind!r}.")
 
 
+def _layered_background_model(world: dict[str, Any], layers: list[dict[str, Any]]) -> np.ndarray:
+    """Create a layered background model from layer dictionaries."""
+    nx, nz = grid_shape(world)
+    background = float(world["medium"].get("background_velocity", 1.5))
+    model = np.full((nx, nz), background, dtype=np.float32)
+    _xmesh, zmesh = coordinate_mesh(world)
+    extent_z = grid_extent(world)[1]
+    for layer in layers:
+        z_min = float(layer["z_min"])
+        z_max = float(layer["z_max"])
+        if z_max <= 1.0 and extent_z != 1.0:
+            z_min *= extent_z
+            z_max *= extent_z
+        layer_mask = (zmesh >= z_min) & (zmesh <= z_max)
+        model[layer_mask] = float(layer["velocity"])
+    return model
+
+
 def velocity_model_from_world(world: dict[str, Any]) -> np.ndarray:
     """Create a 2D velocity model from a world dictionary."""
     validate_world(world)
@@ -394,21 +548,23 @@ def velocity_model_from_world(world: dict[str, Any]) -> np.ndarray:
     kind = anomaly_kind(world)
     anomaly = medium["anomaly"]
 
-    if kind == "circle":
+    if kind in {"circle", "rectangle", "ellipse", "ring", "crack"}:
         model[anomaly_mask_from_world(world)] = float(medium["anomaly_velocity"])
-    elif kind == "rectangle":
-        model[anomaly_mask_from_world(world)] = float(medium["anomaly_velocity"])
+    elif kind == "two-circles":
+        default_velocity = float(medium.get("anomaly_velocity", background))
+        xmesh, zmesh = coordinate_mesh(world)
+        for circle in anomaly["circles"]:
+            center_x = float(circle["center_x"])
+            center_z = float(circle["center_z"])
+            radius = float(circle["radius"])
+            velocity = float(circle.get("velocity", default_velocity))
+            circle_mask = ((xmesh - center_x) ** 2 + (zmesh - center_z) ** 2) <= radius**2
+            model[circle_mask] = velocity
     elif kind == "layered":
-        _xmesh, zmesh = coordinate_mesh(world)
-        extent_z = grid_extent(world)[1]
-        for layer in anomaly["layers"]:
-            z_min = float(layer["z_min"])
-            z_max = float(layer["z_max"])
-            if z_max <= 1.0 and extent_z != 1.0:
-                z_min *= extent_z
-                z_max *= extent_z
-            layer_mask = (zmesh >= z_min) & (zmesh <= z_max)
-            model[layer_mask] = float(layer["velocity"])
+        model = _layered_background_model(world, anomaly["layers"])
+    elif kind == "circle-layered":
+        model = _layered_background_model(world, anomaly["layers"])
+        model[anomaly_mask_from_world(world)] = float(medium["anomaly_velocity"])
     elif kind == "blobs":
         xmesh, zmesh = coordinate_mesh(world)
         default_velocity = float(medium.get("anomaly_velocity", background))
@@ -431,6 +587,8 @@ def background_velocity_model_from_world(world: dict[str, Any]) -> np.ndarray:
     kind = anomaly_kind(world)
     if kind == "layered":
         return velocity_model_from_world(world)
+    if kind == "circle-layered":
+        return _layered_background_model(world, world["medium"]["anomaly"]["layers"])
     nx, nz = grid_shape(world)
     background = float(world["medium"]["background_velocity"])
     return np.full((nx, nz), background, dtype=np.float32)
@@ -466,6 +624,47 @@ def world_with_circle_candidate(
         "center_x": float(center_x),
         "center_z": float(center_z),
         "radius": float(radius),
+    }
+    validate_world(candidate)
+    return candidate
+
+
+def ellipse_parameters(world: dict[str, Any]) -> dict[str, float] | None:
+    """Return ellipse parameters if the world contains an elliptical anomaly."""
+    if anomaly_kind(world) != "ellipse":
+        return None
+    anomaly = world["medium"]["anomaly"]
+    return {
+        "center_x": float(anomaly["center_x"]),
+        "center_z": float(anomaly["center_z"]),
+        "radius_x": float(anomaly["radius_x"]),
+        "radius_z": float(anomaly["radius_z"]),
+        "angle_degrees": float(anomaly["angle_degrees"]),
+    }
+
+
+def world_with_ellipse_candidate(
+    world: dict[str, Any],
+    *,
+    center_x: float,
+    center_z: float,
+    radius_x: float,
+    radius_z: float,
+    angle_degrees: float,
+    anomaly_velocity: float,
+    name: str | None = None,
+) -> dict[str, Any]:
+    """Return a copy of `world` with an elliptical candidate anomaly."""
+    candidate = copy.deepcopy(world)
+    candidate["name"] = name or f"candidate_ellipse_{center_x:.3f}_{center_z:.3f}"
+    candidate["medium"]["anomaly_velocity"] = float(anomaly_velocity)
+    candidate["medium"]["anomaly"] = {
+        "kind": "ellipse",
+        "center_x": float(center_x),
+        "center_z": float(center_z),
+        "radius_x": float(radius_x),
+        "radius_z": float(radius_z),
+        "angle_degrees": float(angle_degrees),
     }
     validate_world(candidate)
     return candidate

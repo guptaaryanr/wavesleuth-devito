@@ -9,15 +9,15 @@ from time import perf_counter
 from typing import Any, Iterable
 
 from .exceptions import ValidationError
-from .inversion import grid_search_circle
+from .inversion import grid_search_circle, grid_search_ellipse
 from .io import load_json, save_json, save_world
 from .report import generate_html_report
 from .scoring import budgeted_challenge_score, score_reconstruction
 from .simulation import simulate_world
 from .visualization import visualize_reconstruction, visualize_run, visualize_uncertainty, visualize_world
-from .world import acquisition_preset, make_demo_world, validate_world
+from .world import acquisition_preset, make_default_world, make_demo_world, validate_world
 
-SUPPORTED_CHALLENGES = ("circle-easy", "circle-noisy", "circle-limited-angle", "circle-radius-velocity", "circle-radius-velocity-staged")
+SUPPORTED_CHALLENGES = ("circle-easy", "circle-noisy", "circle-limited-angle", "circle-radius-velocity", "circle-radius-velocity-staged", "ellipse-easy")
 
 CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
     "circle-easy": {
@@ -56,6 +56,15 @@ CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
             "It localizes center first, keeps top-K centers, then searches radius/velocity and performs a final local center polish.",
         ],
     },
+    "ellipse-easy": {
+        "difficulty": "medium",
+        "experimental": False,
+        "description": "v0.5 first non-circle reconstruction challenge: recover the center of a rotated ellipse.",
+        "notes": [
+            "The baseline holds ellipse axes, orientation, and velocity from metadata and searches the center.",
+            "This is intentionally conservative: it proves non-circle inversion without turning v0.5 into a giant shape optimizer.",
+        ],
+    },
 }
 
 
@@ -85,8 +94,25 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
         "parameter_prior": "none",
         "radius_prior_weight": 0.0,
         "velocity_prior_weight": 0.0,
+        "method": "circle-grid-search",
     }
-    if challenge == "circle-noisy":
+    if challenge == "ellipse-easy":
+        world = make_default_world("ellipse", name="challenge_ellipse_easy", acquisition="crossfire")
+        world["grid"].update({"nx": 52, "nz": 52, "extent_x": 1.0, "extent_z": 1.0})
+        world["simulation"].update(
+            {
+                "nt": 360,
+                "dt": 0.0015,
+                "space_order": 4,
+                "source_frequency": 18.0,
+                "shot_mode": "sequential",
+                "boundary": "sponge",
+                "sponge_width": 5,
+                "sponge_strength": 12.0,
+            }
+        )
+        settings.update({"method": "ellipse-grid-search", "candidate_grid_size": 5, "refine_levels": 1})
+    elif challenge == "circle-noisy":
         world["name"] = "challenge_circle_noisy"
         settings.update({"noise_level": 0.035, "amplitude_jitter": 0.035, "time_jitter": 0.0015})
     elif challenge == "circle-limited-angle":
@@ -117,11 +143,14 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
 
 
 def _compact_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
-    keys = ("center_x", "center_z", "radius", "anomaly_velocity", "mismatch")
+    keys = ("kind", "center_x", "center_z", "radius", "radius_x", "radius_z", "angle_degrees", "anomaly_velocity", "mismatch")
     compact: dict[str, Any] = {}
     for key in keys:
         if key in candidate:
-            compact[key] = _rounded(candidate[key], 6 if key == "mismatch" else 4)
+            if key == "kind":
+                compact[key] = str(candidate[key])
+            else:
+                compact[key] = _rounded(candidate[key], 6 if key == "mismatch" else 4)
     return compact
 
 
@@ -309,23 +338,34 @@ def run_challenge(
         amplitude_jitter=float(settings["amplitude_jitter"]),
         time_jitter=float(settings["time_jitter"]),
     )
-    reconstruction = grid_search_circle(
-        run_path,
-        out_path=recon_path,
-        candidate_grid_size=int(settings["candidate_grid_size"]),
-        refine_levels=int(settings["refine_levels"]),
-        mismatch_mode=str(settings["mismatch_mode"]),
-        metric=str(settings["metric"]),
-        search_radius=bool(settings.get("search_radius", False)),
-        search_velocity=bool(settings.get("search_velocity", False)),
-        search_strategy=str(settings.get("search_strategy", "joint")),
-        top_k_refine=int(settings.get("top_k_refine", 5)),
-        final_refine_top_k=int(settings.get("final_refine_top_k", 1)),
-        parameter_prior=str(settings.get("parameter_prior", "none")),
-        radius_prior_weight=float(settings.get("radius_prior_weight", 0.0)),
-        velocity_prior_weight=float(settings.get("velocity_prior_weight", 0.0)),
-        quiet=quiet,
-    )
+    if settings.get("method") == "ellipse-grid-search":
+        reconstruction = grid_search_ellipse(
+            run_path,
+            out_path=recon_path,
+            candidate_grid_size=int(settings["candidate_grid_size"]),
+            refine_levels=int(settings["refine_levels"]),
+            mismatch_mode=str(settings["mismatch_mode"]),
+            metric=str(settings["metric"]),
+            quiet=quiet,
+        )
+    else:
+        reconstruction = grid_search_circle(
+            run_path,
+            out_path=recon_path,
+            candidate_grid_size=int(settings["candidate_grid_size"]),
+            refine_levels=int(settings["refine_levels"]),
+            mismatch_mode=str(settings["mismatch_mode"]),
+            metric=str(settings["metric"]),
+            search_radius=bool(settings.get("search_radius", False)),
+            search_velocity=bool(settings.get("search_velocity", False)),
+            search_strategy=str(settings.get("search_strategy", "joint")),
+            top_k_refine=int(settings.get("top_k_refine", 5)),
+            final_refine_top_k=int(settings.get("final_refine_top_k", 1)),
+            parameter_prior=str(settings.get("parameter_prior", "none")),
+            radius_prior_weight=float(settings.get("radius_prior_weight", 0.0)),
+            velocity_prior_weight=float(settings.get("velocity_prior_weight", 0.0)),
+            quiet=quiet,
+        )
     runtime = perf_counter() - t0
 
     visualize_world(world, figures / "world.png")
@@ -363,6 +403,9 @@ def run_challenge(
             "center_error": _rounded(score.get("center_error"), 4),
             "normalized_center_error": _rounded(score.get("normalized_center_error"), 4),
             "radius_error": _rounded(score.get("radius_error"), 4),
+            "radius_x_error": _rounded(score.get("radius_x_error"), 4),
+            "radius_z_error": _rounded(score.get("radius_z_error"), 4),
+            "angle_error_degrees": _rounded(score.get("angle_error_degrees"), 3),
             "velocity_error": _rounded(score.get("velocity_error"), 4),
             "relative_velocity_error": _rounded(score.get("relative_velocity_error"), 4),
             "forward_runs": n_forward_runs,
@@ -416,6 +459,9 @@ def collect_leaderboard(paths: Iterable[str | Path]) -> list[dict[str, Any]]:
                 "center_error": _rounded(reconstruction_score.get("center_error"), 4),
                 "normalized_center_error": _rounded(reconstruction_score.get("normalized_center_error"), 4),
                 "radius_error": _rounded(reconstruction_score.get("radius_error"), 4),
+                "radius_x_error": _rounded(reconstruction_score.get("radius_x_error"), 4),
+                "radius_z_error": _rounded(reconstruction_score.get("radius_z_error"), 4),
+                "angle_error_degrees": _rounded(reconstruction_score.get("angle_error_degrees"), 3),
                 "velocity_error": _rounded(reconstruction_score.get("velocity_error"), 4),
                 "relative_velocity_error": _rounded(reconstruction_score.get("relative_velocity_error"), 4),
                 "forward_runs": score.get("n_forward_runs"),

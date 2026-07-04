@@ -60,17 +60,77 @@ def _overlay_acquisition(ax: Any, world: dict[str, Any]) -> None:
     ax.legend(loc="upper right", fontsize=8)
 
 
+def _add_ellipse_patch(ax: Any, *, center_x: float, center_z: float, radius_x: float, radius_z: float, angle_degrees: float, label: str | None, linestyle: str = "-", linewidth: float = 2.0) -> None:
+    from matplotlib.patches import Ellipse
+
+    ax.add_patch(
+        Ellipse(
+            (float(center_x), float(center_z)),
+            width=2.0 * float(radius_x),
+            height=2.0 * float(radius_z),
+            angle=float(angle_degrees),
+            fill=False,
+            linestyle=linestyle,
+            linewidth=linewidth,
+            label=label,
+        )
+    )
+
+
+def _add_crack_patch(ax: Any, *, center_x: float, center_z: float, length: float, width: float, angle_degrees: float, label: str | None, linestyle: str = "-", linewidth: float = 2.0) -> None:
+    from matplotlib.patches import Polygon
+
+    theta = np.deg2rad(float(angle_degrees))
+    c = float(np.cos(theta))
+    s = float(np.sin(theta))
+    half_l = float(length) / 2.0
+    half_w = float(width) / 2.0
+    local = np.asarray([[-half_l, -half_w], [half_l, -half_w], [half_l, half_w], [-half_l, half_w]], dtype=float)
+    points = []
+    for x_local, z_local in local:
+        x = float(center_x) + c * x_local - s * z_local
+        z = float(center_z) + s * x_local + c * z_local
+        points.append((x, z))
+    ax.add_patch(Polygon(points, closed=True, fill=False, linestyle=linestyle, linewidth=linewidth, label=label))
+
+
 def _overlay_anomaly(ax: Any, world: dict[str, Any], *, label: str = "true anomaly") -> None:
     plt = _plt()
     anomaly = world["medium"]["anomaly"]
     kind = anomaly_kind(world)
-    if kind == "circle":
+    if kind in {"circle", "circle-layered"}:
         ax.add_patch(plt.Circle((float(anomaly["center_x"]), float(anomaly["center_z"])), float(anomaly["radius"]), fill=False, linewidth=2.0, label=label))
+    elif kind == "ellipse":
+        _add_ellipse_patch(
+            ax,
+            center_x=float(anomaly["center_x"]),
+            center_z=float(anomaly["center_z"]),
+            radius_x=float(anomaly["radius_x"]),
+            radius_z=float(anomaly["radius_z"]),
+            angle_degrees=float(anomaly["angle_degrees"]),
+            label=label,
+        )
+    elif kind == "ring":
+        ax.add_patch(plt.Circle((float(anomaly["center_x"]), float(anomaly["center_z"])), float(anomaly["outer_radius"]), fill=False, linewidth=2.0, label=label))
+        ax.add_patch(plt.Circle((float(anomaly["center_x"]), float(anomaly["center_z"])), float(anomaly["inner_radius"]), fill=False, linewidth=1.5, label=None))
+    elif kind == "crack":
+        _add_crack_patch(
+            ax,
+            center_x=float(anomaly["center_x"]),
+            center_z=float(anomaly["center_z"]),
+            length=float(anomaly["length"]),
+            width=float(anomaly["width"]),
+            angle_degrees=float(anomaly["angle_degrees"]),
+            label=label,
+        )
     elif kind == "rectangle":
         width = float(anomaly["width"])
         height = float(anomaly["height"])
         lower_left = (float(anomaly["center_x"]) - width / 2.0, float(anomaly["center_z"]) - height / 2.0)
         ax.add_patch(plt.Rectangle(lower_left, width, height, fill=False, linewidth=2.0, label=label))
+    elif kind == "two-circles":
+        for idx, circle in enumerate(anomaly["circles"]):
+            ax.add_patch(plt.Circle((float(circle["center_x"]), float(circle["center_z"])), float(circle["radius"]), fill=False, linewidth=1.5, label=label if idx == 0 else None))
     elif kind == "blobs":
         for idx, blob in enumerate(anomaly["blobs"]):
             ax.add_patch(plt.Circle((float(blob["center_x"]), float(blob["center_z"])), float(blob["radius"]), fill=False, linewidth=1.5, label=label if idx == 0 else None))
@@ -78,7 +138,6 @@ def _overlay_anomaly(ax: Any, world: dict[str, Any], *, label: str = "true anoma
         for layer in anomaly["layers"]:
             ax.axhline(float(layer["z_min"]), linewidth=1.0)
             ax.axhline(float(layer["z_max"]), linewidth=1.0)
-
 
 def visualize_world(world_or_path: dict[str, Any] | str | Path, out_path: str | Path) -> Path:
     """Plot a velocity model and overlay acquisition geometry."""
@@ -163,8 +222,25 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
     fig.colorbar(image0, ax=ax0, label="velocity")
     _overlay_anomaly(ax0, world, label="true")
     if best:
-        label = f"reconstructed r={float(best.get('radius', 0.0)):.3f}"
-        ax0.add_patch(plt.Circle((float(best["center_x"]), float(best["center_z"])), float(best["radius"]), fill=False, linestyle="--", linewidth=2.0, label=label))
+        pred_kind = str(best.get("kind") or reconstruction.get("target_kind") or anomaly_kind(world))
+        if pred_kind == "ellipse" and "radius_x" in best and "radius_z" in best:
+            label = f"reconstructed ellipse"
+            _add_ellipse_patch(
+                ax0,
+                center_x=float(best["center_x"]),
+                center_z=float(best["center_z"]),
+                radius_x=float(best["radius_x"]),
+                radius_z=float(best["radius_z"]),
+                angle_degrees=float(best.get("angle_degrees", 0.0)),
+                label=label,
+                linestyle="--",
+                linewidth=2.0,
+            )
+        elif pred_kind in {"circle", "circle-layered"} and "radius" in best:
+            label = f"reconstructed r={float(best.get('radius', 0.0)):.3f}"
+            ax0.add_patch(plt.Circle((float(best["center_x"]), float(best["center_z"])), float(best["radius"]), fill=False, linestyle="--", linewidth=2.0, label=label))
+        else:
+            ax0.scatter([float(best["center_x"])], [float(best["center_z"])], marker="x", s=90, label="best center")
     ax0.set_title("True and reconstructed anomaly")
     ax0.set_xlabel("x")
     ax0.set_ylabel("z")

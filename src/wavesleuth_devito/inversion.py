@@ -19,15 +19,17 @@ from .exceptions import UnsupportedWorldError, ValidationError
 from .geometry import candidate_axes, grid_extent
 from .io import array_string, load_run_npz, save_json, world_from_run
 from .metadata import base_metadata
-from .scoring import center_error, probability_map_from_mismatch_map, score_circle_reconstruction, trace_mismatch
+from .scoring import center_error, probability_map_from_mismatch_map, score_circle_reconstruction, score_ellipse_reconstruction, trace_mismatch
 from .simulation import ForwardTraceEngine
 from .uncertainty import candidate_probabilities
 from .world import (
     anomaly_kind,
     background_velocity_model_from_world,
     circle_parameters,
+    ellipse_parameters,
     velocity_model_from_world,
     world_with_circle_candidate,
+    world_with_ellipse_candidate,
 )
 
 SUPPORTED_SEARCH_STRATEGIES = ("auto", "joint", "staged")
@@ -665,16 +667,14 @@ def grid_search_circle(
         best_pool = candidate_records
     best = select_best_candidate(best_pool)
 
-    true_velocity = float(world["medium"].get("anomaly_velocity", background_velocity))
-    predicted_velocity = float(best.get("anomaly_velocity", true_velocity))
     score = score_circle_reconstruction(
         world,
         predicted_center_x=float(best["center_x"]),
         predicted_center_z=float(best["center_z"]),
         predicted_radius=float(best["radius"]),
-        predicted_anomaly_velocity=predicted_velocity,
         best_mismatch=float(best["mismatch"]),
     )
+    true_velocity = float(world["medium"].get("anomaly_velocity", background_velocity))
     nearest = _nearest_true_summary(candidate_records, true_params, true_velocity)
     final_level = search_levels[-1]
     uncertainty = candidate_probabilities({"candidates": candidate_records})
@@ -752,3 +752,466 @@ def grid_search_circle(
     if out_path is not None:
         save_json(reconstruction, out_path)
     return reconstruction
+
+
+def default_axis_values(base_axis: float) -> list[float]:
+    """Return a tiny ellipse-axis search axis around a reference semi-axis."""
+    base = float(base_axis)
+    return [0.85 * base, base, 1.15 * base]
+
+
+def default_angle_values(base_angle_degrees: float) -> list[float]:
+    """Return a tiny angle search axis around a reference ellipse orientation."""
+    base = float(base_angle_degrees)
+    return [base - 20.0, base, base + 20.0]
+
+
+def _ellipse_candidate_key(
+    center_x: float,
+    center_z: float,
+    radius_x: float,
+    radius_z: float,
+    angle_degrees: float,
+    velocity: float,
+) -> tuple[float, float, float, float, float, float]:
+    return (
+        round(float(center_x), 8),
+        round(float(center_z), 8),
+        round(float(radius_x), 8),
+        round(float(radius_z), 8),
+        round(float(angle_degrees), 8),
+        round(float(velocity), 8),
+    )
+
+
+def _ellipse_level_summary(
+    *,
+    level: int,
+    stage: str,
+    xs: np.ndarray,
+    zs: np.ndarray,
+    radius_x_values: Sequence[float],
+    radius_z_values: Sequence[float],
+    angle_values: Sequence[float],
+    velocities: Sequence[float],
+    margin: float,
+    records_by_cell: list[list[dict[str, Any] | None]],
+    level_records: list[dict[str, Any]],
+    notes: list[str] | None = None,
+) -> dict[str, Any]:
+    mismatch_map: list[list[float | None]] = []
+    best_parameter_map: list[list[dict[str, Any] | None]] = []
+    for row in records_by_cell:
+        mismatch_row: list[float | None] = []
+        param_row: list[dict[str, Any] | None] = []
+        for record in row:
+            if record is None:
+                mismatch_row.append(None)
+                param_row.append(None)
+            else:
+                mismatch_row.append(float(record["mismatch"]))
+                param_row.append(record)
+        mismatch_map.append(mismatch_row)
+        best_parameter_map.append(param_row)
+    try:
+        _prob, uncertainty_summary = probability_map_from_mismatch_map(mismatch_map)
+    except ValidationError:
+        uncertainty_summary = {}
+    return {
+        "level": int(level),
+        "stage": stage,
+        "grid_size_x": int(len(xs)),
+        "grid_size_z": int(len(zs)),
+        "xs": [float(v) for v in xs],
+        "zs": [float(v) for v in zs],
+        "radius_x_values": [float(v) for v in radius_x_values],
+        "radius_z_values": [float(v) for v in radius_z_values],
+        "angle_values": [float(v) for v in angle_values],
+        "anomaly_velocities": [float(v) for v in velocities],
+        "margin": float(margin),
+        "mismatch_map": mismatch_map,
+        "best_parameter_map": best_parameter_map,
+        "best_candidate": select_best_candidate(level_records) if level_records else None,
+        "uncertainty_summary": uncertainty_summary,
+        "evaluated_records_this_level": int(len(level_records)),
+        "notes": notes or [],
+    }
+
+
+def _nearest_true_ellipse_summary(candidates: list[dict[str, Any]], true_params: dict[str, float], true_velocity: float) -> dict[str, Any]:
+    if not candidates:
+        return {}
+    ranked = sorted(candidates, key=lambda c: float(c["mismatch"]))
+
+    def distance(c: dict[str, Any]) -> float:
+        cdist = center_error(
+            (true_params["center_x"], true_params["center_z"]),
+            (float(c["center_x"]), float(c["center_z"])),
+        )
+        rx = abs(float(c.get("radius_x", true_params["radius_x"])) - float(true_params["radius_x"]))
+        rz = abs(float(c.get("radius_z", true_params["radius_z"])) - float(true_params["radius_z"]))
+        angle = abs(((float(c.get("angle_degrees", true_params["angle_degrees"])) - float(true_params["angle_degrees"]) + 90.0) % 180.0) - 90.0) / 180.0
+        vdist = 0.05 * abs(float(c.get("anomaly_velocity", true_velocity)) - float(true_velocity))
+        return cdist + rx + rz + angle + vdist
+
+    nearest = min(candidates, key=distance)
+    rank = 1 + next(i for i, c in enumerate(ranked) if c is nearest)
+    return {
+        "candidate": nearest,
+        "rank_by_mismatch": int(rank),
+        "distance_to_true_candidate": float(distance(nearest)),
+        "center_distance_to_true": center_error(
+            (true_params["center_x"], true_params["center_z"]),
+            (float(nearest["center_x"]), float(nearest["center_z"])),
+        ),
+    }
+
+
+def grid_search_ellipse(
+    run_path: str | Path,
+    *,
+    out_path: str | Path | None = None,
+    candidate_grid_size: int = 5,
+    radius_x: float | None = None,
+    radius_z: float | None = None,
+    angle_degrees: float | None = None,
+    anomaly_velocity: float | None = None,
+    radius_x_values: Sequence[float] | None = None,
+    radius_z_values: Sequence[float] | None = None,
+    angle_values: Sequence[float] | None = None,
+    anomaly_velocity_values: Sequence[float] | None = None,
+    search_axes: bool = False,
+    search_angle: bool = False,
+    search_velocity: bool = False,
+    max_candidates: int | None = None,
+    quiet: bool = False,
+    mismatch_mode: str = "differential",
+    metric: str = "l2",
+    time_min: float | None = None,
+    time_max: float | None = None,
+    normalize_traces: bool = False,
+    refine_levels: int = 0,
+    shot_mode: str | None = None,
+) -> dict[str, Any]:
+    """Grid-search inversion for an elliptical anomaly.
+
+    v0.5 intentionally keeps ellipse inversion conservative: by default it
+    searches the ellipse center while holding semi-axes, angle, and velocity from
+    metadata. Optional small axes/angle/velocity searches are provided for
+    experiments, but the first non-circle baseline is center recovery.
+    """
+    run = load_run_npz(run_path)
+    world = world_from_run(run)
+    if anomaly_kind(world) != "ellipse":
+        raise UnsupportedWorldError("ellipse-grid-search currently supports ellipse worlds only.")
+
+    observed = np.asarray(run["receiver_traces"], dtype=np.float32)
+    time = np.asarray(run["time"], dtype=np.float32)
+    true_params = ellipse_parameters(world)
+    if true_params is None:
+        raise UnsupportedWorldError("The observed run does not contain ellipse metadata.")
+
+    reference_radius_x = float(radius_x if radius_x is not None else true_params["radius_x"])
+    reference_radius_z = float(radius_z if radius_z is not None else true_params["radius_z"])
+    reference_angle = float(angle_degrees if angle_degrees is not None else true_params["angle_degrees"])
+    reference_velocity = float(
+        anomaly_velocity
+        if anomaly_velocity is not None
+        else world["medium"].get("anomaly_velocity", world["medium"]["background_velocity"])
+    )
+    background_velocity = float(world["medium"]["background_velocity"])
+
+    rx_values = _as_positive_values(radius_x_values, label="radius_x_values")
+    rz_values = _as_positive_values(radius_z_values, label="radius_z_values")
+    velocities = _as_positive_values(anomaly_velocity_values, label="anomaly_velocity_values")
+    if rx_values is None:
+        rx_values = default_axis_values(reference_radius_x) if search_axes else [reference_radius_x]
+    if rz_values is None:
+        rz_values = default_axis_values(reference_radius_z) if search_axes else [reference_radius_z]
+    if angle_values is None:
+        angles = default_angle_values(reference_angle) if search_angle else [reference_angle]
+    else:
+        angles = sorted({round(float(v), 10) for v in angle_values})
+        if not angles:
+            raise ValidationError("angle_values cannot be empty.")
+    if velocities is None:
+        velocities = default_velocity_values(background_velocity, reference_velocity) if search_velocity else [reference_velocity]
+    rx_values = _as_positive_values(rx_values, label="radius_x_values") or []
+    rz_values = _as_positive_values(rz_values, label="radius_z_values") or []
+    velocities = _as_positive_values(velocities, label="anomaly_velocity_values") or []
+
+    if candidate_grid_size < 2:
+        raise ValidationError("candidate_grid_size must be at least 2.")
+    if max_candidates is not None and max_candidates < 1:
+        raise ValidationError("max_candidates must be positive when supplied.")
+    if refine_levels < 0:
+        raise ValidationError("refine_levels must be non-negative.")
+    mismatch_mode = mismatch_mode.lower()
+    if mismatch_mode not in {"raw", "differential"}:
+        raise ValidationError("mismatch_mode must be 'raw' or 'differential'.")
+    metric = metric.lower()
+
+    used_shot_mode = shot_mode or _shot_mode_from_run(run, observed)
+    if used_shot_mode not in {"simultaneous", "sequential"}:
+        raise ValidationError("shot_mode must be 'simultaneous' or 'sequential'.")
+
+    engine = ForwardTraceEngine(world, shot_mode=used_shot_mode, save_wavefield=False, quiet=quiet)
+    margin = max(max(rx_values + rz_values) * 1.15, 0.10 * min(float(world["grid"]["extent_x"]), float(world["grid"]["extent_z"])))
+
+    background_traces: np.ndarray | None = None
+    background_forward_runs = 0
+    if mismatch_mode == "differential":
+        background_model = background_velocity_model_from_world(world)
+        background_traces = engine.run(background_model).receiver_traces
+        background_forward_runs = 1
+        if background_traces.shape != observed.shape:
+            raise ValidationError(f"Background traces shape {background_traces.shape} does not match observed shape {observed.shape}.")
+        observed_target = observed - background_traces
+    else:
+        observed_target = observed
+
+    candidate_records: list[dict[str, Any]] = []
+    search_levels: list[dict[str, Any]] = []
+    trace_cache: dict[tuple[float, float, float, float, float, float], np.ndarray] = {}
+    forward_candidate_runs = 0
+    scored_candidates = 0
+    stop = False
+
+    def evaluate_candidate(
+        *,
+        center_x: float,
+        center_z: float,
+        cand_radius_x: float,
+        cand_radius_z: float,
+        cand_angle: float,
+        cand_velocity: float,
+        level: int,
+        stage: str,
+        ix: int,
+        iz: int,
+    ) -> dict[str, Any] | None:
+        nonlocal forward_candidate_runs, scored_candidates, stop
+        if max_candidates is not None and scored_candidates >= int(max_candidates):
+            stop = True
+            return None
+        key = _ellipse_candidate_key(center_x, center_z, cand_radius_x, cand_radius_z, cand_angle, cand_velocity)
+        simulated_target = trace_cache.get(key)
+        if simulated_target is None:
+            candidate_world = world_with_ellipse_candidate(
+                world,
+                center_x=float(center_x),
+                center_z=float(center_z),
+                radius_x=float(cand_radius_x),
+                radius_z=float(cand_radius_z),
+                angle_degrees=float(cand_angle),
+                anomaly_velocity=float(cand_velocity),
+            )
+            velocity_model = velocity_model_from_world(candidate_world)
+            simulated = engine.run(velocity_model).receiver_traces
+            if simulated.shape != observed.shape:
+                raise ValidationError(f"Candidate traces shape {simulated.shape} does not match observed shape {observed.shape}.")
+            simulated_target = simulated - background_traces if background_traces is not None else simulated
+            trace_cache[key] = simulated_target
+            forward_candidate_runs += 1
+        mismatch = trace_mismatch(
+            observed_target,
+            simulated_target,
+            metric=metric,
+            time=time,
+            time_min=time_min,
+            time_max=time_max,
+            normalize_traces=normalize_traces,
+        )
+        scored_candidates += 1
+        record = {
+            "kind": "ellipse",
+            "level": int(level),
+            "stage": stage,
+            "index_x": int(ix),
+            "index_z": int(iz),
+            "center_x": float(center_x),
+            "center_z": float(center_z),
+            "radius_x": float(cand_radius_x),
+            "radius_z": float(cand_radius_z),
+            "angle_degrees": float(cand_angle),
+            "anomaly_velocity": float(cand_velocity),
+            "metric": metric,
+            "data_mismatch": float(mismatch),
+            "mismatch": float(mismatch),
+        }
+        candidate_records.append(record)
+        if not quiet:
+            limit_text = "?" if max_candidates is None else str(max_candidates)
+            print(
+                f"ellipse candidate {scored_candidates}/{limit_text}: "
+                f"center=({float(center_x):.3f}, {float(center_z):.3f}) "
+                f"rx={float(cand_radius_x):.3f} rz={float(cand_radius_z):.3f} "
+                f"angle={float(cand_angle):.1f} v={float(cand_velocity):.3f} mismatch={mismatch:.6g}"
+            )
+        return record
+
+    previous_best: dict[str, Any] | None = None
+    previous_dx: float | None = None
+    previous_dz: float | None = None
+
+    for level in range(int(refine_levels) + 1):
+        if level == 0 or previous_best is None or previous_dx is None or previous_dz is None:
+            xs, zs, used_margin = _candidate_grid_around(world, grid_size=candidate_grid_size, margin=margin)
+        else:
+            xs, zs, used_margin = _candidate_grid_around(
+                world,
+                grid_size=candidate_grid_size,
+                margin=margin,
+                center_x=float(previous_best["center_x"]),
+                center_z=float(previous_best["center_z"]),
+                span_x=previous_dx,
+                span_z=previous_dz,
+            )
+        dx = abs(float(xs[1] - xs[0])) if len(xs) > 1 else previous_dx or 0.0
+        dz = abs(float(zs[1] - zs[0])) if len(zs) > 1 else previous_dz or 0.0
+        records_by_cell: list[list[dict[str, Any] | None]] = [[None for _ in range(len(xs))] for _ in range(len(zs))]
+        level_records: list[dict[str, Any]] = []
+        for iz, z in enumerate(zs):
+            for ix, x in enumerate(xs):
+                center_best: dict[str, Any] | None = None
+                for cand_rx in rx_values:
+                    for cand_rz in rz_values:
+                        for cand_angle in angles:
+                            for cand_velocity in velocities:
+                                record = evaluate_candidate(
+                                    center_x=float(x),
+                                    center_z=float(z),
+                                    cand_radius_x=float(cand_rx),
+                                    cand_radius_z=float(cand_rz),
+                                    cand_angle=float(cand_angle),
+                                    cand_velocity=float(cand_velocity),
+                                    level=level,
+                                    stage="ellipse" if level == 0 else "ellipse-refine",
+                                    ix=ix,
+                                    iz=iz,
+                                )
+                                if record is None:
+                                    break
+                                level_records.append(record)
+                                if center_best is None or float(record["mismatch"]) < float(center_best["mismatch"]):
+                                    center_best = record
+                            if stop:
+                                break
+                        if stop:
+                            break
+                    if stop:
+                        break
+                records_by_cell[iz][ix] = center_best
+                if stop:
+                    break
+            if stop:
+                break
+        search_levels.append(
+            _ellipse_level_summary(
+                level=level,
+                stage="ellipse" if level == 0 else "ellipse-refine",
+                xs=xs,
+                zs=zs,
+                radius_x_values=rx_values,
+                radius_z_values=rz_values,
+                angle_values=angles,
+                velocities=velocities,
+                margin=used_margin,
+                records_by_cell=records_by_cell,
+                level_records=level_records,
+                notes=["v0.5 ellipse grid search; by default only center is unknown."],
+            )
+        )
+        if level_records:
+            previous_best = select_best_candidate(level_records)
+            previous_dx = dx
+            previous_dz = dz
+        if stop:
+            break
+
+    if not candidate_records:
+        raise ValidationError("No ellipse candidates were evaluated.")
+
+    best = select_best_candidate(candidate_records)
+    true_velocity = float(world["medium"].get("anomaly_velocity", background_velocity))
+    score = score_ellipse_reconstruction(
+        world,
+        predicted_center_x=float(best["center_x"]),
+        predicted_center_z=float(best["center_z"]),
+        predicted_radius_x=float(best["radius_x"]),
+        predicted_radius_z=float(best["radius_z"]),
+        predicted_angle_degrees=float(best["angle_degrees"]),
+        predicted_anomaly_velocity=float(best["anomaly_velocity"]),
+        best_mismatch=float(best["mismatch"]),
+    )
+    nearest = _nearest_true_ellipse_summary(candidate_records, true_params, true_velocity)
+    final_level = search_levels[-1]
+    uncertainty = candidate_probabilities({"candidates": candidate_records})
+
+    reconstruction: dict[str, Any] = {
+        **base_metadata(),
+        "method": "ellipse-grid-search",
+        "target_kind": "ellipse",
+        "run_path": str(run_path),
+        "world_name": world.get("name", "unknown"),
+        "world": world,
+        "objective": {
+            "mismatch_mode": mismatch_mode,
+            "metric": metric,
+            "time_min": None if time_min is None else float(time_min),
+            "time_max": None if time_max is None else float(time_max),
+            "normalize_traces": bool(normalize_traces),
+            "shot_mode": used_shot_mode,
+            "background_subtracted": bool(mismatch_mode == "differential"),
+        },
+        "search": {
+            "search_strategy": "ellipse-grid",
+            "search_axes": bool(search_axes or radius_x_values is not None or radius_z_values is not None),
+            "search_angle": bool(search_angle or angle_values is not None),
+            "search_velocity": bool(search_velocity or anomaly_velocity_values is not None),
+            "radius_x_values": [float(v) for v in rx_values],
+            "radius_z_values": [float(v) for v in rz_values],
+            "angle_values": [float(v) for v in angles],
+            "anomaly_velocities": [float(v) for v in velocities],
+        },
+        "true_center": {
+            "center_x": float(true_params["center_x"]),
+            "center_z": float(true_params["center_z"]),
+            "radius_x": float(true_params["radius_x"]),
+            "radius_z": float(true_params["radius_z"]),
+            "angle_degrees": float(true_params["angle_degrees"]),
+            "anomaly_velocity": true_velocity,
+        },
+        "candidate_grid": {
+            "grid_size": int(candidate_grid_size),
+            "xs": final_level["xs"],
+            "zs": final_level["zs"],
+            "radius_x_values": [float(v) for v in rx_values],
+            "radius_z_values": [float(v) for v in rz_values],
+            "angle_values": [float(v) for v in angles],
+            "anomaly_velocities": [float(v) for v in velocities],
+            "margin": float(final_level["margin"]),
+            "evaluated_candidates": int(scored_candidates),
+            "unique_forward_candidates": int(forward_candidate_runs),
+            "forward_runs": int(forward_candidate_runs + background_forward_runs),
+            "background_forward_runs": int(background_forward_runs),
+            "refine_levels": int(refine_levels),
+        },
+        "search_levels": search_levels,
+        "mismatch_map": final_level["mismatch_map"],
+        "candidates": candidate_records,
+        "best_candidate": best,
+        "best_mismatch": float(best["mismatch"]),
+        "nearest_true_candidate": nearest,
+        "uncertainty": uncertainty,
+        "score": score,
+        "notes": [
+            "v0.5 adds the first non-circle inversion path: ellipse-grid-search.",
+            "The conservative default searches ellipse center while holding axes, angle, and velocity from metadata.",
+            "Optional axes/angle/velocity searches are provided for experiments, but can be ambiguous under sparse data.",
+        ],
+    }
+    if out_path is not None:
+        save_json(reconstruction, out_path)
+    return reconstruction
+

@@ -9,7 +9,7 @@ import numpy as np
 
 from .exceptions import UnsupportedWorldError, ValidationError
 from .geometry import grid_extent, grid_shape
-from .world import anomaly_kind, anomaly_mask_from_world, circle_parameters
+from .world import anomaly_kind, anomaly_mask_from_world, circle_parameters, ellipse_parameters
 
 
 def center_error(true_center: tuple[float, float], predicted_center: tuple[float, float]) -> float:
@@ -162,6 +162,64 @@ def circle_mask_from_params(
     return ((xmesh - float(center_x)) ** 2 + (zmesh - float(center_z)) ** 2) <= float(radius) ** 2
 
 
+def ellipse_mask_from_params(
+    *,
+    nx: int,
+    nz: int,
+    extent_x: float,
+    extent_z: float,
+    center_x: float,
+    center_z: float,
+    radius_x: float,
+    radius_z: float,
+    angle_degrees: float = 0.0,
+) -> np.ndarray:
+    """Create a boolean mask for a rotated ellipse in a domain."""
+    xs = np.linspace(0.0, extent_x, nx, dtype=np.float32)
+    zs = np.linspace(0.0, extent_z, nz, dtype=np.float32)
+    xmesh, zmesh = np.meshgrid(xs, zs, indexing="ij")
+    theta = np.deg2rad(float(angle_degrees))
+    dx = xmesh - float(center_x)
+    dz = zmesh - float(center_z)
+    c = np.cos(theta)
+    s = np.sin(theta)
+    local_x = c * dx + s * dz
+    local_z = -s * dx + c * dz
+    return (local_x / float(radius_x)) ** 2 + (local_z / float(radius_z)) ** 2 <= 1.0
+
+
+def _angle_error_degrees(true_angle: float, predicted_angle: float) -> float:
+    """Return the smallest orientation error in degrees for 180-degree-periodic shapes."""
+    diff = (float(predicted_angle) - float(true_angle) + 90.0) % 180.0 - 90.0
+    return abs(float(diff))
+
+
+def _add_velocity_diagnostics(true_world: dict[str, Any], result: dict[str, Any], predicted_anomaly_velocity: float | None) -> None:
+    if predicted_anomaly_velocity is None or "anomaly_velocity" not in true_world.get("medium", {}):
+        return
+    true_velocity = float(true_world["medium"]["anomaly_velocity"])
+    predicted_velocity = float(predicted_anomaly_velocity)
+    background_velocity = float(true_world["medium"].get("background_velocity", 0.0))
+    vel_err = velocity_error(true_velocity, predicted_velocity)
+    rel_vel_err = relative_velocity_error(true_velocity, predicted_velocity)
+    true_contrast = true_velocity - background_velocity
+    predicted_contrast = predicted_velocity - background_velocity
+    contrast_err = scalar_error(true_contrast, predicted_contrast)
+    rel_contrast_err = relative_scalar_error(true_contrast, predicted_contrast)
+    result.update(
+        {
+            "true_anomaly_velocity": true_velocity,
+            "predicted_anomaly_velocity": predicted_velocity,
+            "velocity_error": vel_err,
+            "relative_velocity_error": rel_vel_err,
+            "anomaly_velocity_error": vel_err,
+            "relative_anomaly_velocity_error": rel_vel_err,
+            "contrast_error": contrast_err,
+            "relative_contrast_error": rel_contrast_err,
+        }
+    )
+
+
 def score_circle_reconstruction(
     true_world: dict[str, Any],
     *,
@@ -214,29 +272,65 @@ def score_circle_reconstruction(
         "reconstruction_score": iou,
     }
 
-    if predicted_anomaly_velocity is not None and "anomaly_velocity" in true_world.get("medium", {}):
-        true_velocity = float(true_world["medium"]["anomaly_velocity"])
-        predicted_velocity = float(predicted_anomaly_velocity)
-        background_velocity = float(true_world["medium"].get("background_velocity", 0.0))
-        vel_err = velocity_error(true_velocity, predicted_velocity)
-        rel_vel_err = relative_velocity_error(true_velocity, predicted_velocity)
-        true_contrast = true_velocity - background_velocity
-        predicted_contrast = predicted_velocity - background_velocity
-        contrast_err = scalar_error(true_contrast, predicted_contrast)
-        rel_contrast_err = relative_scalar_error(true_contrast, predicted_contrast)
-        result.update(
-            {
-                "true_anomaly_velocity": true_velocity,
-                "predicted_anomaly_velocity": predicted_velocity,
-                "velocity_error": vel_err,
-                "relative_velocity_error": rel_vel_err,
-                "anomaly_velocity_error": vel_err,
-                "relative_anomaly_velocity_error": rel_vel_err,
-                "contrast_error": contrast_err,
-                "relative_contrast_error": rel_contrast_err,
-            }
-        )
+    _add_velocity_diagnostics(true_world, result, predicted_anomaly_velocity)
 
+    if best_mismatch is not None:
+        result["best_mismatch"] = float(best_mismatch)
+    return result
+
+
+def score_ellipse_reconstruction(
+    true_world: dict[str, Any],
+    *,
+    predicted_center_x: float,
+    predicted_center_z: float,
+    predicted_radius_x: float,
+    predicted_radius_z: float,
+    predicted_angle_degrees: float = 0.0,
+    predicted_anomaly_velocity: float | None = None,
+    best_mismatch: float | None = None,
+) -> dict[str, Any]:
+    """Score a predicted rotated ellipse against a true ellipse world."""
+    if anomaly_kind(true_world) != "ellipse":
+        return {
+            "supported": False,
+            "message": "Ellipse scoring requires a true ellipse world.",
+        }
+    params = ellipse_parameters(true_world)
+    if params is None:
+        raise UnsupportedWorldError("Expected an ellipse world for ellipse scoring.")
+
+    extent_x, extent_z = grid_extent(true_world)
+    nx, nz = grid_shape(true_world)
+    true_center = (params["center_x"], params["center_z"])
+    predicted_center = (float(predicted_center_x), float(predicted_center_z))
+    true_mask = anomaly_mask_from_world(true_world)
+    pred_mask = ellipse_mask_from_params(
+        nx=nx,
+        nz=nz,
+        extent_x=extent_x,
+        extent_z=extent_z,
+        center_x=float(predicted_center_x),
+        center_z=float(predicted_center_z),
+        radius_x=float(predicted_radius_x),
+        radius_z=float(predicted_radius_z),
+        angle_degrees=float(predicted_angle_degrees),
+    )
+    iou = iou_score(true_mask, pred_mask)
+    center_err = center_error(true_center, predicted_center)
+    norm_center_err = normalized_center_error(true_center, predicted_center, extent_x=extent_x, extent_z=extent_z)
+    result: dict[str, Any] = {
+        "supported": True,
+        "target_kind": "ellipse",
+        "center_error": center_err,
+        "normalized_center_error": norm_center_err,
+        "radius_x_error": abs(float(params["radius_x"]) - float(predicted_radius_x)),
+        "radius_z_error": abs(float(params["radius_z"]) - float(predicted_radius_z)),
+        "angle_error_degrees": _angle_error_degrees(float(params["angle_degrees"]), float(predicted_angle_degrees)),
+        "iou": iou,
+        "reconstruction_score": iou,
+    }
+    _add_velocity_diagnostics(true_world, result, predicted_anomaly_velocity)
     if best_mismatch is not None:
         result["best_mismatch"] = float(best_mismatch)
     return result
@@ -244,30 +338,48 @@ def score_circle_reconstruction(
 
 def score_reconstruction(true_world: dict[str, Any], reconstruction: dict[str, Any]) -> dict[str, Any]:
     """Score a reconstruction JSON-like dictionary against a true world."""
-    if anomaly_kind(true_world) != "circle":
-        return {
-            "supported": False,
-            "message": "MVP scoring currently focuses on circle anomalies.",
-        }
+    kind = anomaly_kind(true_world)
     best = reconstruction.get("best_candidate", {})
     if not best:
         return {
             "supported": False,
             "message": "Reconstruction does not contain a best_candidate field.",
         }
-    radius = float(best.get("radius", reconstruction.get("radius", 0.0)))
+
     mismatch = best.get("mismatch", reconstruction.get("best_mismatch"))
     predicted_velocity_raw = best.get("anomaly_velocity", reconstruction.get("anomaly_velocity"))
     predicted_velocity = None if predicted_velocity_raw is None else float(predicted_velocity_raw)
-    return score_circle_reconstruction(
-        true_world,
-        predicted_center_x=float(best["center_x"]),
-        predicted_center_z=float(best["center_z"]),
-        predicted_radius=radius,
-        predicted_anomaly_velocity=predicted_velocity,
-        best_mismatch=None if mismatch is None else float(mismatch),
-    )
 
+    if kind == "circle":
+        radius = float(best.get("radius", reconstruction.get("radius", 0.0)))
+        return score_circle_reconstruction(
+            true_world,
+            predicted_center_x=float(best["center_x"]),
+            predicted_center_z=float(best["center_z"]),
+            predicted_radius=radius,
+            predicted_anomaly_velocity=predicted_velocity,
+            best_mismatch=None if mismatch is None else float(mismatch),
+        )
+
+    if kind == "ellipse":
+        radius_x = float(best.get("radius_x", best.get("axis_x", reconstruction.get("radius_x", 0.0))))
+        radius_z = float(best.get("radius_z", best.get("axis_z", reconstruction.get("radius_z", 0.0))))
+        angle = float(best.get("angle_degrees", reconstruction.get("angle_degrees", 0.0)))
+        return score_ellipse_reconstruction(
+            true_world,
+            predicted_center_x=float(best["center_x"]),
+            predicted_center_z=float(best["center_z"]),
+            predicted_radius_x=radius_x,
+            predicted_radius_z=radius_z,
+            predicted_angle_degrees=angle,
+            predicted_anomaly_velocity=predicted_velocity,
+            best_mismatch=None if mismatch is None else float(mismatch),
+        )
+
+    return {
+        "supported": False,
+        "message": f"Scoring for {kind!r} worlds is not implemented yet. v0.5 can generate this world, but only circle and ellipse reconstructions are scored parametrically.",
+    }
 
 def probability_map_from_mismatch_map(
     mismatch_map: list[list[float | None]] | np.ndarray,

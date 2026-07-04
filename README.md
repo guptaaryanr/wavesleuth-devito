@@ -392,3 +392,30 @@ v0.4.1 keeps the staged-search numerics unchanged and improves diagnostics aroun
 
 The staged radius/velocity method should be read as strong localization plus approximate contrast recovery, not perfect velocity inversion.
 
+## v0.5 richer worlds and first non-circle inversion
+
+v0.5 expands WaveSleuth beyond circles. New generated world kinds are:
+
+- `ellipse`
+- `ring`
+- `two-circles`
+- `crack`
+- `circle-layered`
+
+The first non-circle inversion baseline is:
+
+```bash
+wavesleuth-devito invert runs/ellipse_obs.npz --method ellipse-grid-search --out runs/ellipse_recon.json
+```
+
+The conservative default searches the ellipse center while holding semi-axes, orientation, and anomaly velocity from metadata. Optional `--search-axes`, `--search-angle`, and `--search-velocity` flags are available for experiments, but sparse data can make those parameters ambiguous.
+
+v0.5 also adds an `ellipse-easy` challenge:
+
+```bash
+wavesleuth-devito challenge ellipse-easy --out-dir challenge_ellipse --quiet
+wavesleuth-devito leaderboard challenge_ellipse
+```
+
+Circle and ellipse reconstructions are scored parametrically. Other v0.5 shapes can be generated, simulated, visualized, and mask-scored manually in future versions, but they do not yet have dedicated inversion methods.
+

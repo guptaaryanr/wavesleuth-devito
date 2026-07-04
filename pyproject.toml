@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wavesleuth-devito"
-version = "0.4.1"
+version = "0.5.0"
 description = "A toy inverse-physics playground using Devito acoustic wave simulation."
 readme = "README.md"
 requires-python = ">=3.10"

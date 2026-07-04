@@ -29,3 +29,20 @@ worlds/*.json
 .DS_Store
 .vscode/
 .idea/
+
+# Output folders
+acq_compare/
+challenge_easy/
+challenge_ellipse/
+challenge_limited/
+challenge_noisy/
+challenge_rv/
+challenge_rv_staged/
+demo_output_v0.1/
+demo_output_v0.2/
+demo_output_v0.3/
+demo_output_v0.4/
+demo_output_v0.5/
+examples/
+figures/
+reports/
