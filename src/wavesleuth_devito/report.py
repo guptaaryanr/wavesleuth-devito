@@ -30,6 +30,14 @@ _REPORT_UNCERTAINTY_KEYS = (
     "effective_candidates",
     "inverse_participation_effective_candidates",
     "center_effective_candidates",
+    "center_entropy",
+    "center_normalized_entropy",
+    "center_entropy_effective_candidates",
+    "center_top_probability",
+    "center_probability_mode",
+    "duplicate_center_candidates",
+    "top_3_center_probability_mass",
+    "top_5_center_probability_mass",
     "best_probability",
     "top_3_probability_mass",
     "top_5_probability_mass",
@@ -40,19 +48,27 @@ _REPORT_UNCERTAINTY_KEYS = (
 
 
 def _report_uncertainty_summary(reconstruction: dict[str, Any]) -> dict[str, Any]:
-    """Return uncertainty diagnostics, backfilling old v0.3 JSON when possible."""
+    """Return uncertainty diagnostics, backfilling old JSON when possible."""
     raw = reconstruction.get("uncertainty", {})
     summary: dict[str, Any] = dict(raw) if isinstance(raw, dict) else {}
     try:
         computed = candidate_probabilities(reconstruction)
     except Exception:
         computed = {}
-    for key in _REPORT_UNCERTAINTY_KEYS:
-        if key not in summary and key in computed:
-            summary[key] = computed[key]
+
+    # v0.5 wrote center probabilities by summing duplicate centers across
+    # refinement levels. For reports, prefer the v0.5.1 unique-center summary
+    # when it can be computed, while preserving any older extra fields.
+    if computed and summary.get("center_probability_mode") != "unique-center-min-mismatch":
+        older = dict(summary)
+        summary = dict(computed)
+        for key, value in older.items():
+            summary.setdefault(key, value)
+    else:
+        for key in _REPORT_UNCERTAINTY_KEYS:
+            if key not in summary and key in computed:
+                summary[key] = computed[key]
     return summary
-
-
 def _report_score_summary(reconstruction: dict[str, Any]) -> dict[str, Any]:
     """Return score diagnostics, backfilling v0.4.1 velocity errors when possible."""
     raw = reconstruction.get("score", {})
@@ -86,7 +102,8 @@ def _staged_uncertainty_note(reconstruction: dict[str, Any]) -> str:
     return (
         "<p><strong>Staged-search note:</strong> this reconstruction contains candidates from multiple search stages. "
         "For location ambiguity, <code>center_effective_candidates</code> is usually more interpretable than raw "
-        "<code>effective_candidates</code>, because it groups radius/velocity variants by center.</p>"
+        "<code>effective_candidates</code>. In v0.5.1, center probabilities use the best mismatch per unique center "
+        "so duplicated refinement candidates do not inflate a center.</p>"
     )
 
 

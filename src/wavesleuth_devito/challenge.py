@@ -61,8 +61,9 @@ CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
         "experimental": False,
         "description": "v0.5 first non-circle reconstruction challenge: recover the center of a rotated ellipse.",
         "notes": [
-            "The baseline holds ellipse axes, orientation, and velocity from metadata and searches the center.",
+            "Known-shape challenge: the baseline holds ellipse axes, orientation, and velocity from metadata and searches the center.",
             "This is intentionally conservative: it proves non-circle inversion without turning v0.5 into a giant shape optimizer.",
+            "Full unknown-ellipse discovery is left for a later staged/regularized search.",
         ],
     },
 }
@@ -111,7 +112,12 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
                 "sponge_strength": 12.0,
             }
         )
-        settings.update({"method": "ellipse-grid-search", "candidate_grid_size": 5, "refine_levels": 1})
+        settings.update({
+            "method": "ellipse-grid-search",
+            "candidate_grid_size": 5,
+            "refine_levels": 1,
+            "known_shape_parameters": ["radius_x", "radius_z", "angle_degrees", "anomaly_velocity"],
+        })
     elif challenge == "circle-noisy":
         world["name"] = "challenge_circle_noisy"
         settings.update({"noise_level": 0.035, "amplitude_jitter": 0.035, "time_jitter": 0.0015})
@@ -153,6 +159,20 @@ def _compact_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
                 compact[key] = _rounded(candidate[key], 6 if key == "mismatch" else 4)
     return compact
 
+
+
+
+def _drop_none_leaderboard_fields(row: dict[str, Any]) -> dict[str, Any]:
+    """Remove non-applicable optional fields from leaderboard rows."""
+    optional = {
+        "radius_error",
+        "radius_x_error",
+        "radius_z_error",
+        "angle_error_degrees",
+        "velocity_error",
+        "relative_velocity_error",
+    }
+    return {key: value for key, value in row.items() if not (key in optional and value is None)}
 
 def _stable_challenge_score_from_summary(data: dict[str, Any]) -> dict[str, Any]:
     """Return a v0.3.2-style challenge score from a saved summary.
@@ -468,6 +488,7 @@ def collect_leaderboard(paths: Iterable[str | Path]) -> list[dict[str, Any]]:
                 "runtime_seconds": _rounded(data.get("runtime_seconds"), 3),
                 "best_candidate": data.get("best_candidate_summary") or _compact_candidate(data.get("best_candidate", {})),
             }
+            row = _drop_none_leaderboard_fields(row)
             sort_score = rounded_score if rounded_score is not None else float("-inf")
             sort_iou = row["iou"] if row["iou"] is not None else float("-inf")
             sort_center = row["center_error"] if row["center_error"] is not None else float("inf")

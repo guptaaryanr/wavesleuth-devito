@@ -275,37 +275,62 @@ def visualize_reconstruction(reconstruction_or_path: dict[str, Any] | str | Path
 
 
 def _candidate_center_probabilities(reconstruction: dict[str, Any], temperature: float | None = None) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return a center-probability grid using v0.5.1 unique-center deduplication."""
     candidates = list(reconstruction.get("candidates", []))
     if not candidates:
         return np.asarray([]), np.asarray([]), np.asarray([[]])
-    xs = np.asarray(sorted({round(float(c["center_x"]), 8) for c in candidates}), dtype=float)
-    zs = np.asarray(sorted({round(float(c["center_z"]), 8) for c in candidates}), dtype=float)
+    try:
+        from .uncertainty import candidate_probabilities
+
+        summary = candidate_probabilities(reconstruction, temperature=temperature)
+        centers = list(summary.get("center_probabilities", []))
+    except Exception:
+        centers = []
+        best_by_center: dict[tuple[float, float], float] = {}
+        mismatches: list[float] = []
+        for c in candidates:
+            try:
+                key = (round(float(c["center_x"]), 8), round(float(c["center_z"]), 8))
+                mismatch = float(c["mismatch"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if not np.isfinite(mismatch):
+                continue
+            mismatches.append(mismatch)
+            best_by_center[key] = min(best_by_center.get(key, float("inf")), mismatch)
+        if best_by_center:
+            arr = np.asarray(list(best_by_center.values()), dtype=float)
+            temp = float(temperature or max(float(np.nanpercentile(arr, 75.0) - float(np.nanmin(arr))), 1.0e-9))
+            weights = np.exp(-(arr - float(np.nanmin(arr))) / temp)
+            weights = weights / max(float(weights.sum()), 1.0e-12)
+            centers = [
+                {"center_x": key[0], "center_z": key[1], "probability": float(prob), "mismatch": float(mismatch)}
+                for (key, mismatch), prob in zip(best_by_center.items(), weights)
+            ]
+    if not centers:
+        return np.asarray([]), np.asarray([]), np.asarray([[]])
+    xs = np.asarray(sorted({round(float(c["center_x"]), 8) for c in centers}), dtype=float)
+    zs = np.asarray(sorted({round(float(c["center_z"]), 8) for c in centers}), dtype=float)
     grid = np.zeros((len(zs), len(xs)), dtype=float)
     x_index = {round(float(x), 8): i for i, x in enumerate(xs)}
     z_index = {round(float(z), 8): i for i, z in enumerate(zs)}
-    mismatches = np.asarray([float(c["mismatch"]) for c in candidates], dtype=float)
-    finite = np.isfinite(mismatches)
-    if not bool(np.any(finite)):
-        return xs, zs, grid
-    if temperature is None:
-        temp = float((reconstruction.get("uncertainty") or {}).get("temperature", 0.0) or 0.0)
-    else:
-        temp = float(temperature)
-    if temp <= 0.0:
-        temp = max(float(np.nanpercentile(mismatches[finite], 75.0) - np.nanmin(mismatches[finite])), 1.0e-9)
-    logits = -(mismatches - np.nanmin(mismatches[finite])) / temp
-    logits[~finite] = -np.inf
-    logits -= float(np.nanmax(logits))
-    raw = np.exp(logits)
-    probs = raw / max(float(raw.sum()), 1.0e-12)
-    for c, p in zip(candidates, probs):
-        grid[z_index[round(float(c["center_z"]), 8)], x_index[round(float(c["center_x"]), 8)]] += float(p)
+    for c in centers:
+        try:
+            ix = x_index[round(float(c["center_x"]), 8)]
+            iz = z_index[round(float(c["center_z"]), 8)]
+            grid[iz, ix] = float(c.get("probability", 0.0))
+        except (KeyError, TypeError, ValueError):
+            continue
     return xs, zs, grid
-
 
 def _uncertainty_summary_for_title(reconstruction: dict[str, Any], temperature: float | None) -> dict[str, Any]:
     summary = reconstruction.get("uncertainty") or {}
-    if temperature is None and summary.get("effective_candidates") is not None:
+    if (
+        temperature is None
+        and isinstance(summary, dict)
+        and summary.get("effective_candidates") is not None
+        and summary.get("center_probability_mode") == "unique-center-min-mismatch"
+    ):
         return summary
     try:
         from .uncertainty import candidate_probabilities
@@ -313,7 +338,6 @@ def _uncertainty_summary_for_title(reconstruction: dict[str, Any], temperature: 
         return candidate_probabilities(reconstruction, temperature=temperature)
     except Exception:
         return summary if isinstance(summary, dict) else {}
-
 
 def visualize_uncertainty(reconstruction_or_path: dict[str, Any] | str | Path, out_path: str | Path, *, temperature: float | None = None) -> Path:
     """Plot a pseudo-probability map from candidate mismatches."""
