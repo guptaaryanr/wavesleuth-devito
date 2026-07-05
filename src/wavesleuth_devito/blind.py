@@ -99,6 +99,8 @@ def public_world_from_secret(secret_world: dict[str, Any], *, challenge: str | N
             anomaly["center_x"] = mid_x
         if "center_z" in anomaly:
             anomaly["center_z"] = mid_z
+    elif kind == "mask-blocks":
+        anomaly["active_cells"] = [{"i": 0, "j": 0}]
     elif kind == "two-circles":
         circles = anomaly.get("circles", [])
         offsets = [-0.08 * float(grid["extent_x"]), 0.08 * float(grid["extent_x"])]

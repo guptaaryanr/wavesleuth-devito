@@ -10,7 +10,7 @@ from wavesleuth_devito.simulation import ForwardTraceEngine
 
 
 def test_version_is_v072() -> None:
-    assert __version__ == "0.7.2"
+    assert tuple(int(part) for part in __version__.split(".")[:3]) >= (0, 7, 2)
 
 
 def test_forward_trace_engine_keeps_single_source_backward_compatible() -> None:

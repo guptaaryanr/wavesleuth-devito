@@ -13,6 +13,7 @@ from .exceptions import DevitoUnavailableError, WaveSleuthError
 from .examples import run_demo
 from .experiments import compare_acquisitions
 from .inversion import grid_search_circle, grid_search_ellipse
+from .cellmask import greedy_cell_search_mask_blocks, visualize_mask_blocks_reconstruction
 from .io import load_json, load_world, save_world
 from .metadata import PROJECT_NAME, __version__
 from .report import generate_html_report
@@ -88,9 +89,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_invert = subparsers.add_parser("invert", help="Invert observed traces with a simple search method.")
     p_invert.add_argument("run", help="Input observed run .npz path.")
-    p_invert.add_argument("--method", choices=["grid-search", "staged-grid-search", "ellipse-grid-search"], default="grid-search", help="Use grid-search for circles, staged-grid-search for v0.4 circles, or ellipse-grid-search for the v0.5 ellipse baseline.")
+    p_invert.add_argument("--method", choices=["grid-search", "staged-grid-search", "ellipse-grid-search", "cell-search"], default="grid-search", help="Use grid-search for circles, staged-grid-search for v0.4 circles, or ellipse-grid-search for the v0.5 ellipse baseline.")
     p_invert.add_argument("--out", required=True, help="Output reconstruction JSON path.")
     p_invert.add_argument("--candidate-grid-size", type=int, default=5)
+    p_invert.add_argument("--cell-grid-size", type=int, default=6, help="Coarse grid size for v0.8 cell-search masks.")
+    p_invert.add_argument("--max-active-cells", type=int, default=None, help="Maximum selected cells for v0.8 cell-search.")
     p_invert.add_argument("--radius", type=float, default=None, help="Circle radius override for circle inversion.")
     p_invert.add_argument("--radius-x", type=float, default=None, help="Ellipse x semi-axis override for ellipse-grid-search.")
     p_invert.add_argument("--radius-z", type=float, default=None, help="Ellipse z semi-axis override for ellipse-grid-search.")
@@ -277,7 +280,22 @@ def cmd_simulate(args: argparse.Namespace) -> int:
 
 
 def cmd_invert(args: argparse.Namespace) -> int:
-    if args.method == "ellipse-grid-search":
+    if args.method == "cell-search":
+        reconstruction = greedy_cell_search_mask_blocks(
+            args.run,
+            out_path=args.out,
+            cell_grid_size=args.cell_grid_size,
+            max_active_cells=args.max_active_cells,
+            anomaly_velocity=args.anomaly_velocity,
+            quiet=args.quiet,
+            mismatch_mode=args.mismatch_mode,
+            metric=args.metric,
+            time_min=args.time_min,
+            time_max=args.time_max,
+            normalize_traces=args.normalize_traces,
+            shot_mode=args.shot_mode,
+        )
+    elif args.method == "ellipse-grid-search":
         reconstruction = grid_search_ellipse(
             args.run,
             out_path=args.out,
@@ -364,7 +382,11 @@ def cmd_visualize_run(args: argparse.Namespace) -> int:
 
 
 def cmd_visualize_reconstruction(args: argparse.Namespace) -> int:
-    out = visualize_reconstruction(args.reconstruction, args.out)
+    reconstruction = load_json(args.reconstruction)
+    if reconstruction.get("method") == "cell-search" or reconstruction.get("target_kind") == "mask-blocks":
+        out = visualize_mask_blocks_reconstruction(reconstruction, args.out)
+    else:
+        out = visualize_reconstruction(reconstruction, args.out)
     print(f"wrote {out}")
     return 0
 

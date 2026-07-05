@@ -350,6 +350,12 @@ def score_reconstruction(true_world: dict[str, Any], reconstruction: dict[str, A
     predicted_velocity_raw = best.get("anomaly_velocity", reconstruction.get("anomaly_velocity"))
     predicted_velocity = None if predicted_velocity_raw is None else float(predicted_velocity_raw)
 
+    best_kind = str(best.get("kind", reconstruction.get("target_kind", "")))
+    if best_kind == "mask-blocks" or reconstruction.get("method") == "cell-search" or kind == "mask-blocks":
+        from .cellmask import score_mask_blocks_reconstruction
+
+        return score_mask_blocks_reconstruction(true_world, reconstruction)
+
     if kind == "circle":
         radius = float(best.get("radius", reconstruction.get("radius", 0.0)))
         return score_circle_reconstruction(
@@ -451,7 +457,10 @@ def budgeted_challenge_score(
             "message": reconstruction_score.get("message", "unsupported reconstruction score"),
         }
     iou = float(reconstruction_score.get("iou", 0.0))
-    norm_err = float(reconstruction_score.get("normalized_center_error", 1.0))
+    norm_raw = reconstruction_score.get("normalized_center_error")
+    if norm_raw is None:
+        norm_raw = reconstruction_score.get("normalized_mask_error", 1.0 - iou)
+    norm_err = float(norm_raw)
     raw = 100.0 * iou - 20.0 * norm_err - 0.08 * int(n_forward_runs) - 0.75 * int(n_sources) - 0.15 * int(n_receivers)
     return {
         "supported": True,

@@ -470,3 +470,20 @@ per-round uncertainty diagnostics, and active runs can be compared directly:
 wavesleuth-devito active-leaderboard active_uncertainty active_spread active_opposite
 ```
 
+
+## v0.8 coarse mask inversion
+
+v0.8 adds `mask-blocks`, a coarse-cell hidden target, and `cell-search`, a
+greedy mask inversion baseline. This is the first image-like reconstruction path
+in WaveSleuth. It is deliberately small and blocky: a useful baseline, not full
+waveform tomography.
+
+```bash
+wavesleuth-devito challenge mask-cell-easy --out-dir challenge_mask --quiet
+wavesleuth-devito leaderboard challenge_mask
+```
+## v0.8.1 note
+
+v0.8.1 is a test/metadata cleanup patch. It preserves the v0.8 mask-block and
+cell-search behavior, and changes old version regression tests so they check
+minimum compatible versions instead of asserting historical exact versions.

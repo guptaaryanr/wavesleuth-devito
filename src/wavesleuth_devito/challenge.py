@@ -11,6 +11,7 @@ from typing import Any, Iterable
 from .blind import blind_observed_run, challenge_secret_digest, public_world_from_secret, secret_world_hashes
 from .exceptions import ValidationError
 from .inversion import grid_search_circle, grid_search_ellipse
+from .cellmask import greedy_cell_search_mask_blocks, visualize_mask_blocks_reconstruction
 from .io import load_json, save_json, save_world
 from .report import generate_html_report
 from .scoring import budgeted_challenge_score, score_reconstruction
@@ -18,7 +19,7 @@ from .simulation import simulate_world
 from .visualization import visualize_reconstruction, visualize_run, visualize_uncertainty, visualize_world
 from .world import acquisition_preset, make_default_world, make_demo_world, validate_world
 
-SUPPORTED_CHALLENGES = ("circle-easy", "circle-noisy", "circle-limited-angle", "circle-radius-velocity", "circle-radius-velocity-staged", "ellipse-easy")
+SUPPORTED_CHALLENGES = ("circle-easy", "circle-noisy", "circle-limited-angle", "circle-radius-velocity", "circle-radius-velocity-staged", "ellipse-easy", "mask-cell-easy")
 
 CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
     "circle-easy": {
@@ -67,6 +68,15 @@ CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
             "Full unknown-ellipse discovery is left for a later staged/regularized search.",
         ],
     },
+    "mask-cell-easy": {
+        "difficulty": "hard",
+        "experimental": False,
+        "description": "v0.8 first coarse mask/image reconstruction challenge.",
+        "notes": [
+            "The hidden target is a blocky coarse-cell mask rather than a parametric circle or ellipse.",
+            "The baseline greedily adds cells and verifies each candidate with Devito.",
+        ],
+    },
 }
 
 
@@ -98,7 +108,28 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
         "velocity_prior_weight": 0.0,
         "method": "circle-grid-search",
     }
-    if challenge == "ellipse-easy":
+    if challenge == "mask-cell-easy":
+        world = make_default_world("mask-blocks", name="challenge_mask_cell_easy", acquisition="crossfire")
+        world["grid"].update({"nx": 48, "nz": 48, "extent_x": 1.0, "extent_z": 1.0})
+        world["simulation"].update(
+            {
+                "nt": 340,
+                "dt": 0.0015,
+                "space_order": 4,
+                "source_frequency": 18.0,
+                "shot_mode": "sequential",
+                "boundary": "sponge",
+                "sponge_width": 5,
+                "sponge_strength": 12.0,
+            }
+        )
+        settings.update({
+            "method": "cell-search",
+            "cell_grid_size": 6,
+            "max_active_cells": 5,
+            "known_shape_parameters": ["cell_grid_size", "anomaly_velocity"],
+        })
+    elif challenge == "ellipse-easy":
         world = make_default_world("ellipse", name="challenge_ellipse_easy", acquisition="crossfire")
         world["grid"].update({"nx": 52, "nz": 52, "extent_x": 1.0, "extent_z": 1.0})
         world["simulation"].update(
@@ -150,7 +181,7 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
 
 
 def _compact_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
-    keys = ("kind", "center_x", "center_z", "radius", "radius_x", "radius_z", "angle_degrees", "anomaly_velocity", "mismatch")
+    keys = ("kind", "center_x", "center_z", "radius", "radius_x", "radius_z", "angle_degrees", "anomaly_velocity", "active_cell_count", "mismatch")
     compact: dict[str, Any] = {}
     for key in keys:
         if key in candidate:
@@ -516,7 +547,17 @@ def run_challenge(
             secret_run_path.unlink()
         except OSError:
             pass
-    if settings.get("method") == "ellipse-grid-search":
+    if settings.get("method") == "cell-search":
+        reconstruction = greedy_cell_search_mask_blocks(
+            run_path,
+            out_path=recon_path,
+            cell_grid_size=int(settings.get("cell_grid_size", 6)),
+            max_active_cells=int(settings.get("max_active_cells", 5)),
+            mismatch_mode=str(settings["mismatch_mode"]),
+            metric=str(settings["metric"]),
+            quiet=quiet,
+        )
+    elif settings.get("method") == "ellipse-grid-search":
         reconstruction = grid_search_ellipse(
             run_path,
             out_path=recon_path,
@@ -550,7 +591,10 @@ def run_challenge(
     if blind:
         visualize_world(world, secret_dir / "answer_world.png")
     visualize_run(run_path, figures / "traces.png")
-    visualize_reconstruction(reconstruction, figures / "reconstruction.png")
+    if reconstruction.get("method") == "cell-search" or reconstruction.get("target_kind") == "mask-blocks":
+        visualize_mask_blocks_reconstruction(reconstruction, figures / "reconstruction.png")
+    else:
+        visualize_reconstruction(reconstruction, figures / "reconstruction.png")
     if blind:
         visualize_reconstruction(private_answer_reconstruction(reconstruction, world), secret_dir / "reconstruction_answer.png")
     visualize_uncertainty(reconstruction, figures / "uncertainty.png")

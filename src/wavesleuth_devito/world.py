@@ -19,7 +19,7 @@ from .geometry import (
 )
 
 DEFAULT_SEED = 20260203
-SUPPORTED_WORLD_KINDS = ("circle", "rectangle", "ellipse", "ring", "two-circles", "crack", "layered", "circle-layered", "blobs")
+SUPPORTED_WORLD_KINDS = ("circle", "rectangle", "ellipse", "ring", "two-circles", "crack", "layered", "circle-layered", "blobs", "mask-blocks")
 SUPPORTED_ACQUISITION_PRESETS = ("single", "crossfire", "ring", "top-only", "left-right")
 SUPPORTED_BOUNDARIES = ("none", "sponge")
 
@@ -217,6 +217,24 @@ def make_default_world(
                 ],
             }
         )
+    elif kind == "mask-blocks":
+        world["name"] = name or "mask_blocks_demo"
+        world["grid"].update({"nx": 54, "nz": 54, "extent_x": 1.0, "extent_z": 1.0})
+        world["simulation"].update({"nt": 340, "dt": 0.0015, "space_order": 4, "source_frequency": 18.0})
+        anomaly.update(
+            {
+                "cell_grid_size": 6,
+                "active_cells": [
+                    {"i": 2, "j": 2},
+                    {"i": 3, "j": 2},
+                    {"i": 3, "j": 3},
+                    {"i": 4, "j": 3},
+                    {"i": 2, "j": 4},
+                ],
+                "cell_velocity": float(world["medium"]["anomaly_velocity"]),
+                "description": "deterministic coarse block mask used by v0.8 cell-search",
+            }
+        )
     elif kind == "rectangle":
         anomaly.update({"center_x": 0.56, "center_z": 0.53, "width": 0.24, "height": 0.16})
     elif kind == "layered":
@@ -278,7 +296,7 @@ def validate_world(world: dict[str, Any]) -> None:
     if kind not in SUPPORTED_WORLD_KINDS:
         raise UnsupportedWorldError(f"Unsupported anomaly kind {kind!r}.")
 
-    if kind in {"circle", "rectangle", "ellipse", "ring", "two-circles", "crack", "circle-layered", "blobs"}:
+    if kind in {"circle", "rectangle", "ellipse", "ring", "two-circles", "crack", "mask-blocks", "circle-layered", "blobs"}:
         anomaly_velocity = float(medium.get("anomaly_velocity", background_velocity))
         if anomaly_velocity <= 0.0:
             raise ValidationError("medium.anomaly_velocity must be positive.")
@@ -336,6 +354,25 @@ def validate_world(world: dict[str, Any]) -> None:
                     raise ValidationError(f"circle-layered layer {idx} missing {key!r}.")
             if float(layer["velocity"]) <= 0.0:
                 raise ValidationError(f"circle-layered layer {idx} velocity must be positive.")
+    elif kind == "mask-blocks":
+        grid_size = int(anomaly.get("cell_grid_size", 0))
+        cells = anomaly.get("active_cells", anomaly.get("cells", []))
+        if grid_size < 2:
+            raise ValidationError("mask-blocks requires cell_grid_size >= 2.")
+        if not isinstance(cells, list) or not cells:
+            raise ValidationError("mask-blocks requires a non-empty active_cells list.")
+        for idx, cell in enumerate(cells):
+            if "i" not in cell and "ix" not in cell:
+                raise ValidationError(f"mask-blocks cell {idx} requires i or ix.")
+            if "j" not in cell and "iz" not in cell:
+                raise ValidationError(f"mask-blocks cell {idx} requires j or iz.")
+            i = int(cell.get("i", cell.get("ix")))
+            j = int(cell.get("j", cell.get("iz")))
+            if not (0 <= i < grid_size and 0 <= j < grid_size):
+                raise ValidationError(f"mask-blocks cell {idx} index ({i}, {j}) lies outside 0..{grid_size - 1}.")
+        cell_velocity = float(anomaly.get("cell_velocity", medium.get("anomaly_velocity", background_velocity)))
+        if cell_velocity <= 0.0:
+            raise ValidationError("mask-blocks cell_velocity must be positive.")
     elif kind == "rectangle":
         for key in ("center_x", "center_z", "width", "height"):
             if key not in anomaly:
@@ -449,6 +486,11 @@ def anomaly_mask_from_world(world: dict[str, Any], *, circle_override: dict[str,
         radius = float(circle_override["radius"])
         return ((xmesh - center_x) ** 2 + (zmesh - center_z) ** 2) <= radius**2
 
+    if kind == "mask-blocks":
+        from .cellmask import mask_blocks_mask_from_cells
+
+        return mask_blocks_mask_from_cells(world, anomaly.get("active_cells", anomaly.get("cells", [])), cell_grid_size=int(anomaly["cell_grid_size"]))
+
     if kind == "circle":
         center_x = float(anomaly["center_x"])
         center_z = float(anomaly["center_z"])
@@ -548,7 +590,7 @@ def velocity_model_from_world(world: dict[str, Any]) -> np.ndarray:
     kind = anomaly_kind(world)
     anomaly = medium["anomaly"]
 
-    if kind in {"circle", "rectangle", "ellipse", "ring", "crack"}:
+    if kind in {"circle", "rectangle", "ellipse", "ring", "crack", "mask-blocks"}:
         model[anomaly_mask_from_world(world)] = float(medium["anomaly_velocity"])
     elif kind == "two-circles":
         default_velocity = float(medium.get("anomaly_velocity", background))
