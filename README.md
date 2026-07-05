@@ -506,4 +506,10 @@ max_active_cells=5
 This keeps `mask-cell-easy` as a demonstration challenge for the first coarse
 mask inversion path. More realistic/robust mask challenges should be added later
 with stronger search methods.
+## v0.8.3 note
 
+v0.8.3 finalizes the first coarse-mask challenge calibration. The `mask-cell-easy`
+challenge now uses the same amplitude-sensitive differential objective as the
+working manual mask-block workflow: `normalize_traces=False`. This keeps the
+first mask/image challenge as a demonstration of the greedy cell-search baseline,
+not a deliberately hard normalized-objective failure.

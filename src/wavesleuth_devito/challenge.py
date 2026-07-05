@@ -126,11 +126,15 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
         # v0.8.2: calibrated easy mask baseline. The sponge-boundary v0.8
         # challenge exposed a real limitation of greedy cell search, but it
         # was too brittle for the first mask/image milestone.
+        # v0.8.3: mask-cell-easy uses amplitude-sensitive differential traces.
+        # The normalized objective is useful elsewhere, but it made this
+        # first coarse-mask milestone select weak/wrong cell impostors.
         settings.update({
             "method": "cell-search",
             "cell_grid_size": 6,
             "max_active_cells": 5,
             "known_shape_parameters": ["cell_grid_size", "anomaly_velocity"],
+            "normalize_traces": False,
         })
     elif challenge == "ellipse-easy":
         world = make_default_world("ellipse", name="challenge_ellipse_easy", acquisition="crossfire")
@@ -558,6 +562,7 @@ def run_challenge(
             max_active_cells=int(settings.get("max_active_cells", 5)),
             mismatch_mode=str(settings["mismatch_mode"]),
             metric=str(settings["metric"]),
+            normalize_traces=bool(settings.get("normalize_traces", False)),
             quiet=quiet,
         )
     elif settings.get("method") == "ellipse-grid-search":
