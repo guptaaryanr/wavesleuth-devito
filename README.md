@@ -487,3 +487,23 @@ wavesleuth-devito leaderboard challenge_mask
 v0.8.1 is a test/metadata cleanup patch. It preserves the v0.8 mask-block and
 cell-search behavior, and changes old version regression tests so they check
 minimum compatible versions instead of asserting historical exact versions.
+
+## v0.8.2 mask-cell challenge calibration
+
+v0.8 introduced `mask-blocks` worlds and a first greedy `cell-search` baseline.
+The original `mask-cell-easy` challenge used a small sponge-boundary setup that
+made the intentionally simple greedy baseline fail even though the manual
+calibrated mask workflow worked. v0.8.2 keeps the algorithm unchanged and aligns
+`mask-cell-easy` with the calibrated default mask setup:
+
+```text
+nx=nz=54
+boundary=none
+cell_grid_size=6
+max_active_cells=5
+```
+
+This keeps `mask-cell-easy` as a demonstration challenge for the first coarse
+mask inversion path. More realistic/robust mask challenges should be added later
+with stronger search methods.
+

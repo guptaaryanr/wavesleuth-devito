@@ -69,7 +69,7 @@ CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
         ],
     },
     "mask-cell-easy": {
-        "difficulty": "hard",
+        "difficulty": "medium",
         "experimental": False,
         "description": "v0.8 first coarse mask/image reconstruction challenge.",
         "notes": [
@@ -110,7 +110,7 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
     }
     if challenge == "mask-cell-easy":
         world = make_default_world("mask-blocks", name="challenge_mask_cell_easy", acquisition="crossfire")
-        world["grid"].update({"nx": 48, "nz": 48, "extent_x": 1.0, "extent_z": 1.0})
+        world["grid"].update({"nx": 54, "nz": 54, "extent_x": 1.0, "extent_z": 1.0})
         world["simulation"].update(
             {
                 "nt": 340,
@@ -118,11 +118,14 @@ def make_challenge_world(challenge: str) -> tuple[dict[str, Any], dict[str, Any]
                 "space_order": 4,
                 "source_frequency": 18.0,
                 "shot_mode": "sequential",
-                "boundary": "sponge",
-                "sponge_width": 5,
-                "sponge_strength": 12.0,
+                "boundary": "none",
+                "sponge_width": 0,
+                "sponge_strength": 0.0,
             }
         )
+        # v0.8.2: calibrated easy mask baseline. The sponge-boundary v0.8
+        # challenge exposed a real limitation of greedy cell search, but it
+        # was too brittle for the first mask/image milestone.
         settings.update({
             "method": "cell-search",
             "cell_grid_size": 6,
