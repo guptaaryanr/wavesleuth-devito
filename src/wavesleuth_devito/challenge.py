@@ -467,7 +467,7 @@ def score_challenge_directory(
         runtime_seconds=summary.get("runtime_seconds"),
     )
     result = {
-        "schema_version": "0.6.1",
+        "schema_version": "0.9.0",
         "challenge": summary.get("challenge", challenge_name),
         "blind": bool(summary.get("blind", False)),
         "secret_world_path": str(secret_path),
@@ -477,6 +477,9 @@ def score_challenge_directory(
         "reconstruction_path": str(recon_path),
         "physical_score": physical_score,
         "challenge_score": challenge_score,
+        "schema_notes": [
+            "v0.9 preferred fields: physical_score is reconstruction quality; challenge_score is the budgeted game score.",
+        ],
         "score": physical_score,
     }
     if update_reconstruction:
@@ -624,7 +627,7 @@ def run_challenge(
     )
     secret_digest = secret_hashes["secret_world_sha256"]
     manifest = {
-        "schema_version": "0.6.1",
+        "schema_version": "0.9.0",
         "challenge": challenge,
         "difficulty": meta["difficulty"],
         "experimental": bool(meta["experimental"]),
@@ -648,7 +651,7 @@ def run_challenge(
     save_json(manifest, manifest_path)
 
     summary = {
-        "schema_version": "0.6.1",
+        "schema_version": "0.9.0",
         "challenge": challenge,
         "difficulty": meta["difficulty"],
         "experimental": bool(meta["experimental"]),

@@ -9,6 +9,13 @@ from typing import Any
 
 from .challenge import SUPPORTED_CHALLENGES, collect_leaderboard, run_challenge, score_challenge_directory
 from .active import collect_active_leaderboard, run_active_demo
+from .release import (
+    DEFAULT_RELEASE_CHALLENGES,
+    doctor_report,
+    generate_release_html_report,
+    run_release_challenge_suite,
+    validate_artifact_paths,
+)
 from .exceptions import DevitoUnavailableError, WaveSleuthError
 from .examples import run_demo
 from .experiments import compare_acquisitions
@@ -239,6 +246,33 @@ def build_parser() -> argparse.ArgumentParser:
     p_self = subparsers.add_parser("self-test", help="Run lightweight sanity checks.")
     p_self.add_argument("--try-devito", action="store_true", help="Run a tiny Devito simulation when Devito is installed.")
     p_self.set_defaults(func=cmd_self_test)
+
+
+    p_doctor = subparsers.add_parser("doctor", help="Print environment and package sanity checks.")
+    p_doctor.add_argument("--try-devito", action="store_true", help="Import Devito and report its version if available.")
+    p_doctor.set_defaults(func=cmd_doctor)
+
+    p_validate = subparsers.add_parser("validate", help="Validate WaveSleuth artifacts and output directories.")
+    p_validate.add_argument("paths", nargs="+", help="Worlds, runs, reconstructions, challenge dirs, or active-demo dirs.")
+    p_validate.add_argument("--strict", action="store_true", help="Treat missing optional integrity inputs as errors when applicable.")
+    p_validate.set_defaults(func=cmd_validate)
+
+    p_suite = subparsers.add_parser("challenge-suite", help="Run the standard v0.9 challenge suite.")
+    p_suite.add_argument("--out-dir", required=True, help="Output directory for the suite.")
+    p_suite.add_argument(
+        "--challenges",
+        default=",".join(DEFAULT_RELEASE_CHALLENGES),
+        help="Comma-separated challenge names. Defaults to the v0.9 release suite.",
+    )
+    p_suite.add_argument("--blind-ellipse", action="store_true", help="Run ellipse-easy as a blind challenge inside the suite.")
+    p_suite.add_argument("--quiet", action="store_true")
+    p_suite.set_defaults(func=cmd_challenge_suite)
+
+    p_release_report = subparsers.add_parser("release-report", help="Generate a compact HTML report for challenge/active outputs.")
+    p_release_report.add_argument("--out", required=True, help="Output HTML report path.")
+    p_release_report.add_argument("--challenge-paths", nargs="*", default=[], help="Challenge output dirs or summaries.")
+    p_release_report.add_argument("--active-paths", nargs="*", default=[], help="Active-demo output dirs or summaries.")
+    p_release_report.set_defaults(func=cmd_release_report)
 
     return parser
 
@@ -541,6 +575,45 @@ def cmd_self_test(args: argparse.Namespace) -> int:
         print(message)
     return 0
 
+
+
+def cmd_doctor(args: argparse.Namespace) -> int:
+    _json_print(doctor_report(try_devito=args.try_devito))
+    return 0
+
+
+def cmd_validate(args: argparse.Namespace) -> int:
+    report = validate_artifact_paths(args.paths, strict=args.strict)
+    _json_print(report)
+    return 0 if report.get("ok") else 2
+
+
+def cmd_challenge_suite(args: argparse.Namespace) -> int:
+    challenges = [item.strip() for item in args.challenges.split(",") if item.strip()]
+    summary = run_release_challenge_suite(
+        args.out_dir,
+        challenges=challenges,
+        quiet=args.quiet,
+        blind_ellipse=args.blind_ellipse,
+    )
+    _json_print({
+        "suite": summary.get("suite"),
+        "out_dir": args.out_dir,
+        "challenge_names": summary.get("challenge_names"),
+        "leaderboard": summary.get("leaderboard"),
+        "validation_ok": summary.get("validation", {}).get("ok"),
+    })
+    return 0
+
+
+def cmd_release_report(args: argparse.Namespace) -> int:
+    out = generate_release_html_report(
+        args.out,
+        challenge_paths=args.challenge_paths,
+        active_paths=args.active_paths,
+    )
+    print(f"wrote {out}")
+    return 0
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()

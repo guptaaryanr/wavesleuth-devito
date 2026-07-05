@@ -513,3 +513,26 @@ challenge now uses the same amplitude-sensitive differential objective as the
 working manual mask-block workflow: `normalize_traces=False`. This keeps the
 first mask/image challenge as a demonstration of the greedy cell-search baseline,
 not a deliberately hard normalized-objective failure.
+## v0.9 release-hardening commands
+
+v0.9 adds validation and release-report helpers without changing the numerical
+simulation or inversion methods.
+
+```bash
+wavesleuth-devito doctor
+wavesleuth-devito validate challenge_easy challenge_ellipse challenge_mask
+wavesleuth-devito challenge-suite --out-dir release_suite --quiet
+wavesleuth-devito release-report \
+  --out reports/release_report.html \
+  --challenge-paths challenge_easy challenge_ellipse challenge_rv_staged challenge_mask
+```
+
+The preferred score schema is now:
+
+```text
+physical_score   reconstruction quality such as IoU, center error, mask error
+challenge_score  budgeted game score with sensing/simulation cost
+```
+
+Older files that use `score` for the physical reconstruction score remain
+readable.
