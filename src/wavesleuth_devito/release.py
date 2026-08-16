@@ -21,7 +21,7 @@ from .io import load_json, load_run_npz, world_from_run, save_json, ensure_paren
 from .metadata import PROJECT_NAME, __version__, base_metadata
 from .world import validate_world, velocity_model_from_world, anomaly_kind
 
-RELEASE_SCHEMA_VERSION = "0.9.0"
+RELEASE_SCHEMA_VERSION = "0.9.1"
 DEFAULT_RELEASE_CHALLENGES = (
     "circle-easy",
     "ellipse-easy",
@@ -313,7 +313,7 @@ def validate_active_directory(path: str | Path) -> dict[str, Any]:
         extra.update(
             {
                 "strategy": summary.get("strategy"),
-                "kind": summary.get("kind"),
+                "active_target_kind": summary.get("kind"),
                 "round_count": len(rounds) if isinstance(rounds, list) else None,
                 "initial_reconstruction_score": summary.get("initial_reconstruction_score"),
                 "final_reconstruction_score": summary.get("final_reconstruction_score"),
@@ -443,6 +443,7 @@ def generate_release_html_report(
     validation_rows = [
         {
             "kind": item.get("kind"),
+            "active_target_kind": item.get("active_target_kind"),
             "ok": item.get("ok"),
             "path": item.get("path"),
             "errors": "; ".join(item.get("errors", [])),
@@ -454,7 +455,7 @@ def generate_release_html_report(
 <html>
 <head>
   <meta charset=\"utf-8\">
-  <title>WaveSleuth-Devito v0.9 Release Report</title>
+  <title>WaveSleuth-Devito v0.9.1 Release Report</title>
   <style>
     body {{ font-family: sans-serif; line-height: 1.4; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }}
     table {{ border-collapse: collapse; width: 100%; margin: 1rem 0; }}
@@ -464,7 +465,7 @@ def generate_release_html_report(
   </style>
 </head>
 <body>
-  <h1>WaveSleuth-Devito v0.9 Release Report</h1>
+  <h1>WaveSleuth-Devito v0.9.1 Release Report</h1>
   <p>Package version: <code>{html.escape(__version__)}</code>. Schema version: <code>{RELEASE_SCHEMA_VERSION}</code>.</p>
   <h2>Challenge leaderboard</h2>
   {_html_table(challenge_rows, challenge_columns)}
@@ -474,7 +475,7 @@ def generate_release_html_report(
   <p>Overall validation status: <strong>{html.escape(str(validation.get('ok')))}</strong></p>
   {_html_table(validation_rows, ['kind', 'ok', 'path', 'errors', 'warnings'])}
   <h2>Notes</h2>
-  <p>v0.9 is a hardening release. It does not alter Devito simulation or inversion numerics.</p>
+  <p>v0.9.1 is a hardening cleanup release. It does not alter Devito simulation or inversion numerics.</p>
 </body>
 </html>
 """

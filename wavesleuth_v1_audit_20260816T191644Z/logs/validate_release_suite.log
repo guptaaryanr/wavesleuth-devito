@@ -1,0 +1,64 @@
+$ wavesleuth-devito validate wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/ellipse-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-radius-velocity-staged wavesleuth_v1_audit_20260816T191644Z/release/release_suite/mask-cell-easy
+
+{
+  "checked": 4,
+  "created_utc": "2026-08-16T19:17:14+00:00",
+  "ok": true,
+  "project": "WaveSleuth-Devito",
+  "release_schema_version": "0.9.1",
+  "results": [
+    {
+      "blind": false,
+      "challenge": "circle-easy",
+      "challenge_score": 71.96155590854295,
+      "difficulty": "easy",
+      "errors": [],
+      "kind": "challenge",
+      "manifest_schema_version": "0.9.0",
+      "ok": true,
+      "path": "wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-easy",
+      "physical_iou": 0.8,
+      "warnings": []
+    },
+    {
+      "blind": false,
+      "challenge": "ellipse-easy",
+      "challenge_score": 70.6324998648192,
+      "difficulty": "medium",
+      "errors": [],
+      "kind": "challenge",
+      "manifest_schema_version": "0.9.0",
+      "ok": true,
+      "path": "wavesleuth_v1_audit_20260816T191644Z/release/release_suite/ellipse-easy",
+      "physical_iou": 0.7866666666666666,
+      "warnings": []
+    },
+    {
+      "blind": false,
+      "challenge": "circle-radius-velocity-staged",
+      "challenge_score": 69.62732101789997,
+      "difficulty": "hard",
+      "errors": [],
+      "kind": "challenge",
+      "manifest_schema_version": "0.9.0",
+      "ok": true,
+      "path": "wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-radius-velocity-staged",
+      "physical_iou": 0.8951612903225806,
+      "warnings": []
+    },
+    {
+      "blind": false,
+      "challenge": "mask-cell-easy",
+      "challenge_score": 82.57,
+      "difficulty": "medium",
+      "errors": [],
+      "kind": "challenge",
+      "manifest_schema_version": "0.9.0",
+      "ok": true,
+      "path": "wavesleuth_v1_audit_20260816T191644Z/release/release_suite/mask-cell-easy",
+      "physical_iou": 1.0,
+      "warnings": []
+    }
+  ],
+  "version": "0.9.1"
+}

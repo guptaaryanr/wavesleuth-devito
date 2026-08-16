@@ -14,7 +14,7 @@ from .exceptions import ValidationError
 from .io import array_string, ensure_parent
 from .world import background_velocity_model_from_world, validate_world
 
-PUBLIC_SCHEMA_VERSION = "0.6.1"
+PUBLIC_SCHEMA_VERSION = "0.9.1"
 
 
 def canonical_json(data: dict[str, Any]) -> str:
@@ -68,6 +68,8 @@ def is_blind_public_world(world: dict[str, Any]) -> bool:
     """Return True if `world` is public metadata for a blind challenge."""
     if not isinstance(world, dict):
         return False
+    if bool(world.get("blind", False)) or bool(world.get("answer_hidden", False)):
+        return True
     marker = world.get("blind_public_metadata")
     if isinstance(marker, dict):
         return bool(marker.get("blind", marker.get("answer_hidden", False)))
@@ -91,6 +93,9 @@ def public_world_from_secret(secret_world: dict[str, Any], *, challenge: str | N
     mid_x = 0.5 * float(grid["extent_x"])
     mid_z = 0.5 * float(grid["extent_z"])
     public["name"] = f"{secret_world.get('name', challenge or 'challenge')}_public"
+    public["blind"] = True
+    public["answer_hidden"] = True
+    public["blind_schema_version"] = PUBLIC_SCHEMA_VERSION
     anomaly = public.get("medium", {}).get("anomaly", {})
     kind = str(anomaly.get("kind"))
 

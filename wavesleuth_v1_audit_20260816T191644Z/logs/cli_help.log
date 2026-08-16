@@ -1,0 +1,42 @@
+$ wavesleuth-devito --help
+
+usage: wavesleuth-devito [-h] [--version]
+                         {generate-world,simulate,invert,visualize-world,visualize-run,visualize-reconstruction,visualize-uncertainty,score,score-challenge,report,compare-acquisition,challenge,leaderboard,demo,active-demo,active-leaderboard,self-test,doctor,validate,challenge-suite,release-report}
+                         ...
+
+Scientific Battleship with Devito acoustic waves.
+
+positional arguments:
+  {generate-world,simulate,invert,visualize-world,visualize-run,visualize-reconstruction,visualize-uncertainty,score,score-challenge,report,compare-acquisition,challenge,leaderboard,demo,active-demo,active-leaderboard,self-test,doctor,validate,challenge-suite,release-report}
+    generate-world      Generate a deterministic hidden world JSON file.
+    simulate            Run Devito acoustic simulation for a world.
+    invert              Invert observed traces with a simple search method.
+    visualize-world     Plot a world velocity model.
+    visualize-run       Plot receiver traces from a run.
+    visualize-reconstruction
+                        Plot reconstruction summary.
+    visualize-uncertainty
+                        Plot uncertainty/pseudo-probability from a
+                        reconstruction mismatch map.
+    score               Score a reconstruction against a true world.
+    score-challenge     Score a challenge folder using its secret answer when
+                        present.
+    report              Generate a lightweight HTML experiment report.
+    compare-acquisition
+                        Compare acquisition presets on the same hidden world.
+    challenge           Run a named budgeted challenge.
+    leaderboard         Collect challenge_summary.json files into a sorted
+                        leaderboard.
+    demo                Run a complete tiny pipeline.
+    active-demo         Run a multi-round active-sensing demo.
+    active-leaderboard  Compare active-demo output directories.
+    self-test           Run lightweight sanity checks.
+    doctor              Print environment and package sanity checks.
+    validate            Validate WaveSleuth artifacts and output directories.
+    challenge-suite     Run the standard v0.9 challenge suite.
+    release-report      Generate a compact HTML report for challenge/active
+                        outputs.
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit

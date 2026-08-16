@@ -1,0 +1,22 @@
+$ wavesleuth-devito active-demo --help
+
+usage: wavesleuth-devito active-demo [-h] --out-dir OUT_DIR
+                                     [--kind {circle,ellipse}]
+                                     [--rounds ROUNDS]
+                                     [--candidate-grid-size CANDIDATE_GRID_SIZE]
+                                     [--refine-levels REFINE_LEVELS]
+                                     [--strategy {uncertainty,spread,opposite-best}]
+                                     [--pool-preset {boundary-8,boundary-12}]
+                                     [--noise-level NOISE_LEVEL] [--quiet]
+
+options:
+  -h, --help            show this help message and exit
+  --out-dir OUT_DIR     Output directory for active-sensing files.
+  --kind {circle,ellipse}
+  --rounds ROUNDS       Number of active sensing rounds.
+  --candidate-grid-size CANDIDATE_GRID_SIZE
+  --refine-levels REFINE_LEVELS
+  --strategy {uncertainty,spread,opposite-best}
+  --pool-preset {boundary-8,boundary-12}
+  --noise-level NOISE_LEVEL
+  --quiet

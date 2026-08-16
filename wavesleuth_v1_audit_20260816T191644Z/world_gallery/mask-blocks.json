@@ -1,0 +1,109 @@
+{
+  "acquisition": {
+    "receivers": [
+      {
+        "x": 0.2,
+        "z": 0.84
+      },
+      {
+        "x": 0.4,
+        "z": 0.84
+      },
+      {
+        "x": 0.6,
+        "z": 0.84
+      },
+      {
+        "x": 0.8,
+        "z": 0.84
+      },
+      {
+        "x": 0.88,
+        "z": 0.3
+      },
+      {
+        "x": 0.88,
+        "z": 0.5
+      },
+      {
+        "x": 0.88,
+        "z": 0.7
+      },
+      {
+        "x": 0.12,
+        "z": 0.34
+      },
+      {
+        "x": 0.12,
+        "z": 0.54
+      },
+      {
+        "x": 0.12,
+        "z": 0.74
+      }
+    ],
+    "sources": [
+      {
+        "x": 0.18,
+        "z": 0.18
+      },
+      {
+        "x": 0.82,
+        "z": 0.18
+      },
+      {
+        "x": 0.18,
+        "z": 0.72
+      }
+    ]
+  },
+  "grid": {
+    "extent_x": 1.0,
+    "extent_z": 1.0,
+    "nx": 54,
+    "nz": 54
+  },
+  "medium": {
+    "anomaly": {
+      "active_cells": [
+        {
+          "i": 2,
+          "j": 2
+        },
+        {
+          "i": 3,
+          "j": 2
+        },
+        {
+          "i": 3,
+          "j": 3
+        },
+        {
+          "i": 4,
+          "j": 3
+        },
+        {
+          "i": 2,
+          "j": 4
+        }
+      ],
+      "cell_grid_size": 6,
+      "cell_velocity": 2.2,
+      "description": "deterministic coarse block mask used by v0.8 cell-search",
+      "kind": "mask-blocks"
+    },
+    "anomaly_velocity": 2.2,
+    "background_velocity": 1.5
+  },
+  "name": "mask_blocks_demo",
+  "simulation": {
+    "boundary": "none",
+    "dt": 0.0015,
+    "nt": 340,
+    "shot_mode": "sequential",
+    "source_frequency": 18.0,
+    "space_order": 4,
+    "sponge_strength": 0.0,
+    "sponge_width": 0
+  }
+}

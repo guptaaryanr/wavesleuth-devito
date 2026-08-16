@@ -1,0 +1,15 @@
+$ wavesleuth-devito challenge-suite --help
+
+usage: wavesleuth-devito challenge-suite [-h] --out-dir OUT_DIR
+                                         [--challenges CHALLENGES]
+                                         [--blind-ellipse] [--quiet]
+
+options:
+  -h, --help            show this help message and exit
+  --out-dir OUT_DIR     Output directory for the suite.
+  --challenges CHALLENGES
+                        Comma-separated challenge names. Defaults to the v0.9
+                        release suite.
+  --blind-ellipse       Run ellipse-easy as a blind challenge inside the
+                        suite.
+  --quiet

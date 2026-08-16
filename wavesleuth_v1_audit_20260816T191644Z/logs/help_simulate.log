@@ -1,0 +1,35 @@
+$ wavesleuth-devito simulate --help
+
+usage: wavesleuth-devito simulate [-h] --out OUT [--quiet] [--no-wavefield]
+                                  [--shot-mode {simultaneous,sequential}]
+                                  [--boundary {none,sponge}]
+                                  [--sponge-width SPONGE_WIDTH]
+                                  [--sponge-strength SPONGE_STRENGTH]
+                                  [--noise-level NOISE_LEVEL]
+                                  [--receiver-dropout RECEIVER_DROPOUT]
+                                  [--amplitude-jitter AMPLITUDE_JITTER]
+                                  [--time-jitter TIME_JITTER]
+                                  [--noise-seed NOISE_SEED]
+                                  world
+
+positional arguments:
+  world                 Input world JSON path.
+
+options:
+  -h, --help            show this help message and exit
+  --out OUT             Output run .npz path.
+  --quiet               Reduce Devito logging.
+  --no-wavefield        Do not save final wavefield/snapshots.
+  --shot-mode {simultaneous,sequential}
+  --boundary {none,sponge}
+  --sponge-width SPONGE_WIDTH
+  --sponge-strength SPONGE_STRENGTH
+  --noise-level NOISE_LEVEL
+                        Add Gaussian noise relative to trace RMS.
+  --receiver-dropout RECEIVER_DROPOUT
+                        Randomly zero a fraction of receiver channels.
+  --amplitude-jitter AMPLITUDE_JITTER
+                        Per-channel amplitude gain jitter.
+  --time-jitter TIME_JITTER
+                        Per-channel timing jitter in seconds.
+  --noise-seed NOISE_SEED

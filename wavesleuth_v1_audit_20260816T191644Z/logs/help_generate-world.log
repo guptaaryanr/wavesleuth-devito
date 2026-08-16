@@ -1,0 +1,21 @@
+$ wavesleuth-devito generate-world --help
+
+usage: wavesleuth-devito generate-world [-h] --kind
+                                        {circle,rectangle,ellipse,ring,two-circles,crack,layered,circle-layered,blobs,mask-blocks}
+                                        --out OUT [--seed SEED] [--name NAME]
+                                        [--acquisition-preset {single,crossfire,ring,top-only,left-right}]
+                                        [--boundary {none,sponge}]
+                                        [--sponge-width SPONGE_WIDTH]
+                                        [--sponge-strength SPONGE_STRENGTH]
+
+options:
+  -h, --help            show this help message and exit
+  --kind {circle,rectangle,ellipse,ring,two-circles,crack,layered,circle-layered,blobs,mask-blocks}
+  --out OUT             Output world JSON path.
+  --seed SEED           Seed used by random world types.
+  --name NAME           Optional world name.
+  --acquisition-preset {single,crossfire,ring,top-only,left-right}
+  --boundary {none,sponge}
+                        Optional boundary mode metadata.
+  --sponge-width SPONGE_WIDTH
+  --sponge-strength SPONGE_STRENGTH

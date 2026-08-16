@@ -1,0 +1,39 @@
+{
+  "answer_hidden": true,
+  "arrays": [
+    "blind_public_run",
+    "blind_schema_version",
+    "final_wavefield",
+    "receiver_coordinates",
+    "receiver_traces",
+    "shot_mode",
+    "snapshots",
+    "source_coordinates",
+    "time",
+    "velocity_model",
+    "world_json"
+  ],
+  "challenge_dir": "wavesleuth_v1_audit_20260816T191644Z/blind/challenge_ellipse_blind",
+  "final_wavefield_shape": [
+    0
+  ],
+  "ok": true,
+  "public_anomaly": {
+    "angle_degrees": 25.0,
+    "center_x": 0.5,
+    "center_z": 0.5,
+    "kind": "ellipse",
+    "radius_x": 0.17,
+    "radius_z": 0.095
+  },
+  "run_files": [
+    "wavesleuth_v1_audit_20260816T191644Z/blind/challenge_ellipse_blind/runs/ellipse-easy_obs.npz"
+  ],
+  "snapshots_shape": [
+    0
+  ],
+  "velocity_model_is_constant": true,
+  "velocity_model_max": 1.5,
+  "velocity_model_min": 1.5,
+  "world_blind": true
+}

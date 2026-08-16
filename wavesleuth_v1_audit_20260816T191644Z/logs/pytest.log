@@ -1,0 +1,56 @@
+$ python -m pytest
+
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/arygupta/solvergate/wavesleuth-devito
+configfile: pyproject.toml
+testpaths: tests
+collected 99 items
+
+tests/test_cli_smoke.py ..                                               [  2%]
+tests/test_geometry.py ...                                               [  5%]
+tests/test_inversion.py ...                                              [  8%]
+tests/test_io.py ...                                                     [ 11%]
+tests/test_scoring.py ...                                                [ 14%]
+tests/test_v02_features.py ......                                        [ 20%]
+tests/test_v031_cleanup.py ....                                          [ 24%]
+tests/test_v032_final_cleanup.py ....                                    [ 28%]
+tests/test_v03_features.py ........                                      [ 36%]
+tests/test_v041_reporting.py ....                                        [ 40%]
+tests/test_v04_staged_search.py .....                                    [ 45%]
+tests/test_v051_leaderboard_cleanup.py .                                 [ 46%]
+tests/test_v051_report_cleanup.py .                                      [ 47%]
+tests/test_v051_uncertainty_cleanup.py ..                                [ 49%]
+tests/test_v05_ellipse_inversion.py .                                    [ 50%]
+tests/test_v05_scoring.py ..                                             [ 52%]
+tests/test_v05_worlds.py ...                                             [ 55%]
+tests/test_v061_blind_integrity.py ...                                   [ 58%]
+tests/test_v06_blind_challenges.py ...                                   [ 61%]
+tests/test_v071_active_cleanup.py ...                                    [ 64%]
+tests/test_v072_active_shape_compat.py ....                              [ 68%]
+tests/test_v07_active.py ....                                            [ 72%]
+tests/test_v081_version_cleanup.py ..                                    [ 74%]
+tests/test_v082_mask_challenge_calibration.py ..                         [ 76%]
+tests/test_v083_mask_challenge_objective.py ...                          [ 79%]
+tests/test_v08_cli_surface.py .                                          [ 80%]
+tests/test_v08_mask_blocks.py ....                                       [ 84%]
+tests/test_v091_audit_cleanup.py .....                                   [ 89%]
+tests/test_v09_release_hardening.py ......F                              [ 96%]
+tests/test_world.py ...                                                  [100%]
+
+=================================== FAILURES ===================================
+_______________________ test_release_html_report_writes ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-arygupta/pytest-1/test_release_html_report_write0')
+
+    def test_release_html_report_writes(tmp_path) -> None:
+        out = generate_release_html_report(tmp_path / "release_report.html")
+        assert out.exists()
+        text = out.read_text(encoding="utf-8")
+>       assert "WaveSleuth-Devito v0.9 Release Report" in text
+E       assert 'WaveSleuth-Devito v0.9 Release Report' in '<!doctype html>\n<html>\n<head>\n  <meta charset="utf-8">\n  <title>WaveSleuth-Devito v0.9.1 Release Report</title>\n...9.1 is a hardening cleanup release. It does not alter Devito simulation or inversion numerics.</p>\n</body>\n</html>\n'
+
+tests/test_v09_release_hardening.py:66: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_v09_release_hardening.py::test_release_html_report_writes
+========================= 1 failed, 98 passed in 3.74s =========================

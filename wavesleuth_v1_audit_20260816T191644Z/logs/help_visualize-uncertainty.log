@@ -1,0 +1,13 @@
+$ wavesleuth-devito visualize-uncertainty --help
+
+usage: wavesleuth-devito visualize-uncertainty [-h] --out OUT
+                                               [--temperature TEMPERATURE]
+                                               reconstruction
+
+positional arguments:
+  reconstruction        Input reconstruction JSON path.
+
+options:
+  -h, --help            show this help message and exit
+  --out OUT             Output PNG path.
+  --temperature TEMPERATURE

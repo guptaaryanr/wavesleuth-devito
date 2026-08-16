@@ -1,0 +1,9 @@
+$ git status --short
+
+ M CHANGELOG.md
+ M pyproject.toml
+ M src/wavesleuth_devito/blind.py
+ M src/wavesleuth_devito/metadata.py
+ M src/wavesleuth_devito/release.py
+?? tests/test_v091_audit_cleanup.py
+?? wavesleuth_v1_audit_20260816T191644Z/

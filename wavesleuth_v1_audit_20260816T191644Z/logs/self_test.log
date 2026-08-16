@@ -1,0 +1,9 @@
+$ wavesleuth-devito self-test
+
+world generation: ok
+velocity model: ok
+ellipse world: ok
+ring acquisition: ok
+noise helper: ok
+sponge damping helper: ok
+tiny Devito simulation: not requested; pass --try-devito to run it

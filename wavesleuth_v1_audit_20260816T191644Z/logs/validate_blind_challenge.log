@@ -1,0 +1,26 @@
+$ wavesleuth-devito validate wavesleuth_v1_audit_20260816T191644Z/blind/challenge_ellipse_blind
+
+{
+  "checked": 1,
+  "created_utc": "2026-08-16T19:17:19+00:00",
+  "ok": true,
+  "project": "WaveSleuth-Devito",
+  "release_schema_version": "0.9.1",
+  "results": [
+    {
+      "blind": true,
+      "challenge": "ellipse-easy",
+      "challenge_score": 70.6324998648192,
+      "difficulty": "medium",
+      "errors": [],
+      "kind": "challenge",
+      "manifest_schema_version": "0.9.0",
+      "ok": true,
+      "path": "wavesleuth_v1_audit_20260816T191644Z/blind/challenge_ellipse_blind",
+      "physical_iou": 0.7866666666666666,
+      "secret_world_file_sha256_matches": true,
+      "warnings": []
+    }
+  ],
+  "version": "0.9.1"
+}

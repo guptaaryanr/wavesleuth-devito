@@ -1,0 +1,10 @@
+$ wavesleuth-devito visualize-run --help
+
+usage: wavesleuth-devito visualize-run [-h] --out OUT run
+
+positional arguments:
+  run         Input run .npz path.
+
+options:
+  -h, --help  show this help message and exit
+  --out OUT   Output PNG path.

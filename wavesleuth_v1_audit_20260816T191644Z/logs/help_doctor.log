@@ -1,0 +1,7 @@
+$ wavesleuth-devito doctor --help
+
+usage: wavesleuth-devito doctor [-h] [--try-devito]
+
+options:
+  -h, --help    show this help message and exit
+  --try-devito  Import Devito and report its version if available.

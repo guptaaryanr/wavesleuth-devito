@@ -1,0 +1,11 @@
+$ wavesleuth-devito visualize-reconstruction --help
+
+usage: wavesleuth-devito visualize-reconstruction [-h] --out OUT
+                                                  reconstruction
+
+positional arguments:
+  reconstruction  Input reconstruction JSON path.
+
+options:
+  -h, --help      show this help message and exit
+  --out OUT       Output PNG path.

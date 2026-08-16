@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.1
+
+- Fixed active-demo artifact validation in release hardening.
+- Made blind public worlds expose top-level `blind` and `answer_hidden` markers in addition to nested metadata.
+- Kept numerical simulation and inversion behavior unchanged.
+
+
 ## v0.9.0
 
 Release-hardening pass.

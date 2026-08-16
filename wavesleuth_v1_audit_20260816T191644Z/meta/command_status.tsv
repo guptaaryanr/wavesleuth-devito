@@ -1,0 +1,65 @@
+python_version	0	python --version
+pip_freeze	0	python -m pip freeze
+wavesleuth_version	0	wavesleuth-devito --version
+cli_help	0	wavesleuth-devito --help
+git_status	0	git status --short
+git_log	0	git log --oneline -n 25
+git_diff_stat	0	git diff --stat
+git_diff	0	git diff
+pytest	1	python -m pytest
+doctor	0	wavesleuth-devito doctor
+doctor_try_devito	0	wavesleuth-devito doctor --try-devito
+self_test	0	wavesleuth-devito self-test
+self_test_try_devito	0	wavesleuth-devito self-test --try-devito
+help_generate-world	0	wavesleuth-devito generate-world --help
+help_simulate	0	wavesleuth-devito simulate --help
+help_invert	0	wavesleuth-devito invert --help
+help_visualize-world	0	wavesleuth-devito visualize-world --help
+help_visualize-run	0	wavesleuth-devito visualize-run --help
+help_visualize-reconstruction	0	wavesleuth-devito visualize-reconstruction --help
+help_visualize-uncertainty	0	wavesleuth-devito visualize-uncertainty --help
+help_score	0	wavesleuth-devito score --help
+help_challenge	0	wavesleuth-devito challenge --help
+help_leaderboard	0	wavesleuth-devito leaderboard --help
+help_active-demo	0	wavesleuth-devito active-demo --help
+help_active-leaderboard	0	wavesleuth-devito active-leaderboard --help
+help_score-challenge	0	wavesleuth-devito score-challenge --help
+help_validate	0	wavesleuth-devito validate --help
+help_challenge-suite	0	wavesleuth-devito challenge-suite --help
+help_release-report	0	wavesleuth-devito release-report --help
+help_doctor	0	wavesleuth-devito doctor --help
+help_report	0	wavesleuth-devito report --help
+gallery_generate_circle	0	wavesleuth-devito generate-world --kind circle --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/circle.json
+gallery_visualize_circle	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/circle.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/circle.png
+gallery_generate_rectangle	0	wavesleuth-devito generate-world --kind rectangle --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/rectangle.json
+gallery_visualize_rectangle	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/rectangle.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/rectangle.png
+gallery_generate_layered	0	wavesleuth-devito generate-world --kind layered --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/layered.json
+gallery_visualize_layered	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/layered.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/layered.png
+gallery_generate_blobs	0	wavesleuth-devito generate-world --kind blobs --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/blobs.json
+gallery_visualize_blobs	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/blobs.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/blobs.png
+gallery_generate_ellipse	0	wavesleuth-devito generate-world --kind ellipse --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/ellipse.json
+gallery_visualize_ellipse	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/ellipse.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/ellipse.png
+gallery_generate_ring	0	wavesleuth-devito generate-world --kind ring --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/ring.json
+gallery_visualize_ring	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/ring.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/ring.png
+gallery_generate_two_circles	0	wavesleuth-devito generate-world --kind two-circles --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/two-circles.json
+gallery_visualize_two_circles	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/two-circles.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/two-circles.png
+gallery_generate_crack	0	wavesleuth-devito generate-world --kind crack --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/crack.json
+gallery_visualize_crack	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/crack.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/crack.png
+gallery_generate_circle_layered	0	wavesleuth-devito generate-world --kind circle-layered --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/circle-layered.json
+gallery_visualize_circle_layered	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/circle-layered.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/circle-layered.png
+gallery_generate_mask_blocks	0	wavesleuth-devito generate-world --kind mask-blocks --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/mask-blocks.json
+gallery_visualize_mask_blocks	0	wavesleuth-devito visualize-world wavesleuth_v1_audit_20260816T191644Z/world_gallery/mask-blocks.json --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/mask-blocks.png
+challenge_suite	0	wavesleuth-devito challenge-suite --out-dir wavesleuth_v1_audit_20260816T191644Z/release/release_suite --quiet
+validate_release_suite	0	wavesleuth-devito validate wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/ellipse-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-radius-velocity-staged wavesleuth_v1_audit_20260816T191644Z/release/release_suite/mask-cell-easy
+leaderboard_release_suite	0	wavesleuth-devito leaderboard wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/ellipse-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-radius-velocity-staged wavesleuth_v1_audit_20260816T191644Z/release/release_suite/mask-cell-easy
+blind_challenge_ellipse	0	wavesleuth-devito challenge ellipse-easy --blind --out-dir wavesleuth_v1_audit_20260816T191644Z/blind/challenge_ellipse_blind --quiet
+score_challenge_blind	0	wavesleuth-devito score-challenge wavesleuth_v1_audit_20260816T191644Z/blind/challenge_ellipse_blind
+validate_blind_challenge	0	wavesleuth-devito validate wavesleuth_v1_audit_20260816T191644Z/blind/challenge_ellipse_blind
+active_uncertainty	0	wavesleuth-devito active-demo --out-dir wavesleuth_v1_audit_20260816T191644Z/active/active_uncertainty --strategy uncertainty --rounds 3 --candidate-grid-size 5 --refine-levels 1 --quiet
+active_spread	0	wavesleuth-devito active-demo --out-dir wavesleuth_v1_audit_20260816T191644Z/active/active_spread --strategy spread --rounds 3 --candidate-grid-size 5 --refine-levels 1 --quiet
+active_opposite	0	wavesleuth-devito active-demo --out-dir wavesleuth_v1_audit_20260816T191644Z/active/active_opposite --strategy opposite-best --rounds 3 --candidate-grid-size 5 --refine-levels 1 --quiet
+active_ellipse	0	wavesleuth-devito active-demo --kind ellipse --out-dir wavesleuth_v1_audit_20260816T191644Z/active/active_ellipse --strategy uncertainty --rounds 3 --candidate-grid-size 5 --refine-levels 1 --quiet
+active_leaderboard	0	wavesleuth-devito active-leaderboard wavesleuth_v1_audit_20260816T191644Z/active/active_uncertainty wavesleuth_v1_audit_20260816T191644Z/active/active_spread wavesleuth_v1_audit_20260816T191644Z/active/active_opposite wavesleuth_v1_audit_20260816T191644Z/active/active_ellipse
+validate_active	0	wavesleuth-devito validate wavesleuth_v1_audit_20260816T191644Z/active/active_uncertainty wavesleuth_v1_audit_20260816T191644Z/active/active_spread wavesleuth_v1_audit_20260816T191644Z/active/active_opposite wavesleuth_v1_audit_20260816T191644Z/active/active_ellipse
+release_report_challenges_only	0	wavesleuth-devito release-report --out wavesleuth_v1_audit_20260816T191644Z/reports/release_report_challenges_only.html --challenge-paths wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/ellipse-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-radius-velocity-staged wavesleuth_v1_audit_20260816T191644Z/release/release_suite/mask-cell-easy
+release_report_full	0	wavesleuth-devito release-report --out wavesleuth_v1_audit_20260816T191644Z/reports/release_report_full.html --challenge-paths wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/ellipse-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-radius-velocity-staged wavesleuth_v1_audit_20260816T191644Z/release/release_suite/mask-cell-easy wavesleuth_v1_audit_20260816T191644Z/blind/challenge_ellipse_blind --active-paths wavesleuth_v1_audit_20260816T191644Z/active/active_uncertainty wavesleuth_v1_audit_20260816T191644Z/active/active_spread wavesleuth_v1_audit_20260816T191644Z/active/active_opposite wavesleuth_v1_audit_20260816T191644Z/active/active_ellipse

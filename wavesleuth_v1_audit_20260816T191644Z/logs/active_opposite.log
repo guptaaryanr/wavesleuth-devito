@@ -1,0 +1,586 @@
+$ wavesleuth-devito active-demo --out-dir wavesleuth_v1_audit_20260816T191644Z/active/active_opposite --strategy opposite-best --rounds 3 --candidate-grid-size 5 --refine-levels 1 --quiet
+
+{
+  "candidate_grid_size": 5,
+  "created_utc": "2026-08-16T19:17:37+00:00",
+  "figures": {
+    "answer_world": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/answer_world.png",
+    "progress": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/active_progress.png",
+    "source_layout": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/active_source_layout.png"
+  },
+  "final_physical_score": {
+    "anomaly_velocity_error": 0.0,
+    "best_mismatch": 0.35033038465054966,
+    "center_error": 0.0493963646358056,
+    "contrast_error": 0.0,
+    "iou": 0.5986394557823129,
+    "normalized_center_error": 0.0349285043999415,
+    "predicted_anomaly_velocity": 2.2,
+    "radius_error": 0.0,
+    "reconstruction_score": 0.5986394557823129,
+    "relative_anomaly_velocity_error": 0.0,
+    "relative_contrast_error": 0.0,
+    "relative_velocity_error": 0.0,
+    "supported": true,
+    "true_anomaly_velocity": 2.2,
+    "velocity_error": 0.0
+  },
+  "final_reconstruction_score": 0.5986394557823129,
+  "final_uncertainty_summary": {
+    "center_effective_candidates": 37.281288466064325,
+    "center_entropy_effective_candidates": 38.47389607594419,
+    "center_top_probability": 0.028474389787745535,
+    "duplicate_center_candidates": 1,
+    "effective_candidates": 39.47014375306359,
+    "n_candidates": 50,
+    "n_centers": 49,
+    "supported": true,
+    "temperature": 53.10974993925287,
+    "top_3_center_probability_mass": 0.08509105441078756,
+    "top_5_center_probability_mass": 0.14169342303750604,
+    "top_center": {
+      "center_x": 0.59200001,
+      "center_z": 0.546,
+      "mismatch": 0.35033038465054966,
+      "probability": 0.028474389787745535
+    }
+  },
+  "initial_reconstruction_score": 0.0,
+  "kind": "circle",
+  "mode": "active-demo",
+  "noise_level": 0.0,
+  "notes": [
+    "v0.7.2 active-demo is a deterministic heuristic active-sensing loop.",
+    "It re-simulates cumulative sequential shots each round instead of storing incremental shot updates.",
+    "Sequential active run files use a stable (shot, time, receiver) trace layout, including one-shot rounds.",
+    "The selected next source is based on geometric spread and reconstruction uncertainty, not optimal experimental design."
+  ],
+  "pool_preset": "boundary-8",
+  "project": "WaveSleuth-Devito",
+  "refine_levels": 1,
+  "report_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/reports/active_report.html",
+  "round_count": 3,
+  "rounds": [
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.776,
+        "center_z": 0.592,
+        "mismatch": 0.235793,
+        "radius": 0.12
+      },
+      "figures": {
+        "reconstruction": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_01_reconstruction.png",
+        "traces": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_01_traces.png",
+        "uncertainty": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_01_uncertainty.png",
+        "world": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_01_world.png"
+      },
+      "n_sources": 1,
+      "physical_score": {
+        "anomaly_velocity_error": 0.0,
+        "best_mismatch": 0.23579305594726135,
+        "center_error": 0.23719187275873038,
+        "contrast_error": 0.0,
+        "iou": 0.0,
+        "normalized_center_error": 0.16771998167003496,
+        "predicted_anomaly_velocity": 2.2,
+        "radius_error": 0.0,
+        "reconstruction_score": 0.0,
+        "relative_anomaly_velocity_error": 0.0,
+        "relative_contrast_error": 0.0,
+        "relative_velocity_error": 0.0,
+        "supported": true,
+        "true_anomaly_velocity": 2.2,
+        "velocity_error": 0.0
+      },
+      "reconstruction_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/runs/round_01_recon.json",
+      "round": 1,
+      "run_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/runs/round_01_obs.npz",
+      "selected_next_source": {
+        "distance_to_estimated_center": 0.4311780111405242,
+        "estimated_center": {
+          "center_effective_candidates": 35.78702349156135,
+          "center_x": 0.7731322702856726,
+          "center_z": 0.6784971218385998,
+          "source": "uncertainty-weighted-center",
+          "top_center_probability": 0.028971652808930954,
+          "top_center_x": 0.77599996,
+          "top_center_z": 0.59200001
+        },
+        "min_distance_to_existing_sources": 0.4525483399593903,
+        "ranked_candidates": [
+          {
+            "distance_to_estimated_center": 0.4311780111405242,
+            "estimated_center": {
+              "center_effective_candidates": 35.78702349156135,
+              "center_x": 0.7731322702856726,
+              "center_z": 0.6784971218385998,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.028971652808930954,
+              "top_center_x": 0.77599996,
+              "top_center_z": 0.59200001
+            },
+            "min_distance_to_existing_sources": 0.4525483399593903,
+            "selection_score": 0.43865762622712734,
+            "strategy": "opposite-best",
+            "x": 0.18,
+            "z": 0.82
+          },
+          {
+            "distance_to_estimated_center": 0.3540451698370866,
+            "estimated_center": {
+              "center_effective_candidates": 35.78702349156135,
+              "center_x": 0.7731322702856726,
+              "center_z": 0.6784971218385998,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.028971652808930954,
+              "top_center_x": 0.77599996,
+              "top_center_z": 0.59200001
+            },
+            "min_distance_to_existing_sources": 0.4525483399593903,
+            "selection_score": 0.3885212793798929,
+            "strategy": "opposite-best",
+            "x": 0.82,
+            "z": 0.18
+          },
+          {
+            "distance_to_estimated_center": 0.4651438993374813,
+            "estimated_center": {
+              "center_effective_candidates": 35.78702349156135,
+              "center_x": 0.7731322702856726,
+              "center_z": 0.6784971218385998,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.028971652808930954,
+              "top_center_x": 0.77599996,
+              "top_center_z": 0.59200001
+            },
+            "min_distance_to_existing_sources": 0.22803508501982758,
+            "selection_score": 0.3821558143263025,
+            "strategy": "opposite-best",
+            "x": 0.14,
+            "z": 0.5
+          },
+          {
+            "distance_to_estimated_center": 0.42695455689093037,
+            "estimated_center": {
+              "center_effective_candidates": 35.78702349156135,
+              "center_x": 0.7731322702856726,
+              "center_z": 0.6784971218385998,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.028971652808930954,
+              "top_center_x": 0.77599996,
+              "top_center_z": 0.59200001
+            },
+            "min_distance_to_existing_sources": 0.22803508501982758,
+            "selection_score": 0.3573327417360444,
+            "strategy": "opposite-best",
+            "x": 0.5,
+            "z": 0.14
+          },
+          {
+            "distance_to_estimated_center": 0.23188847734663073,
+            "estimated_center": {
+              "center_effective_candidates": 35.78702349156135,
+              "center_x": 0.7731322702856726,
+              "center_z": 0.6784971218385998,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.028971652808930954,
+              "top_center_x": 0.77599996,
+              "top_center_z": 0.59200001
+            },
+            "min_distance_to_existing_sources": 0.5314132102234569,
+            "selection_score": 0.3367221338535199,
+            "strategy": "opposite-best",
+            "x": 0.5,
+            "z": 0.86
+          },
+          {
+            "distance_to_estimated_center": 0.10540315132038346,
+            "estimated_center": {
+              "center_effective_candidates": 35.78702349156135,
+              "center_x": 0.7731322702856726,
+              "center_z": 0.6784971218385998,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.028971652808930954,
+              "top_center_x": 0.77599996,
+              "top_center_z": 0.59200001
+            },
+            "min_distance_to_existing_sources": 0.6399999999999999,
+            "selection_score": 0.2925120483582492,
+            "strategy": "opposite-best",
+            "x": 0.82,
+            "z": 0.82
+          },
+          {
+            "distance_to_estimated_center": 0.14036955683193092,
+            "estimated_center": {
+              "center_effective_candidates": 35.78702349156135,
+              "center_x": 0.7731322702856726,
+              "center_z": 0.6784971218385998,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.028971652808930954,
+              "top_center_x": 0.77599996,
+              "top_center_z": 0.59200001
+            },
+            "min_distance_to_existing_sources": 0.5314132102234569,
+            "selection_score": 0.277234835518965,
+            "strategy": "opposite-best",
+            "x": 0.86,
+            "z": 0.5
+          }
+        ],
+        "selection_score": 0.43865762622712734,
+        "strategy": "opposite-best",
+        "x": 0.18,
+        "z": 0.82
+      },
+      "sources": [
+        {
+          "x": 0.18,
+          "z": 0.18
+        }
+      ],
+      "trace_metadata": {
+        "active_trace_shape_standard": true,
+        "available": true,
+        "layout": "shot_time_receiver",
+        "n_receivers": 12,
+        "n_shots": 1,
+        "ndim": 3,
+        "nt": 340,
+        "shape": [
+          1,
+          340,
+          12
+        ]
+      },
+      "uncertainty_summary": {
+        "center_effective_candidates": 35.78702349156135,
+        "center_entropy_effective_candidates": 36.44525587165666,
+        "center_top_probability": 0.028971652808930954,
+        "duplicate_center_candidates": 1,
+        "effective_candidates": 37.44376811432301,
+        "n_candidates": 50,
+        "n_centers": 49,
+        "supported": true,
+        "temperature": 37.44919086821663,
+        "top_3_center_probability_mass": 0.08691459167701679,
+        "top_5_center_probability_mass": 0.14485716272079976,
+        "top_center": {
+          "center_x": 0.77599996,
+          "center_z": 0.59200001,
+          "mismatch": 0.23579305594726135,
+          "probability": 0.028971652808930954
+        }
+      },
+      "world_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/rounds/round_01/world.json"
+    },
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.868,
+        "center_z": 0.546,
+        "mismatch": 0.807902,
+        "radius": 0.12
+      },
+      "figures": {
+        "reconstruction": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_02_reconstruction.png",
+        "traces": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_02_traces.png",
+        "uncertainty": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_02_uncertainty.png",
+        "world": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_02_world.png"
+      },
+      "n_sources": 2,
+      "physical_score": {
+        "anomaly_velocity_error": 0.0,
+        "best_mismatch": 0.8079022323212107,
+        "center_error": 0.3190610939914027,
+        "contrast_error": 0.0,
+        "iou": 0.0,
+        "normalized_center_error": 0.22561026317411925,
+        "predicted_anomaly_velocity": 2.2,
+        "radius_error": 0.0,
+        "reconstruction_score": 0.0,
+        "relative_anomaly_velocity_error": 0.0,
+        "relative_contrast_error": 0.0,
+        "relative_velocity_error": 0.0,
+        "supported": true,
+        "true_anomaly_velocity": 2.2,
+        "velocity_error": 0.0
+      },
+      "reconstruction_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/runs/round_02_recon.json",
+      "round": 2,
+      "run_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/runs/round_02_obs.npz",
+      "selected_next_source": {
+        "distance_to_estimated_center": 0.4465114849027801,
+        "estimated_center": {
+          "center_effective_candidates": 38.3856812517538,
+          "center_x": 0.7714625953878039,
+          "center_z": 0.4999459049918585,
+          "source": "uncertainty-weighted-center",
+          "top_center_probability": 0.027419877336552077,
+          "top_center_x": 0.86799997,
+          "top_center_z": 0.546
+        },
+        "min_distance_to_existing_sources": 0.22803508501982755,
+        "ranked_candidates": [
+          {
+            "distance_to_estimated_center": 0.4465114849027801,
+            "estimated_center": {
+              "center_effective_candidates": 38.3856812517538,
+              "center_x": 0.7714625953878039,
+              "center_z": 0.4999459049918585,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.027419877336552077,
+              "top_center_x": 0.86799997,
+              "top_center_z": 0.546
+            },
+            "min_distance_to_existing_sources": 0.22803508501982755,
+            "selection_score": 0.37004474494374673,
+            "strategy": "opposite-best",
+            "x": 0.14,
+            "z": 0.5
+          },
+          {
+            "distance_to_estimated_center": 0.22890009106373074,
+            "estimated_center": {
+              "center_effective_candidates": 38.3856812517538,
+              "center_x": 0.7714625953878039,
+              "center_z": 0.4999459049918585,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.027419877336552077,
+              "top_center_x": 0.86799997,
+              "top_center_z": 0.546
+            },
+            "min_distance_to_existing_sources": 0.4525483399593903,
+            "selection_score": 0.30717697817721157,
+            "strategy": "opposite-best",
+            "x": 0.82,
+            "z": 0.82
+          },
+          {
+            "distance_to_estimated_center": 0.22882445429580658,
+            "estimated_center": {
+              "center_effective_candidates": 38.3856812517538,
+              "center_x": 0.7714625953878039,
+              "center_z": 0.4999459049918585,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.027419877336552077,
+              "top_center_x": 0.86799997,
+              "top_center_z": 0.546
+            },
+            "min_distance_to_existing_sources": 0.4525483399593903,
+            "selection_score": 0.3071278142780609,
+            "strategy": "opposite-best",
+            "x": 0.82,
+            "z": 0.18
+          },
+          {
+            "distance_to_estimated_center": 0.31885019368569806,
+            "estimated_center": {
+              "center_effective_candidates": 38.3856812517538,
+              "center_x": 0.7714625953878039,
+              "center_z": 0.4999459049918585,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.027419877336552077,
+              "top_center_x": 0.86799997,
+              "top_center_z": 0.546
+            },
+            "min_distance_to_existing_sources": 0.22803508501982758,
+            "selection_score": 0.2870649056526434,
+            "strategy": "opposite-best",
+            "x": 0.5,
+            "z": 0.86
+          },
+          {
+            "distance_to_estimated_center": 0.3187891114946451,
+            "estimated_center": {
+              "center_effective_candidates": 38.3856812517538,
+              "center_x": 0.7714625953878039,
+              "center_z": 0.4999459049918585,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.027419877336552077,
+              "top_center_x": 0.86799997,
+              "top_center_z": 0.546
+            },
+            "min_distance_to_existing_sources": 0.22803508501982758,
+            "selection_score": 0.287025202228459,
+            "strategy": "opposite-best",
+            "x": 0.5,
+            "z": 0.14
+          },
+          {
+            "distance_to_estimated_center": 0.0626054108753134,
+            "estimated_center": {
+              "center_effective_candidates": 38.3856812517538,
+              "center_x": 0.7714625953878039,
+              "center_z": 0.4999459049918585,
+              "source": "uncertainty-weighted-center",
+              "top_center_probability": 0.027419877336552077,
+              "top_center_x": 0.86799997,
+              "top_center_z": 0.546
+            },
+            "min_distance_to_existing_sources": 0.5314132102234569,
+            "selection_score": 0.2266881406471636,
+            "strategy": "opposite-best",
+            "x": 0.86,
+            "z": 0.5
+          }
+        ],
+        "selection_score": 0.37004474494374673,
+        "strategy": "opposite-best",
+        "x": 0.14,
+        "z": 0.5
+      },
+      "sources": [
+        {
+          "x": 0.18,
+          "z": 0.18
+        },
+        {
+          "x": 0.18,
+          "z": 0.82
+        }
+      ],
+      "trace_metadata": {
+        "active_trace_shape_standard": true,
+        "available": true,
+        "layout": "shot_time_receiver",
+        "n_receivers": 12,
+        "n_shots": 2,
+        "ndim": 3,
+        "nt": 340,
+        "shape": [
+          2,
+          340,
+          12
+        ]
+      },
+      "uncertainty_summary": {
+        "center_effective_candidates": 38.3856812517538,
+        "center_entropy_effective_candidates": 39.49461980555294,
+        "center_top_probability": 0.027419877336552077,
+        "duplicate_center_candidates": 1,
+        "effective_candidates": 40.49136409040333,
+        "n_candidates": 50,
+        "n_centers": 49,
+        "supported": true,
+        "temperature": 536.4060386117019,
+        "top_3_center_probability_mass": 0.08225942885669808,
+        "top_5_center_probability_mass": 0.13709857377670118,
+        "top_center": {
+          "center_x": 0.86799997,
+          "center_z": 0.546,
+          "mismatch": 0.8079022323212107,
+          "probability": 0.027419877336552077
+        }
+      },
+      "world_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/rounds/round_02/world.json"
+    },
+    {
+      "best_candidate": {
+        "anomaly_velocity": 2.2,
+        "center_x": 0.592,
+        "center_z": 0.546,
+        "mismatch": 0.35033,
+        "radius": 0.12
+      },
+      "figures": {
+        "reconstruction": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_03_reconstruction.png",
+        "traces": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_03_traces.png",
+        "uncertainty": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_03_uncertainty.png",
+        "world": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/figures/round_03_world.png"
+      },
+      "n_sources": 3,
+      "physical_score": {
+        "anomaly_velocity_error": 0.0,
+        "best_mismatch": 0.35033038465054966,
+        "center_error": 0.0493963646358056,
+        "contrast_error": 0.0,
+        "iou": 0.5986394557823129,
+        "normalized_center_error": 0.0349285043999415,
+        "predicted_anomaly_velocity": 2.2,
+        "radius_error": 0.0,
+        "reconstruction_score": 0.5986394557823129,
+        "relative_anomaly_velocity_error": 0.0,
+        "relative_contrast_error": 0.0,
+        "relative_velocity_error": 0.0,
+        "supported": true,
+        "true_anomaly_velocity": 2.2,
+        "velocity_error": 0.0
+      },
+      "reconstruction_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/runs/round_03_recon.json",
+      "round": 3,
+      "run_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/runs/round_03_obs.npz",
+      "selected_next_source": null,
+      "sources": [
+        {
+          "x": 0.18,
+          "z": 0.18
+        },
+        {
+          "x": 0.18,
+          "z": 0.82
+        },
+        {
+          "x": 0.14,
+          "z": 0.5
+        }
+      ],
+      "trace_metadata": {
+        "active_trace_shape_standard": true,
+        "available": true,
+        "layout": "shot_time_receiver",
+        "n_receivers": 12,
+        "n_shots": 3,
+        "ndim": 3,
+        "nt": 340,
+        "shape": [
+          3,
+          340,
+          12
+        ]
+      },
+      "uncertainty_summary": {
+        "center_effective_candidates": 37.281288466064325,
+        "center_entropy_effective_candidates": 38.47389607594419,
+        "center_top_probability": 0.028474389787745535,
+        "duplicate_center_candidates": 1,
+        "effective_candidates": 39.47014375306359,
+        "n_candidates": 50,
+        "n_centers": 49,
+        "supported": true,
+        "temperature": 53.10974993925287,
+        "top_3_center_probability_mass": 0.08509105441078756,
+        "top_5_center_probability_mass": 0.14169342303750604,
+        "top_center": {
+          "center_x": 0.59200001,
+          "center_z": 0.546,
+          "mismatch": 0.35033038465054966,
+          "probability": 0.028474389787745535
+        }
+      },
+      "world_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/rounds/round_03/world.json"
+    }
+  ],
+  "runtime_seconds": 5.324594374000071,
+  "score_delta": 0.5986394557823129,
+  "secret_world_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/worlds/active_secret_world.json",
+  "source_history": [
+    {
+      "x": 0.18,
+      "z": 0.18
+    },
+    {
+      "x": 0.18,
+      "z": 0.82
+    },
+    {
+      "x": 0.14,
+      "z": 0.5
+    }
+  ],
+  "strategy": "opposite-best",
+  "summary_path": "wavesleuth_v1_audit_20260816T191644Z/active/active_opposite/active_summary.json",
+  "trace_layout": "shot_time_receiver",
+  "version": "0.7.2"
+}

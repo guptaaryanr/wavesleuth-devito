@@ -1,0 +1,10 @@
+$ wavesleuth-devito report --help
+
+usage: wavesleuth-devito report [-h] --out OUT reconstruction
+
+positional arguments:
+  reconstruction  Input reconstruction JSON path.
+
+options:
+  -h, --help      show this help message and exit
+  --out OUT       Output HTML path.

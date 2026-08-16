@@ -1,0 +1,105 @@
+$ wavesleuth-devito invert --help
+
+usage: wavesleuth-devito invert [-h]
+                                [--method {grid-search,staged-grid-search,ellipse-grid-search,cell-search}]
+                                --out OUT
+                                [--candidate-grid-size CANDIDATE_GRID_SIZE]
+                                [--cell-grid-size CELL_GRID_SIZE]
+                                [--max-active-cells MAX_ACTIVE_CELLS]
+                                [--radius RADIUS] [--radius-x RADIUS_X]
+                                [--radius-z RADIUS_Z]
+                                [--angle-degrees ANGLE_DEGREES]
+                                [--anomaly-velocity ANOMALY_VELOCITY]
+                                [--radius-values RADIUS_VALUES]
+                                [--radius-x-values RADIUS_X_VALUES]
+                                [--radius-z-values RADIUS_Z_VALUES]
+                                [--angle-values ANGLE_VALUES]
+                                [--anomaly-velocity-values ANOMALY_VELOCITY_VALUES]
+                                [--search-radius] [--search-axes]
+                                [--search-angle] [--search-velocity]
+                                [--max-candidates MAX_CANDIDATES] [--quiet]
+                                [--mismatch-mode {raw,differential}]
+                                [--metric {l2,correlation}]
+                                [--time-min TIME_MIN] [--time-max TIME_MAX]
+                                [--normalize-traces]
+                                [--refine-levels REFINE_LEVELS]
+                                [--shot-mode {simultaneous,sequential}]
+                                [--search-strategy {auto,joint,staged}]
+                                [--top-k-refine TOP_K_REFINE]
+                                [--final-refine-top-k FINAL_REFINE_TOP_K]
+                                [--center-metric {l2,correlation}]
+                                [--final-metric {l2,correlation}]
+                                [--parameter-prior {none,reference}]
+                                [--radius-prior-weight RADIUS_PRIOR_WEIGHT]
+                                [--velocity-prior-weight VELOCITY_PRIOR_WEIGHT]
+                                run
+
+positional arguments:
+  run                   Input observed run .npz path.
+
+options:
+  -h, --help            show this help message and exit
+  --method {grid-search,staged-grid-search,ellipse-grid-search,cell-search}
+                        Use grid-search for circles, staged-grid-search for
+                        v0.4 circles, or ellipse-grid-search for the v0.5
+                        ellipse baseline.
+  --out OUT             Output reconstruction JSON path.
+  --candidate-grid-size CANDIDATE_GRID_SIZE
+  --cell-grid-size CELL_GRID_SIZE
+                        Coarse grid size for v0.8 cell-search masks.
+  --max-active-cells MAX_ACTIVE_CELLS
+                        Maximum selected cells for v0.8 cell-search.
+  --radius RADIUS       Circle radius override for circle inversion.
+  --radius-x RADIUS_X   Ellipse x semi-axis override for ellipse-grid-search.
+  --radius-z RADIUS_Z   Ellipse z semi-axis override for ellipse-grid-search.
+  --angle-degrees ANGLE_DEGREES
+                        Ellipse angle override for ellipse-grid-search.
+  --anomaly-velocity ANOMALY_VELOCITY
+  --radius-values RADIUS_VALUES
+                        Comma-separated circle radius values, e.g.
+                        0.09,0.12,0.15
+  --radius-x-values RADIUS_X_VALUES
+                        Comma-separated ellipse x semi-axis values.
+  --radius-z-values RADIUS_Z_VALUES
+                        Comma-separated ellipse z semi-axis values.
+  --angle-values ANGLE_VALUES
+                        Comma-separated ellipse angle values in degrees.
+  --anomaly-velocity-values ANOMALY_VELOCITY_VALUES
+                        Comma-separated anomaly velocities.
+  --search-radius       Search a tiny default radius axis around the metadata
+                        radius.
+  --search-axes         Search tiny default ellipse semi-axis axes around
+                        metadata axes.
+  --search-angle        Search a tiny default ellipse orientation axis around
+                        metadata angle.
+  --search-velocity     Search a tiny default velocity axis around the
+                        metadata velocity.
+  --max-candidates MAX_CANDIDATES
+  --quiet
+  --mismatch-mode {raw,differential}
+  --metric {l2,correlation}
+  --time-min TIME_MIN
+  --time-max TIME_MAX
+  --normalize-traces
+  --refine-levels REFINE_LEVELS
+  --shot-mode {simultaneous,sequential}
+  --search-strategy {auto,joint,staged}
+                        v0.4 strategy: auto uses staged when radius/velocity
+                        axes are searched.
+  --top-k-refine TOP_K_REFINE
+                        For staged search, keep this many center candidates
+                        for refinement.
+  --final-refine-top-k FINAL_REFINE_TOP_K
+                        For staged search, final center polish around this
+                        many parameter candidates.
+  --center-metric {l2,correlation}
+                        Metric for staged center screening. Defaults to
+                        --metric.
+  --final-metric {l2,correlation}
+                        Metric for final staged center polish. Defaults to
+                        --metric.
+  --parameter-prior {none,reference}
+                        Optional weak reference prior for radius/velocity
+                        search.
+  --radius-prior-weight RADIUS_PRIOR_WEIGHT
+  --velocity-prior-weight VELOCITY_PRIOR_WEIGHT
