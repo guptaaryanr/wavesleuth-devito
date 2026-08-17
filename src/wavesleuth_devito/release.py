@@ -22,6 +22,7 @@ from .metadata import PROJECT_NAME, __version__, base_metadata, ARTIFACT_SCHEMA_
 from .world import validate_world, velocity_model_from_world, anomaly_kind
 
 RELEASE_SCHEMA_VERSION = ARTIFACT_SCHEMA_VERSION
+RELEASE_REPORT_NOTE = 'This report validates package, artifact, challenge, blind-mode, and active-sensing release outputs without changing numerical methods.'
 DEFAULT_RELEASE_CHALLENGES = (
     "circle-easy",
     "ellipse-easy",
@@ -476,7 +477,7 @@ def generate_release_html_report(
   <p>Overall validation status: <strong>{html.escape(str(validation.get('ok')))}</strong></p>
   {_html_table(validation_rows, ['kind', 'ok', 'path', 'errors', 'warnings'])}
   <h2>Notes</h2>
-  <p>v0.9.1 is a hardening cleanup release. It does not alter Devito simulation or inversion numerics.</p>
+  <p>{html.escape(RELEASE_REPORT_NOTE)}</p>
 </body>
 </html>
 """

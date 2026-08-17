@@ -9,7 +9,7 @@ The project feels like scientific Battleship with wave propagation: hide a
 structure, choose how to illuminate it, observe a few traces, infer what is
 there, and inspect why the reconstruction worked or failed.
 
-**Status:** v0.9.3 is the final pre-v1.0 release candidate. The numerical
+**Status:** 0.9.4 is the final pre-v1.0 release candidate. The numerical
 feature set is frozen. The remaining gate is a clean master audit followed by
 the version/tag change to v1.0.0.
 

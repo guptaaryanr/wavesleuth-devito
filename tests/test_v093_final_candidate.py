@@ -54,7 +54,7 @@ def test_release_report_is_dynamic_and_version_neutral(tmp_path) -> None:
     out = generate_release_html_report(tmp_path / "report.html")
     text = out.read_text(encoding="utf-8")
     assert f"WaveSleuth-Devito v{__version__} Release Report" in text
-    assert "v0.9.1 is a hardening" not in text
+    assert not re.search(r"\bv[0-9]+\.[0-9]+(?:\.[0-9]+)? is a hardening(?: cleanup)? release\b", text, flags=re.IGNORECASE)
 
 
 def test_public_docs_and_hygiene_files_exist() -> None:

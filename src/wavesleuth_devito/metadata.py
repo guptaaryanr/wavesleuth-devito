@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 PROJECT_NAME = "WaveSleuth-Devito"
-__version__ = "0.9.3"
+__version__ = "0.9.4"
 ARTIFACT_SCHEMA_VERSION = __version__
 
 

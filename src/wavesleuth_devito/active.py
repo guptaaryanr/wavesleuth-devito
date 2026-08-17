@@ -29,7 +29,7 @@ from .exceptions import UnsupportedWorldError, ValidationError
 from .geometry import grid_extent, receiver_coordinates
 from .inversion import grid_search_circle, grid_search_ellipse
 from .io import ensure_parent, load_json, save_json, save_world
-from .metadata import base_metadata, ARTIFACT_SCHEMA_VERSION
+from .metadata import base_metadata, ARTIFACT_SCHEMA_VERSION, __version__
 from .scoring import score_reconstruction
 from .simulation import simulate_world
 from .uncertainty import candidate_probabilities

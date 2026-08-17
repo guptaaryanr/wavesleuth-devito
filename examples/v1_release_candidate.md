@@ -1,6 +1,6 @@
 # Final pre-v1 release candidate
 
-v0.9.3 changes only release-layer behavior:
+0.9.4 changes only release-layer behavior:
 
 - one current schema constant for every fresh artifact
 - version-neutral suite and challenge wording

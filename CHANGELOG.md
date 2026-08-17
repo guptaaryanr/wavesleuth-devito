@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.4
+
+- Fixed the active-demo release wrapper so package-version metadata resolves at runtime.
+- Replaced the last hard-coded historical release-report sentence with a centralized, version-neutral note.
+- Added static and runtime pre-v1 gates for version-symbol resolution and stale release wording.
+- Kept all numerical simulation, inversion, challenge, and scoring behavior unchanged.
+
+
 ## v0.9.3
 
 Final pre-v1.0 release candidate.
