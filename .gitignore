@@ -25,10 +25,6 @@ figures/*
 !figures/README.md
 worlds/*.json
 
-# Docs
-docs/*
-!docs/SCHEMA.md
-
 # OS/editor noise
 .DS_Store
 .vscode/
