@@ -1,3 +1,0 @@
-$ wavesleuth-devito release-report --out wavesleuth_v1_audit_20260816T191644Z/reports/release_report_challenges_only.html --challenge-paths wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/ellipse-easy wavesleuth_v1_audit_20260816T191644Z/release/release_suite/circle-radius-velocity-staged wavesleuth_v1_audit_20260816T191644Z/release/release_suite/mask-cell-easy
-
-wrote wavesleuth_v1_audit_20260816T191644Z/reports/release_report_challenges_only.html

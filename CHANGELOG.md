@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.2
+
+Final pre-v1.0 release candidate. Fixes release-report version assertions,
+active final-score reporting, schema/version consistency, and stale artifact
+wording. No simulation or inversion numerics changed.
+
 ## 0.9.1
 
 - Fixed active-demo artifact validation in release hardening.

@@ -63,4 +63,4 @@ def test_release_html_report_writes(tmp_path) -> None:
     out = generate_release_html_report(tmp_path / "release_report.html")
     assert out.exists()
     text = out.read_text(encoding="utf-8")
-    assert "WaveSleuth-Devito v0.9 Release Report" in text
+    assert f"WaveSleuth-Devito v{__version__} Release Report" in text

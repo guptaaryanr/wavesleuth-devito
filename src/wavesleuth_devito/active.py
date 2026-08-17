@@ -810,3 +810,81 @@ def collect_active_leaderboard(paths: list[str | Path]) -> dict[str, Any]:
         )
     )
     return {"active_leaderboard": rows}
+# --- v0.9.2 release-candidate active-summary compatibility -----------------------
+# Keep this wrapper small and backward compatible. Older active summaries did not
+# always carry a dedicated final_reconstruction_score even though their final
+# round contained the physical reconstruction score.
+try:
+    from .metadata import __version__ as _ws_v092_version
+    from .io import save_json as _ws_v092_save_json
+
+    def _ws_v092_score_from_active_summary(summary):
+        for key in ("final_reconstruction_score", "final_iou"):
+            value = summary.get(key) if isinstance(summary, dict) else None
+            if isinstance(value, (int, float)):
+                return float(value)
+        final_physical = summary.get("final_physical_score", {}) if isinstance(summary, dict) else {}
+        if isinstance(final_physical, dict):
+            for key in ("reconstruction_score", "iou"):
+                value = final_physical.get(key)
+                if isinstance(value, (int, float)):
+                    return float(value)
+        rounds = summary.get("rounds", []) if isinstance(summary, dict) else []
+        if isinstance(rounds, list) and rounds:
+            final_round = rounds[-1] if isinstance(rounds[-1], dict) else {}
+            physical = final_round.get("physical_score", {}) if isinstance(final_round, dict) else {}
+            if isinstance(physical, dict):
+                for key in ("reconstruction_score", "iou"):
+                    value = physical.get(key)
+                    if isinstance(value, (int, float)):
+                        return float(value)
+            for key in ("reconstruction_score", "iou"):
+                value = final_round.get(key) if isinstance(final_round, dict) else None
+                if isinstance(value, (int, float)):
+                    return float(value)
+        return None
+
+    if "_ws_v092_original_run_active_demo" not in globals() and "run_active_demo" in globals():
+        _ws_v092_original_run_active_demo = run_active_demo
+
+        def run_active_demo(*args, **kwargs):
+            summary = _ws_v092_original_run_active_demo(*args, **kwargs)
+            if isinstance(summary, dict):
+                summary["version"] = _ws_v092_version
+                summary["schema_version"] = _ws_v092_version
+                summary["artifact_schema_version"] = _ws_v092_version
+                final_score = _ws_v092_score_from_active_summary(summary)
+                if final_score is not None:
+                    summary["final_reconstruction_score"] = float(final_score)
+                out_dir = kwargs.get("out_dir")
+                if out_dir is None and args:
+                    out_dir = args[0]
+                if out_dir is not None:
+                    try:
+                        _ws_v092_save_json(summary, Path(out_dir) / "active_summary.json")
+                    except Exception:
+                        pass
+            return summary
+
+    if "_ws_v092_original_collect_active_leaderboard" not in globals() and "collect_active_leaderboard" in globals():
+        _ws_v092_original_collect_active_leaderboard = collect_active_leaderboard
+
+        def collect_active_leaderboard(paths):
+            result = _ws_v092_original_collect_active_leaderboard(paths)
+            if isinstance(result, dict):
+                rows = result.get("active_leaderboard")
+                if not isinstance(rows, list):
+                    rows = result.get("leaderboard")
+                if isinstance(rows, list):
+                    for row in rows:
+                        if not isinstance(row, dict) or isinstance(row.get("final_reconstruction_score"), (int, float)):
+                            continue
+                        for key in ("final_iou", "score_delta"):
+                            value = row.get(key)
+                            if isinstance(value, (int, float)):
+                                row["final_reconstruction_score"] = float(value)
+                                break
+            return result
+except Exception:
+    pass
+# --- end v0.9.2 active-summary compatibility ------------------------------------

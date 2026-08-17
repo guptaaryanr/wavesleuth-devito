@@ -1,9 +1,0 @@
-$ wavesleuth-devito leaderboard --help
-
-usage: wavesleuth-devito leaderboard [-h] paths [paths ...]
-
-positional arguments:
-  paths       Files or directories to scan.
-
-options:
-  -h, --help  show this help message and exit

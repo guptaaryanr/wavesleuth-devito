@@ -1,8 +1,0 @@
-$ git diff --stat
-
- CHANGELOG.md                      |  7 +++++++
- pyproject.toml                    |  2 +-
- src/wavesleuth_devito/blind.py    |  7 ++++++-
- src/wavesleuth_devito/metadata.py |  2 +-
- src/wavesleuth_devito/release.py  | 11 ++++++-----
- 5 files changed, 21 insertions(+), 8 deletions(-)

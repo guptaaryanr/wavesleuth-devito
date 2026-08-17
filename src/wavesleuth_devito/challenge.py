@@ -52,26 +52,26 @@ CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
     "circle-radius-velocity-staged": {
         "difficulty": "hard",
         "experimental": False,
-        "description": "v0.4 staged center-first search over center, radius, and anomaly velocity.",
+        "description": "Staged center-first search over center, radius, and anomaly velocity.",
         "notes": [
-            "This is the v0.4 answer to the naive joint radius/velocity failure mode.",
+            "This staged search addresses the naive joint radius/velocity failure mode.",
             "It localizes center first, keeps top-K centers, then searches radius/velocity and performs a final local center polish.",
         ],
     },
     "ellipse-easy": {
         "difficulty": "medium",
         "experimental": False,
-        "description": "v0.5 first non-circle reconstruction challenge: recover the center of a rotated ellipse.",
+        "description": "Known-shape ellipse reconstruction challenge: recover the center of a rotated ellipse.",
         "notes": [
             "Known-shape challenge: the baseline holds ellipse axes, orientation, and velocity from metadata and searches the center.",
-            "This is intentionally conservative: it proves non-circle inversion without turning v0.5 into a giant shape optimizer.",
+            "This is intentionally conservative: it demonstrates non-circle inversion without turning the baseline into a giant shape optimizer.",
             "Full unknown-ellipse discovery is left for a later staged/regularized search.",
         ],
     },
     "mask-cell-easy": {
         "difficulty": "medium",
         "experimental": False,
-        "description": "v0.8 first coarse mask/image reconstruction challenge.",
+        "description": "Coarse mask/image reconstruction challenge.",
         "notes": [
             "The hidden target is a blocky coarse-cell mask rather than a parametric circle or ellipse.",
             "The baseline greedily adds cells and verifies each candidate with Devito.",

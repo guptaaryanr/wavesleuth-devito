@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 PROJECT_NAME = "WaveSleuth-Devito"
-__version__ = "0.9.1"
+__version__ = "0.9.2"
 
 
 def utc_timestamp() -> str:

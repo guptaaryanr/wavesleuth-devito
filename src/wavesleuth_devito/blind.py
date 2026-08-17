@@ -14,7 +14,7 @@ from .exceptions import ValidationError
 from .io import array_string, ensure_parent
 from .world import background_velocity_model_from_world, validate_world
 
-PUBLIC_SCHEMA_VERSION = "0.9.1"
+PUBLIC_SCHEMA_VERSION = "0.9.2"
 
 
 def canonical_json(data: dict[str, Any]) -> str:

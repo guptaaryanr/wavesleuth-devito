@@ -1,9 +1,0 @@
-$ wavesleuth-devito active-leaderboard --help
-
-usage: wavesleuth-devito active-leaderboard [-h] paths [paths ...]
-
-positional arguments:
-  paths       Active demo directories or active_summary.json files.
-
-options:
-  -h, --help  show this help message and exit

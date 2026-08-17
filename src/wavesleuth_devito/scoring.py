@@ -473,5 +473,5 @@ def budgeted_challenge_score(
         "runtime_seconds": None if runtime_seconds is None else float(runtime_seconds),
         "runtime_scored": False,
         "formula": "100*IoU - 20*normalized_center_error - 0.08*forward_runs - 0.75*sources - 0.15*receivers",
-        "notes": ["runtime_seconds is reported for diagnostics but is not part of the default v0.3.2 score."],
+        "notes": ["runtime_seconds is reported for diagnostics but is not part of the default challenge score."],
     }

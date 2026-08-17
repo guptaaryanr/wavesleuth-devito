@@ -1,3 +1,0 @@
-$ wavesleuth-devito generate-world --kind layered --acquisition-preset crossfire --out wavesleuth_v1_audit_20260816T191644Z/world_gallery/layered.json
-
-wrote wavesleuth_v1_audit_20260816T191644Z/world_gallery/layered.json

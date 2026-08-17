@@ -21,7 +21,7 @@ from .io import load_json, load_run_npz, world_from_run, save_json, ensure_paren
 from .metadata import PROJECT_NAME, __version__, base_metadata
 from .world import validate_world, velocity_model_from_world, anomaly_kind
 
-RELEASE_SCHEMA_VERSION = "0.9.1"
+RELEASE_SCHEMA_VERSION = "0.9.2"
 DEFAULT_RELEASE_CHALLENGES = (
     "circle-easy",
     "ellipse-easy",
@@ -455,7 +455,7 @@ def generate_release_html_report(
 <html>
 <head>
   <meta charset=\"utf-8\">
-  <title>WaveSleuth-Devito v0.9.1 Release Report</title>
+  <title>WaveSleuth-Devito v{__version__} Release Report</title>
   <style>
     body {{ font-family: sans-serif; line-height: 1.4; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }}
     table {{ border-collapse: collapse; width: 100%; margin: 1rem 0; }}
@@ -465,7 +465,7 @@ def generate_release_html_report(
   </style>
 </head>
 <body>
-  <h1>WaveSleuth-Devito v0.9.1 Release Report</h1>
+  <h1>WaveSleuth-Devito v{__version__} Release Report</h1>
   <p>Package version: <code>{html.escape(__version__)}</code>. Schema version: <code>{RELEASE_SCHEMA_VERSION}</code>.</p>
   <h2>Challenge leaderboard</h2>
   {_html_table(challenge_rows, challenge_columns)}
