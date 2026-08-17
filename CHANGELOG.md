@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.0 - 2026-08-17
+
+First stable release.
+
+- Finalized the Devito-backed 2D inverse-wave playground.
+- Included circle, ellipse, and coarse mask reconstruction baselines.
+- Included staged parameter search, noise controls, acquisition presets,
+  uncertainty summaries, blind challenges, active sensing, leaderboards,
+  reports, artifact validation, and the canonical release suite.
+- Promoted package and fresh artifact schema metadata to `1.0.0`.
+- Added a reusable release gate with isolated wheel build/install validation.
+- Finalized v1 documentation and the post-v1/v2 roadmap.
+- Preserved the validated numerical behavior of v0.9.4.
+
+
 ## 0.9.4
 
 - Fixed the active-demo release wrapper so package-version metadata resolves at runtime.

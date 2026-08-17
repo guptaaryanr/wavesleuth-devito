@@ -1,6 +1,6 @@
 # Artifact schema
 
-The current artifact schema version is `0.9.3`. Fresh artifacts use the same
+The current artifact schema version is `1.0.0`. Fresh artifacts use the same
 value as the package version through `ARTIFACT_SCHEMA_VERSION` in
 `wavesleuth_devito.metadata`.
 
@@ -82,7 +82,7 @@ Public blind worlds expose top-level markers:
 {
   "blind": true,
   "answer_hidden": true,
-  "blind_schema_version": "0.9.3"
+  "blind_schema_version": "1.0.0"
 }
 ```
 

@@ -9,9 +9,7 @@ The project feels like scientific Battleship with wave propagation: hide a
 structure, choose how to illuminate it, observe a few traces, infer what is
 there, and inspect why the reconstruction worked or failed.
 
-**Status:** 0.9.4 is the final pre-v1.0 release candidate. The numerical
-feature set is frozen. The remaining gate is a clean master audit followed by
-the version/tag change to v1.0.0.
+**Status:** v1.0.0 is the first stable release. The package, fresh artifact schema, canonical challenge suite, blind-challenge flow, active-sensing flow, and release tooling are versioned together.
 
 ## What it is
 
@@ -328,3 +326,16 @@ reports, and checksums.
 ## License
 
 MIT.
+## Release validation
+
+```bash
+python tools/release_gate.py --with-devito
+bash collect_wavesleuth_v1_audit.sh
+```
+
+The release gate runs compilation, pytest, dependency and health checks, plus an
+isolated wheel build/install/CLI smoke test.
+
+## v1 release and future work
+
+See `docs/V1_RELEASE_NOTES.md` and `docs/POST_V1_ROADMAP.md`.

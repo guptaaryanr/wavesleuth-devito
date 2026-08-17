@@ -39,3 +39,9 @@ wavesleuth-devito active-demo \
   --out-dir active_uncertainty \
   --quiet
 ```
+
+Run the release gate:
+
+```bash
+python tools/release_gate.py --with-devito
+```

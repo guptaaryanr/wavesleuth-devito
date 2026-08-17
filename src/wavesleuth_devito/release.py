@@ -85,7 +85,7 @@ def doctor_report(*, try_devito: bool = False) -> dict[str, Any]:
         "devito_import": devito_import,
         "notes": [
             "Devito is only required for simulation/inversion commands.",
-            "v0.9 doctor does not run a numerical simulation unless future checks explicitly add one.",
+            "doctor does not run a numerical simulation unless --try-devito is requested.",
         ],
     }
 
