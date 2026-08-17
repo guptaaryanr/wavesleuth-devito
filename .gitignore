@@ -56,3 +56,10 @@ reports/
 
 # Bash Scripts
 collect_wavesleuth_v1_audit.sh
+
+# Generated release-audit bundles
+wavesleuth_v1_audit_*/
+wavesleuth_v1_audit_*.zip
+wavesleuth_v1_audit_*.zip.sha256
+wavesleuth_v1_audit_*.tar.gz
+wavesleuth_v1_audit_*.tar.gz.sha256

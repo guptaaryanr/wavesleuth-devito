@@ -185,7 +185,7 @@ def candidate_probabilities(reconstruction: dict[str, Any], *, temperature: floa
         "notes": [
             "These probabilities are derived from mismatch values, not a calibrated Bayesian posterior.",
             "effective_candidates is exp(entropy): roughly how many candidate entries remain plausible under this soft weighting.",
-            "v0.5.1 center_probabilities use the best mismatch at each unique center, so duplicate refinement candidates do not inflate a center.",
+            "center_probabilities use the best mismatch at each unique center, so duplicate refinement candidates do not inflate a center.",
             "center_effective_candidates is usually the clearest location-ambiguity diagnostic.",
             "High entropy means many candidates explain the traces about equally well.",
         ],

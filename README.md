@@ -1,43 +1,61 @@
 # WaveSleuth-Devito
 
-WaveSleuth-Devito is a toy inverse-physics playground I made just for fun and because I was bored and wanted to try something new.
+WaveSleuth-Devito is a compact inverse-wave playground built on Devito. It
+simulates acoustic waves through hidden two-dimensional media, records sparse
+receiver traces, and reconstructs hidden structures with deliberately simple,
+inspectable inversion strategies.
 
-It uses Devito to simulate acoustic waves through hidden 2D media, records sparse receiver traces, and tries to reconstruct hidden structures using simple inversion strategies.
+The project feels like scientific Battleship with wave propagation: hide a
+structure, choose how to illuminate it, observe a few traces, infer what is
+there, and inspect why the reconstruction worked or failed.
 
-The vibe is scientific Battleship with wave propagation: hide something in a medium, fire waves through it, observe only a few traces, then make a guess about what was hidden.
+**Status:** v0.9.3 is the final pre-v1.0 release candidate. The numerical
+feature set is frozen. The remaining gate is a clean master audit followed by
+the version/tag change to v1.0.0.
 
-## What this is
+## What it is
 
-WaveSleuth-Devito is a small, runnable sandbox for learning and tinkering with:
+- a local CPU playground for small two-dimensional acoustic inverse problems
+- a real Devito forward model, not a NumPy wave surrogate presented as Devito
+- a visual sandbox for sparse acquisition, uncertainty, blind challenges, and
+  active sensing
+- a collection of honest baseline inversions that are easy to inspect and
+  modify
+- a reproducible challenge and reporting layer for comparing quality and cost
 
-- wave propagation
-- hidden-medium reconstruction
-- inverse problems
-- sparse sensing
-- source and receiver placement
-- simple search-based inversion
-- visualization
-- future AI-for-science extensions
+## What it is not
 
-## What this is not
+- a production seismic, ultrasound, or nondestructive-testing package
+- a validated field-scale model
+- a generic Devito benchmark
+- a full-waveform inversion framework
+- evidence that mismatch-derived uncertainty weights are calibrated Bayesian
+  posteriors
 
-This is not a paper, not a production inversion package, not a generic Devito benchmark, and not a polished full-waveform inversion framework. The MVP intentionally favors a hackable end-to-end pipeline over architectural depth.
+## Current capabilities
 
-## Why it exists
+| Area | Stable capability |
+|---|---|
+| Forward model | Devito-backed constant-density 2D acoustic wave equation |
+| Sources | Ricker pulse, simultaneous or sequential shots |
+| Boundaries | Reflective/default boundary or simple damping sponge, not full PML |
+| Acquisition | Single, crossfire, ring, top-only, left-right, limited-angle |
+| Data realism | Deterministic noise, dropout, amplitude jitter, and time jitter |
+| Circle inversion | Joint grid search and staged center/radius/velocity search |
+| Ellipse inversion | Known-shape center search; broader parameter search is experimental |
+| Mask inversion | Greedy coarse-cell recovery for `mask-blocks` worlds |
+| Objectives | Raw or differential traces, L2 or correlation, optional time gates |
+| Uncertainty | Candidate and unique-center mismatch-derived summaries |
+| Challenges | Open and blind modes, physical and budgeted scores, leaderboards |
+| Active sensing | Multi-round source selection with three deterministic heuristics |
+| Release tools | `doctor`, `validate`, `challenge-suite`, and `release-report` |
 
-A lot of inverse-problem software jumps from textbook math to heavyweight research systems. WaveSleuth-Devito tries to make the basic loop tangible:
-
-1. define a hidden 2D world
-2. simulate acoustic waves through it
-3. record sparse receiver traces
-4. search over candidate hidden structures
-5. visualize and score the guess
-
-The default inversion is deliberately simple: a coarse grid search for the center of a circular anomaly. It is not smart, but it is inspectable.
+The detailed support table is in
+[`docs/FEATURE_MATRIX.md`](docs/FEATURE_MATRIX.md).
 
 ## Installation
 
-For the full wave simulation path, install with the Devito extra:
+Python 3.10, 3.11, and 3.12 are the supported release targets.
 
 ```bash
 python -m venv .venv
@@ -46,7 +64,7 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[devito,test]"
 ```
 
-On Windows PowerShell:
+Windows PowerShell:
 
 ```powershell
 python -m venv .venv
@@ -55,484 +73,258 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[devito,test]"
 ```
 
-A lighter install works for JSON generation, scoring helpers, and non-Devito tests:
+A lighter development install is available:
 
 ```bash
 python -m pip install -e ".[test]"
 ```
 
-Simulation and inversion commands will clearly fail if Devito is not installed.
+World generation, JSON handling, scoring, validation, documentation checks, and
+non-Devito tests still work. Simulation and inversion fail clearly when Devito
+is unavailable.
 
-## Quickstart
-
-```bash
-wavesleuth-devito generate-world --kind circle --out worlds/circle.json
-wavesleuth-devito simulate worlds/circle.json --out runs/circle_obs.npz
-wavesleuth-devito invert runs/circle_obs.npz --method grid-search --out runs/circle_recon.json
-wavesleuth-devito visualize-world worlds/circle.json --out figures/circle_world.png
-wavesleuth-devito visualize-run runs/circle_obs.npz --out figures/circle_traces.png
-wavesleuth-devito visualize-reconstruction runs/circle_recon.json --out figures/circle_recon.png
-wavesleuth-devito score worlds/circle.json runs/circle_recon.json
-```
-
-Or run the whole tiny pipeline:
+## Fastest useful start
 
 ```bash
-wavesleuth-devito demo --out-dir demo_output
+wavesleuth-devito demo --out-dir demo_output --quiet
+wavesleuth-devito challenge-suite --out-dir release_suite --quiet
+wavesleuth-devito doctor --try-devito
 ```
 
-## CLI commands
+Validate the canonical suite:
 
 ```bash
-wavesleuth-devito --help
-
-wavesleuth-devito generate-world --kind circle --out worlds/circle.json
-wavesleuth-devito generate-world --kind rectangle --out worlds/rectangle.json
-wavesleuth-devito generate-world --kind layered --out worlds/layered.json
-wavesleuth-devito generate-world --kind blobs --out worlds/blobs.json
-
-wavesleuth-devito simulate worlds/circle.json --out runs/circle_obs.npz
-wavesleuth-devito invert runs/circle_obs.npz --method grid-search --out runs/circle_recon.json
-wavesleuth-devito visualize-world worlds/circle.json --out figures/circle_world.png
-wavesleuth-devito visualize-run runs/circle_obs.npz --out figures/circle_traces.png
-wavesleuth-devito visualize-reconstruction runs/circle_recon.json --out figures/circle_recon.png
-
-wavesleuth-devito score worlds/circle.json runs/circle_recon.json
-wavesleuth-devito demo --out-dir demo_output
-wavesleuth-devito self-test
+wavesleuth-devito validate \
+  release_suite/circle-easy \
+  release_suite/ellipse-easy \
+  release_suite/circle-radius-velocity-staged \
+  release_suite/mask-cell-easy
 ```
 
-## Worlds
-
-A world is a JSON file containing grid geometry, velocity settings, hidden-medium parameters, source and receiver coordinates, and simulation settings.
-
-Supported generated worlds:
-
-- `circle`: one circular velocity anomaly
-- `rectangle`: one rectangular velocity anomaly
-- `layered`: horizontal velocity layers
-- `blobs`: multiple deterministic random circular anomalies
-
-Example:
-
-```json
-{
-  "name": "circle_demo",
-  "grid": {
-    "nx": 70,
-    "nz": 70,
-    "extent_x": 1.0,
-    "extent_z": 1.0
-  },
-  "medium": {
-    "background_velocity": 1.5,
-    "anomaly_velocity": 2.2,
-    "anomaly": {
-      "kind": "circle",
-      "center_x": 0.55,
-      "center_z": 0.52,
-      "radius": 0.12
-    }
-  },
-  "acquisition": {
-    "sources": [
-      {"x": 0.2, "z": 0.12}
-    ],
-    "receivers": [
-      {"x": 0.15, "z": 0.82},
-      {"x": 0.30, "z": 0.82},
-      {"x": 0.45, "z": 0.82},
-      {"x": 0.60, "z": 0.82},
-      {"x": 0.75, "z": 0.82},
-      {"x": 0.90, "z": 0.82}
-    ]
-  },
-  "simulation": {
-    "nt": 360,
-    "dt": 0.0015,
-    "space_order": 4,
-    "source_frequency": 20.0
-  }
-}
-```
-
-Coordinates are physical coordinates in the domain described by `extent_x` and `extent_z`.
-
-## Simulation
-
-The forward simulation uses a simple constant-density acoustic wave equation in 2D, implemented with Devito symbols and operators. Sources and receivers are sparse Devito time functions. The source pulse is a Ricker wavelet.
-
-The generated `.npz` run file contains:
-
-- `receiver_traces`: array with shape `(nt, n_receivers)`
-- `time`: simulation times
-- `velocity_model`: 2D velocity grid
-- `source_coordinates`: source locations as `(x, z)`
-- `receiver_coordinates`: receiver locations as `(x, z)`
-- `final_wavefield`: final wavefield if saved
-- `snapshots`: sparse wavefield snapshots if saved
-- `world_json`: serialized world metadata
-
-MVP boundary behavior is intentionally crude. The solver does not implement a production absorbing boundary or PML. Expect boundary reflections, especially for long runs or sources near the edges.
-
-## Inversion
-
-The first inversion method is `grid-search` for circular anomalies.
-
-Given observed traces from a circle world, the inversion:
-
-1. reads the hidden-world metadata stored inside the `.npz`
-2. holds radius and anomaly velocity fixed unless overridden
-3. scans a coarse grid of candidate circle centers
-4. runs a Devito forward simulation for each candidate
-5. computes normalized trace mismatch
-6. saves the best candidate and mismatch map
-
-Example:
+## Circle workflow
 
 ```bash
+wavesleuth-devito generate-world \
+  --kind circle \
+  --acquisition-preset crossfire \
+  --out worlds/circle.json
+
+wavesleuth-devito simulate worlds/circle.json \
+  --shot-mode sequential \
+  --out runs/circle_obs.npz \
+  --quiet
+
 wavesleuth-devito invert runs/circle_obs.npz \
   --method grid-search \
-  --candidate-grid-size 5 \
-  --out runs/circle_recon.json
-```
-
-Useful options:
-
-```bash
---candidate-grid-size 7
---radius 0.10
---anomaly-velocity 2.1
---max-candidates 20
---quiet
-```
-
-This is intentionally brute force. It is there to make the inverse loop visible, not to be clever.
-
-## Scoring
-
-For circle worlds, scoring reports:
-
-- center error
-- normalized center error
-- radius error
-- anomaly mask IoU
-- best mismatch if available
-
-For non-circle worlds, the MVP scorer returns a clear unsupported message instead of pretending to evaluate a method it does not yet understand.
-
-## Visualization
-
-Matplotlib visualizations are available for:
-
-- worlds: velocity model plus source and receiver overlays
-- runs: receiver trace heatmap
-- reconstructions: true/predicted circles plus candidate mismatch heatmap
-
-No notebooks are required.
-
-## Current limitations
-
-- Circle inversion only searches for the anomaly center.
-- Radius and anomaly velocity are fixed or supplied manually.
-- The default acoustic solver uses simple zero-style boundary behavior, not a tuned absorbing boundary.
-- One or more sources are supported, but the default examples use a single simultaneous shot.
-- The inversion repeatedly runs forward models, so it is intentionally small.
-- The numerical model is for learning and play, not validated field-scale modeling.
-
-## Future ideas
-
-- better absorbing boundaries
-- multiple shot experiments
-- active source/receiver placement
-- CO2 plume toy mode
-- ultrasound mode
-- nondestructive testing mode
-- learned inversion using small neural networks
-- surrogate forward models
-- uncertainty maps
-- comparison against stronger inversion methods
-- performance and validation reports as secondary support features
-
-## Development checks
-
-```bash
-python -m pytest
-wavesleuth-devito self-test
-```
-
-Devito-heavy tests are skipped when Devito is unavailable.
-## v0.2 improvements
-
-This repo has been upgraded with a more useful inverse-problem baseline:
-
-- `--acquisition-preset crossfire` generates sparse multi-angle source/receiver geometry.
-- `simulate --shot-mode sequential` fires sources one at a time and stores a trace cube.
-- `invert --mismatch-mode differential` subtracts a background simulation before comparing traces.
-- `invert --refine-levels N` performs local grid refinement after the first coarse search.
-- `invert --metric correlation`, `--time-min`, `--time-max`, and `--normalize-traces` expose a few simple objective variants.
-
-A good v0.2 workflow is:
-
-```bash
-wavesleuth-devito generate-world --kind circle --acquisition-preset crossfire --out worlds/circle_crossfire.json
-wavesleuth-devito simulate worlds/circle_crossfire.json --shot-mode sequential --out runs/circle_crossfire_obs.npz
-wavesleuth-devito invert runs/circle_crossfire_obs.npz --method grid-search --candidate-grid-size 5 --refine-levels 1 --mismatch-mode differential --out runs/circle_crossfire_recon.json
-wavesleuth-devito visualize-reconstruction runs/circle_crossfire_recon.json --out figures/circle_crossfire_recon.png
-wavesleuth-devito score worlds/circle_crossfire.json runs/circle_crossfire_recon.json
-```
-## v0.3 improvements
-
-v0.3 expands the playground from a better demo into a small experiment engine:
-
-- `invert --radius-values`, `--anomaly-velocity-values`, `--search-radius`, and `--search-velocity` can search size and contrast, not just center.
-- `simulate --noise-level`, `--receiver-dropout`, `--amplitude-jitter`, and `--time-jitter` create deterministic imperfect observations.
-- `generate-world --acquisition-preset ring|top-only|left-right` adds more source/receiver layouts.
-- `--boundary sponge --sponge-width N --sponge-strength X` enables a simple damping sponge. This is not a full PML.
-- `visualize-uncertainty` turns candidate mismatch values into pseudo-probability diagnostics.
-- `challenge` runs named budgeted reconstruction games such as `circle-easy`, `circle-noisy`, `circle-limited-angle`, and `circle-radius-velocity`.
-- `leaderboard` scans challenge summaries and ranks them by budgeted score.
-- `compare-acquisition` runs the same hidden object under multiple source/receiver layouts.
-- `report` writes a small HTML experiment report.
-
-Example v0.3 commands:
-
-```bash
-wavesleuth-devito demo --out-dir demo_output_v03 --quiet
-wavesleuth-devito challenge circle-noisy --out-dir challenge_noisy --quiet
-wavesleuth-devito leaderboard .
-wavesleuth-devito generate-world --kind circle --acquisition-preset ring --boundary sponge --sponge-width 5 --sponge-strength 12 --out worlds/circle_ring.json
-wavesleuth-devito compare-acquisition worlds/circle_ring.json --out-dir acq_compare --quiet
-```
-
-Radius/velocity search example:
-
-```bash
-wavesleuth-devito invert runs/circle_obs.npz \
-  --method grid-search \
+  --mismatch-mode differential \
   --candidate-grid-size 5 \
   --refine-levels 1 \
-  --mismatch-mode differential \
-  --radius-values 0.09,0.12,0.15 \
-  --anomaly-velocity-values 2.0,2.2,2.4 \
-  --out runs/circle_recon_param_search.json
+  --out runs/circle_recon.json \
+  --quiet
+
+wavesleuth-devito visualize-reconstruction runs/circle_recon.json \
+  --out figures/circle_recon.png
+
+wavesleuth-devito score worlds/circle.json runs/circle_recon.json
 ```
-## v0.3.1 cleanup
 
-v0.3.1 is a small polish release focused on diagnostics rather than new inversion behavior:
-
-- uncertainty summaries now include `effective_candidates`, `center_effective_candidates`, and top-candidate probability mass diagnostics
-- `visualize-uncertainty` handles single-center or degenerate candidate grids without Matplotlib identical-limit warnings
-- leaderboard rows are rounded and sorted on rounded scores so tiny runtime jitter does not imply a meaningful ranking difference
-- leaderboard rows include difficulty, experimental status, radius error, normalized center error, and a compact best-candidate summary
-- challenge summaries now label `circle-radius-velocity` as hard/experimental and document why naive joint radius/velocity search can fail
-- HTML reports include the uncertainty summary block
-## v0.3.2 final cleanup
-
-v0.3.2 is the final v0.3 cleanup patch before v0.4 work:
-
-- challenge runs clean known challenge-owned outputs by default so stale files from a previous challenge do not linger in reused output directories
-- challenge supports `--no-clean` / `--keep-existing` when you intentionally want to preserve old generated files
-- default challenge scores no longer include wall-clock runtime, because first-run compilation and cache state make runtime too noisy for the main score
-- runtime remains reported as a diagnostic field
-- HTML reports backfill uncertainty diagnostics for older v0.3 reconstruction JSON files when candidate mismatches are available
-
-## v0.4 staged radius/velocity search
-
-v0.4 keeps the v0.3 joint grid search as a baseline, but adds a staged strategy for harder circle inversions where center, radius, and anomaly velocity are all uncertain.
-
-The staged strategy is center-first:
-
-1. search candidate centers using the reference radius and velocity
-2. keep the top-K plausible centers
-3. search radius and velocity only near those centers
-4. optionally perform a final local center polish
-
-This is designed to reduce the v0.3 failure mode where a small weak impostor anomaly can win the global joint objective before the center has been localized.
-
-Example:
+For unknown center, radius, and anomaly velocity, use staged search:
 
 ```bash
 wavesleuth-devito invert runs/circle_obs.npz \
   --method staged-grid-search \
   --search-radius \
   --search-velocity \
+  --top-k-refine 5 \
+  --final-refine-top-k 1 \
+  --out runs/circle_staged_recon.json \
+  --quiet
+```
+
+## Ellipse workflow
+
+The stable ellipse baseline assumes that axes, orientation, and anomaly
+velocity are public and searches the center.
+
+```bash
+wavesleuth-devito generate-world \
+  --kind ellipse \
+  --acquisition-preset crossfire \
+  --out worlds/ellipse.json
+
+wavesleuth-devito simulate worlds/ellipse.json \
+  --shot-mode sequential \
+  --out runs/ellipse_obs.npz \
+  --quiet
+
+wavesleuth-devito invert runs/ellipse_obs.npz \
+  --method ellipse-grid-search \
   --candidate-grid-size 5 \
   --refine-levels 1 \
-  --top-k-refine 5 \
-  --out runs/circle_recon_staged.json
+  --out runs/ellipse_recon.json \
+  --quiet
 ```
 
-The old joint behavior is still available:
+`--search-axes`, `--search-angle`, and `--search-velocity` remain experimental.
+Extra unknowns can reduce trace mismatch without improving geometry.
+
+## Coarse mask workflow
+
+`mask-blocks` is the first non-parametric baseline. It greedily adds coarse
+cells and verifies every candidate with Devito.
 
 ```bash
-wavesleuth-devito invert runs/circle_obs.npz \
-  --method grid-search \
-  --search-strategy joint \
-  --search-radius \
-  --search-velocity \
-  --out runs/circle_recon_joint.json
+wavesleuth-devito generate-world \
+  --kind mask-blocks \
+  --acquisition-preset crossfire \
+  --out worlds/mask_blocks.json
+
+wavesleuth-devito simulate worlds/mask_blocks.json \
+  --shot-mode sequential \
+  --out runs/mask_blocks_obs.npz \
+  --quiet
+
+wavesleuth-devito invert runs/mask_blocks_obs.npz \
+  --method cell-search \
+  --cell-grid-size 6 \
+  --max-active-cells 5 \
+  --mismatch-mode differential \
+  --out runs/mask_blocks_recon.json \
+  --quiet
 ```
 
-A new challenge compares the v0.4 staged method against the old hard radius/velocity baseline:
+The bundled `mask-cell-easy` challenge is a calibrated deterministic proof of
+concept, not evidence that greedy cell search is a general imaging method.
+
+## Challenges and blind mode
 
 ```bash
-wavesleuth-devito challenge circle-radius-velocity-staged --out-dir challenge_rv_staged --quiet
-wavesleuth-devito leaderboard challenge_rv challenge_rv_staged
-```
-
-## v0.4.1 reporting polish
-
-v0.4.1 keeps the staged-search numerics unchanged and improves diagnostics around the hard radius/velocity challenge:
-
-- circle scoring now reports anomaly-velocity error and relative velocity error when the true velocity is known
-- challenge leaderboards display velocity-error fields
-- reports backfill velocity diagnostics for older v0.4 reconstruction JSONs when possible
-- staged uncertainty plots emphasize center-effective candidates because staged searches contain candidates from multiple phases
-
-The staged radius/velocity method should be read as strong localization plus approximate contrast recovery, not perfect velocity inversion.
-
-## v0.5 richer worlds and first non-circle inversion
-
-v0.5 expands WaveSleuth beyond circles. New generated world kinds are:
-
-- `ellipse`
-- `ring`
-- `two-circles`
-- `crack`
-- `circle-layered`
-
-The first non-circle inversion baseline is:
-
-```bash
-wavesleuth-devito invert runs/ellipse_obs.npz --method ellipse-grid-search --out runs/ellipse_recon.json
-```
-
-The conservative default searches the ellipse center while holding semi-axes, orientation, and anomaly velocity from metadata. Optional `--search-axes`, `--search-angle`, and `--search-velocity` flags are available for experiments, but sparse data can make those parameters ambiguous.
-
-v0.5 also adds an `ellipse-easy` challenge:
-
-```bash
+wavesleuth-devito challenge circle-easy --out-dir challenge_circle --quiet
 wavesleuth-devito challenge ellipse-easy --out-dir challenge_ellipse --quiet
-wavesleuth-devito leaderboard challenge_ellipse
+wavesleuth-devito leaderboard challenge_circle challenge_ellipse
 ```
 
-Circle and ellipse reconstructions are scored parametrically. Other v0.5 shapes can be generated, simulated, visualized, and mask-scored manually in future versions, but they do not yet have dedicated inversion methods.
-
-## v0.6 blind challenges
-
-
-v0.6 adds optional blind challenge bundles. In blind mode, observed traces are
-written with public/redacted metadata while the true answer is stored separately
-under `secret/` for local scoring.
+Blind mode separates public observations from the local answer key:
 
 ```bash
-wavesleuth-devito challenge ellipse-easy --blind --out-dir challenge_ellipse_blind --quiet
+wavesleuth-devito challenge ellipse-easy \
+  --blind \
+  --out-dir challenge_ellipse_blind \
+  --quiet
+
 wavesleuth-devito score-challenge challenge_ellipse_blind
 ```
 
-The public observed `.npz` keeps traces and acquisition geometry but replaces the
-saved velocity model with a background model and omits wavefield snapshots.
-Known-shape hints remain public for the current baseline inversions; fully
-unknown-shape challenges are later work.
+Public blind runs retain acquisition geometry, traces, timing, background
+velocity, and known-shape hints required by the stable baseline. They do not
+contain the true velocity model, final wavefield, snapshots, or hidden location.
 
-## v0.6.1 blind challenge cleanup
-
-
-v0.6.1 clarifies blind challenge integrity artifacts. Challenge manifests now
-report both file-byte and canonical secret-world SHA-256 digests. Public files
-still hide the answer, while private files under `secret/` can show the true
-answer for local inspection.
-
-## v0.7 active sensing
-
-
-v0.7 adds a deterministic active-sensing demo. The loop starts with one source,
-inverts the current observations, chooses a new source based on uncertainty and
-geometric spread, and repeats with cumulative sequential shots.
+## Active sensing
 
 ```bash
-wavesleuth-devito active-demo --out-dir active_demo --quiet
+wavesleuth-devito active-demo \
+  --strategy uncertainty \
+  --rounds 3 \
+  --out-dir active_uncertainty \
+  --quiet
+
+wavesleuth-devito active-demo \
+  --strategy spread \
+  --rounds 3 \
+  --out-dir active_spread \
+  --quiet
+
+wavesleuth-devito active-demo \
+  --strategy opposite-best \
+  --rounds 3 \
+  --out-dir active_opposite \
+  --quiet
+
+wavesleuth-devito active-leaderboard \
+  active_uncertainty active_spread active_opposite
 ```
 
-Outputs include `active_summary.json`, `reports/active_report.html`, per-round
-trace/reconstruction/uncertainty figures, and a progress plot. The strategy is a
-simple heuristic, not an optimal experimental-design solver.
+These policies are deterministic heuristics, not optimal experimental-design
+solvers. A new shot may expose ambiguity without monotonically improving a
+simple inversion.
 
-## v0.7.1 active sensing cleanup
+## Scoring
 
+Two scores serve different purposes:
 
-v0.7.1 tightens active-sensing artifacts. Sequential active traces are stored as
-`(shot, time, receiver)` even for one-shot rounds, active summaries include
-per-round uncertainty diagnostics, and active runs can be compared directly:
+- `physical_score` describes reconstruction quality, including IoU, center
+  error, shape-parameter errors, and contrast errors where supported.
+- `challenge_score` is the budgeted game score. It rewards reconstruction
+  quality and penalizes source, receiver, and forward-run cost. Runtime is
+  diagnostic only.
 
-```bash
-wavesleuth-devito active-leaderboard active_uncertainty active_spread active_opposite
-```
+The legacy `score` alias remains readable for backward compatibility.
 
+## Uncertainty
 
-## v0.8 coarse mask inversion
+Candidate probabilities are soft weights derived from mismatch values. They are
+not calibrated posteriors. `center_effective_candidates` is usually the clearest
+location-ambiguity diagnostic because it deduplicates repeated centers across
+refinement stages.
 
-v0.8 adds `mask-blocks`, a coarse-cell hidden target, and `cell-search`, a
-greedy mask inversion baseline. This is the first image-like reconstruction path
-in WaveSleuth. It is deliberately small and blocky: a useful baseline, not full
-waveform tomography.
+## World families
 
-```bash
-wavesleuth-devito challenge mask-cell-easy --out-dir challenge_mask --quiet
-wavesleuth-devito leaderboard challenge_mask
-```
-## v0.8.1 note
-
-v0.8.1 is a test/metadata cleanup patch. It preserves the v0.8 mask-block and
-cell-search behavior, and changes old version regression tests so they check
-minimum compatible versions instead of asserting historical exact versions.
-
-## v0.8.2 mask-cell challenge calibration
-
-v0.8 introduced `mask-blocks` worlds and a first greedy `cell-search` baseline.
-The original `mask-cell-easy` challenge used a small sponge-boundary setup that
-made the intentionally simple greedy baseline fail even though the manual
-calibrated mask workflow worked. v0.8.2 keeps the algorithm unchanged and aligns
-`mask-cell-easy` with the calibrated default mask setup:
+Generation and forward simulation support:
 
 ```text
-nx=nz=54
-boundary=none
-cell_grid_size=6
-max_active_cells=5
+circle
+rectangle
+layered
+blobs
+ellipse
+ring
+two-circles
+crack
+circle-layered
+mask-blocks
 ```
 
-This keeps `mask-cell-easy` as a demonstration challenge for the first coarse
-mask inversion path. More realistic/robust mask challenges should be added later
-with stronger search methods.
-## v0.8.3 note
+Stable reconstruction baselines currently cover circle, known-shape ellipse,
+and calibrated coarse `mask-blocks` targets. Other families are simulation and
+visualization targets for future inversion work.
 
-v0.8.3 finalizes the first coarse-mask challenge calibration. The `mask-cell-easy`
-challenge now uses the same amplitude-sensitive differential objective as the
-working manual mask-block workflow: `normalize_traces=False`. This keeps the
-first mask/image challenge as a demonstration of the greedy cell-search baseline,
-not a deliberately hard normalized-objective failure.
-## v0.9 release-hardening commands
-
-v0.9 adds validation and release-report helpers without changing the numerical
-simulation or inversion methods.
+## Validation and release audit
 
 ```bash
-wavesleuth-devito doctor
-wavesleuth-devito validate challenge_easy challenge_ellipse challenge_mask
+python -m pytest
+wavesleuth-devito doctor --try-devito
+wavesleuth-devito self-test --try-devito
 wavesleuth-devito challenge-suite --out-dir release_suite --quiet
-wavesleuth-devito release-report \
-  --out reports/release_report.html \
-  --challenge-paths challenge_easy challenge_ellipse challenge_rv_staged challenge_mask
+bash collect_wavesleuth_v1_audit.sh
 ```
 
-The preferred score schema is now:
+The master audit collects tests, environment information, a world gallery, the
+standard challenge suite, blind-integrity checks, active demos, validation,
+reports, and checksums.
 
-```text
-physical_score   reconstruction quality such as IoU, center error, mask error
-challenge_score  budgeted game score with sensing/simulation cost
-```
+## Current limitations
 
-Older files that use `score` for the physical reconstruction score remain
-readable.
+- The forward model is a small constant-density acoustic toy model.
+- The simple sponge is not a production PML.
+- Circle and ellipse inversions are parametric.
+- Ellipse axes/orientation recovery is experimental.
+- Mask-cell search is greedy and calibrated only for a simple deterministic
+  milestone.
+- Velocity contrast remains less identifiable than location and radius in the
+  staged circle challenge.
+- Active policies are heuristic.
+- Uncertainty weights are qualitative.
+- No GPU, MPI, 3D, cloud, notebook, or neural-network dependency is required.
+
+## Documentation
+
+- [`examples/quickstart.md`](examples/quickstart.md)
+- [`docs/SCHEMA.md`](docs/SCHEMA.md)
+- [`docs/FEATURE_MATRIX.md`](docs/FEATURE_MATRIX.md)
+- [`docs/V1_RELEASE_CHECKLIST.md`](docs/V1_RELEASE_CHECKLIST.md)
+- [`docs/POST_V1_ROADMAP.md`](docs/POST_V1_ROADMAP.md)
+- [`CHANGELOG.md`](CHANGELOG.md)
+
+## License
+
+MIT.

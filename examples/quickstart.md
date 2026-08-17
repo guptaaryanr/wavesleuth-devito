@@ -1,21 +1,41 @@
 # Quickstart
 
-From the repository root after installation:
-
 ```bash
-wavesleuth-devito generate-world --kind circle --out worlds/circle.json
-wavesleuth-devito visualize-world worlds/circle.json --out figures/circle_world.png
-wavesleuth-devito simulate worlds/circle.json --out runs/circle_obs.npz
-wavesleuth-devito visualize-run runs/circle_obs.npz --out figures/circle_traces.png
-wavesleuth-devito invert runs/circle_obs.npz --method grid-search --candidate-grid-size 5 --out runs/circle_recon.json
-wavesleuth-devito visualize-reconstruction runs/circle_recon.json --out figures/circle_recon.png
-wavesleuth-devito score worlds/circle.json runs/circle_recon.json
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[devito,test]"
+
+wavesleuth-devito demo --out-dir demo_output --quiet
+wavesleuth-devito challenge-suite --out-dir release_suite --quiet
+wavesleuth-devito doctor --try-devito
 ```
 
-For a smaller one-command pipeline:
+Inspect the standard suite:
 
 ```bash
-wavesleuth-devito demo --out-dir demo_output
+wavesleuth-devito leaderboard \
+  release_suite/circle-easy \
+  release_suite/ellipse-easy \
+  release_suite/circle-radius-velocity-staged \
+  release_suite/mask-cell-easy
 ```
 
-The generated files are intentionally plain JSON, NPZ, and PNG so you can inspect and modify them without notebooks.
+Run a blind challenge:
+
+```bash
+wavesleuth-devito challenge ellipse-easy \
+  --blind \
+  --out-dir challenge_ellipse_blind \
+  --quiet
+wavesleuth-devito score-challenge challenge_ellipse_blind
+```
+
+Run active sensing:
+
+```bash
+wavesleuth-devito active-demo \
+  --strategy uncertainty \
+  --rounds 3 \
+  --out-dir active_uncertainty \
+  --quiet
+```

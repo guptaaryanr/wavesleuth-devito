@@ -524,7 +524,7 @@ def grid_search_circle(
                 level_velocities=velocities,
                 level_metric=metric,
                 used_margin=used_margin,
-                notes=["v0.3-compatible joint center/radius/velocity search."],
+                notes=["Joint center/radius/velocity search retained as a diagnostic baseline."],
             )
             if level_records:
                 previous_best = select_best_candidate(level_records)
@@ -747,8 +747,8 @@ def grid_search_circle(
         "notes": [
             "Grid search assumes a circular anomaly.",
             "Differential mode compares hidden-minus-background residual traces and is usually less fooled by direct arrivals.",
-            "v0.4 adds staged search: center first, top-K radius/velocity search second, optional final local center refinement.",
-            "Joint strategy remains available for v0.3-style behavior and for diagnosing impostor solutions.",
+            "Staged search localizes center first, searches radius/velocity around top candidates, and optionally refines center.",
+            "Joint strategy remains available for diagnosing impostor solutions.",
             "The mismatch map is taken from the final displayed search level; inspect search_levels for the full multi-stage trajectory.",
             "The optional sponge boundary is a simple damping layer, not a production PML.",
         ],
@@ -1124,7 +1124,7 @@ def grid_search_ellipse(
                 margin=used_margin,
                 records_by_cell=records_by_cell,
                 level_records=level_records,
-                notes=["v0.5 ellipse grid search; by default only center is unknown."],
+                notes=["Ellipse grid search; by default only center is unknown."],
             )
         )
         if level_records:
@@ -1211,7 +1211,7 @@ def grid_search_ellipse(
         "uncertainty": uncertainty,
         "score": score,
         "notes": [
-            "v0.5 adds the first non-circle inversion path: ellipse-grid-search.",
+            "ellipse-grid-search is the stable known-shape non-circle baseline.",
             "The conservative default searches ellipse center while holding axes, angle, and velocity from metadata.",
             "Optional axes/angle/velocity searches are provided for experiments, but can be ambiguous under sparse data.",
         ],

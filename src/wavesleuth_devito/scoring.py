@@ -384,7 +384,7 @@ def score_reconstruction(true_world: dict[str, Any], reconstruction: dict[str, A
 
     return {
         "supported": False,
-        "message": f"Scoring for {kind!r} worlds is not implemented yet. v0.5 can generate this world, but only circle and ellipse reconstructions are scored parametrically.",
+        "message": f"Scoring for {kind!r} worlds is not implemented yet. The world can be generated and simulated, but only supported target families receive dedicated reconstruction scores.",
     }
 
 def probability_map_from_mismatch_map(
@@ -446,7 +446,7 @@ def budgeted_challenge_score(
 ) -> dict[str, Any]:
     """Return a lightweight game-style score for budgeted challenge runs.
 
-    v0.3.2 deliberately reports runtime but does not include it in the default
+    The stable challenge score reports runtime but does not include it in the default
     score. Wall-clock time is too dependent on first-run compilation, CPU load,
     and cache state to be a stable scientific/game score. Performance can still
     be compared using the returned ``runtime_seconds`` field.

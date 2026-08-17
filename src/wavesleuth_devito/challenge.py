@@ -13,6 +13,7 @@ from .exceptions import ValidationError
 from .inversion import grid_search_circle, grid_search_ellipse
 from .cellmask import greedy_cell_search_mask_blocks, visualize_mask_blocks_reconstruction
 from .io import load_json, save_json, save_world
+from .metadata import ARTIFACT_SCHEMA_VERSION
 from .report import generate_html_report
 from .scoring import budgeted_challenge_score, score_reconstruction
 from .simulation import simulate_world
@@ -43,7 +44,7 @@ CHALLENGE_METADATA: dict[str, dict[str, Any]] = {
     "circle-radius-velocity": {
         "difficulty": "hard",
         "experimental": True,
-        "description": "v0.3-style naive joint search over center, radius, and anomaly velocity.",
+        "description": "Naive joint search over center, radius, and anomaly velocity, retained as a diagnostic baseline.",
         "notes": [
             "This remains as a diagnostic baseline because joint radius/velocity search can prefer weak impostor anomalies.",
             "A low score here is a useful failure mode, not evidence that the basic center-recovery pipeline is broken.",
@@ -214,10 +215,10 @@ def _drop_none_leaderboard_fields(row: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in row.items() if not (key in optional and value is None)}
 
 def _stable_challenge_score_from_summary(data: dict[str, Any]) -> dict[str, Any]:
-    """Return a v0.3.2-style challenge score from a saved summary.
+    """Return the stable budgeted challenge score from a saved summary.
 
-    Older v0.3.1 summaries stored a runtime-penalized score. Leaderboards should
-    display the stable v0.3.2 score when the required reconstruction and budget
+    Some historical summaries stored a runtime-penalized score. Leaderboards should
+    display the stable current score when the required reconstruction and budget
     fields are available, without forcing users to rerun every challenge just to
     get the cleaned scoring formula.
     """
@@ -255,7 +256,7 @@ def _rounded(value: Any, digits: int = 3) -> float | None:
 def _backfill_velocity_score_fields(data: dict[str, Any], summary_path: Path | None = None) -> dict[str, Any]:
     """Return reconstruction score with velocity diagnostics when recoverable.
 
-    v0.4 challenge summaries saved before v0.4.1 may not include velocity-error
+    Historical challenge summaries may not include velocity-error
     fields. When a reconstruction JSON is available, derive those fields from its
     embedded true_center and best_candidate entries so old summaries display
     cleaner leaderboards without forcing an immediate rerun.
@@ -467,7 +468,7 @@ def score_challenge_directory(
         runtime_seconds=summary.get("runtime_seconds"),
     )
     result = {
-        "schema_version": "0.9.0",
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
         "challenge": summary.get("challenge", challenge_name),
         "blind": bool(summary.get("blind", False)),
         "secret_world_path": str(secret_path),
@@ -483,7 +484,7 @@ def score_challenge_directory(
         "score": physical_score,
     }
     if update_reconstruction:
-        reconstruction["schema_version"] = "0.6.1"
+        reconstruction["schema_version"] = ARTIFACT_SCHEMA_VERSION
         reconstruction["physical_score"] = physical_score
         reconstruction["score"] = physical_score
         save_json(reconstruction, recon_path)
@@ -627,7 +628,7 @@ def run_challenge(
     )
     secret_digest = secret_hashes["secret_world_sha256"]
     manifest = {
-        "schema_version": "0.9.0",
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
         "challenge": challenge,
         "difficulty": meta["difficulty"],
         "experimental": bool(meta["experimental"]),
@@ -651,7 +652,7 @@ def run_challenge(
     save_json(manifest, manifest_path)
 
     summary = {
-        "schema_version": "0.9.0",
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
         "challenge": challenge,
         "difficulty": meta["difficulty"],
         "experimental": bool(meta["experimental"]),

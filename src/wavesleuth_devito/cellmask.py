@@ -16,6 +16,7 @@ import numpy as np
 from .exceptions import ValidationError
 from .geometry import coordinate_mesh, grid_extent, grid_shape
 from .io import array_string, ensure_parent, load_json, load_run_npz, save_json, world_from_run
+from .metadata import ARTIFACT_SCHEMA_VERSION
 from .metadata import base_metadata
 from .scoring import iou_score, trace_mismatch
 from .simulation import ForwardTraceEngine
@@ -41,7 +42,7 @@ def json_cells(cells: Iterable[dict[str, Any] | tuple[int, int]]) -> list[dict[s
 
 
 def default_mask_block_cells() -> list[dict[str, int]]:
-    """Return the deterministic v0.8 hidden block mask."""
+    """Return the deterministic hidden block mask."""
     return json_cells([(2, 2), (3, 2), (3, 3), (4, 3), (2, 4)])
 
 
@@ -365,7 +366,7 @@ def greedy_cell_search_mask_blocks(
     candidate_world = world_with_mask_blocks_candidate(world, active_cells=selected, anomaly_velocity=velocity, cell_grid_size=n, name="best_mask_blocks")
     reconstruction: dict[str, Any] = {
         **base_metadata(),
-        "schema_version": "0.8.0",
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
         "method": "cell-search",
         "target_kind": "mask-blocks",
         "world_name": world.get("name", "unknown"),
@@ -393,7 +394,7 @@ def greedy_cell_search_mask_blocks(
         "best_candidate": best_candidate,
         "best_mismatch": float(best_candidate["mismatch"]),
         "notes": [
-            "v0.8 cell-search is a greedy coarse-mask baseline, not full tomography.",
+            "cell-search is a greedy coarse-mask baseline, not full tomography.",
             "The reconstruction is blocky because the candidate space is a small occupancy grid.",
         ],
     }

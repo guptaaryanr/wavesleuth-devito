@@ -5,7 +5,7 @@ import json
 import numpy as np
 
 from wavesleuth_devito import __version__
-from wavesleuth_devito.blind import is_blind_public_world, public_world_from_secret
+from wavesleuth_devito.blind import PUBLIC_SCHEMA_VERSION, is_blind_public_world, public_world_from_secret
 from wavesleuth_devito.io import save_run_npz
 from wavesleuth_devito.release import generate_release_html_report, validate_active_directory
 from wavesleuth_devito.world import background_velocity_model_from_world, make_default_world
@@ -68,7 +68,7 @@ def test_public_world_has_top_level_blind_markers() -> None:
     public = public_world_from_secret(secret, challenge="ellipse-easy")
     assert public["blind"] is True
     assert public["answer_hidden"] is True
-    assert public["blind_schema_version"] == "0.9.1"
+    assert public["blind_schema_version"] == PUBLIC_SCHEMA_VERSION
     assert public["blind_public_metadata"]["blind"] is True
     assert is_blind_public_world(public)
 

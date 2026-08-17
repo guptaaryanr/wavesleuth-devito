@@ -96,11 +96,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_invert = subparsers.add_parser("invert", help="Invert observed traces with a simple search method.")
     p_invert.add_argument("run", help="Input observed run .npz path.")
-    p_invert.add_argument("--method", choices=["grid-search", "staged-grid-search", "ellipse-grid-search", "cell-search"], default="grid-search", help="Use grid-search for circles, staged-grid-search for v0.4 circles, or ellipse-grid-search for the v0.5 ellipse baseline.")
+    p_invert.add_argument("--method", choices=["grid-search", "staged-grid-search", "ellipse-grid-search", "cell-search"], default="grid-search", help="Use grid-search for circles, staged-grid-search for staged circle parameters, ellipse-grid-search for known-shape ellipses, or cell-search for coarse masks.")
     p_invert.add_argument("--out", required=True, help="Output reconstruction JSON path.")
     p_invert.add_argument("--candidate-grid-size", type=int, default=5)
-    p_invert.add_argument("--cell-grid-size", type=int, default=6, help="Coarse grid size for v0.8 cell-search masks.")
-    p_invert.add_argument("--max-active-cells", type=int, default=None, help="Maximum selected cells for v0.8 cell-search.")
+    p_invert.add_argument("--cell-grid-size", type=int, default=6, help="Coarse grid size for cell-search masks.")
+    p_invert.add_argument("--max-active-cells", type=int, default=None, help="Maximum selected cells for cell-search.")
     p_invert.add_argument("--radius", type=float, default=None, help="Circle radius override for circle inversion.")
     p_invert.add_argument("--radius-x", type=float, default=None, help="Ellipse x semi-axis override for ellipse-grid-search.")
     p_invert.add_argument("--radius-z", type=float, default=None, help="Ellipse z semi-axis override for ellipse-grid-search.")
@@ -124,7 +124,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_invert.add_argument("--normalize-traces", action="store_true")
     p_invert.add_argument("--refine-levels", type=int, default=0)
     p_invert.add_argument("--shot-mode", choices=["simultaneous", "sequential"], default=None)
-    p_invert.add_argument("--search-strategy", choices=["auto", "joint", "staged"], default="auto", help="v0.4 strategy: auto uses staged when radius/velocity axes are searched.")
+    p_invert.add_argument("--search-strategy", choices=["auto", "joint", "staged"], default="auto", help="Search strategy: auto uses staged search when radius or velocity axes are searched.")
     p_invert.add_argument("--top-k-refine", type=int, default=5, help="For staged search, keep this many center candidates for refinement.")
     p_invert.add_argument("--final-refine-top-k", type=int, default=1, help="For staged search, final center polish around this many parameter candidates.")
     p_invert.add_argument("--center-metric", choices=["l2", "correlation"], default=None, help="Metric for staged center screening. Defaults to --metric.")
@@ -193,7 +193,7 @@ def build_parser() -> argparse.ArgumentParser:
         dest="clean",
         action="store_true",
         default=True,
-        help="Clean challenge-owned outputs before running. This is the default in v0.3.2.",
+        help="Clean challenge-owned outputs before running. This is the default.",
     )
     p_challenge.add_argument(
         "--no-clean",

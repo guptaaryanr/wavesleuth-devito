@@ -18,10 +18,10 @@ import numpy as np
 
 from .exceptions import ValidationError
 from .io import load_json, load_run_npz, world_from_run, save_json, ensure_parent
-from .metadata import PROJECT_NAME, __version__, base_metadata
+from .metadata import PROJECT_NAME, __version__, base_metadata, ARTIFACT_SCHEMA_VERSION
 from .world import validate_world, velocity_model_from_world, anomaly_kind
 
-RELEASE_SCHEMA_VERSION = "0.9.2"
+RELEASE_SCHEMA_VERSION = ARTIFACT_SCHEMA_VERSION
 DEFAULT_RELEASE_CHALLENGES = (
     "circle-easy",
     "ellipse-easy",
@@ -393,7 +393,8 @@ def run_release_challenge_suite(
     suite = {
         **base_metadata(),
         "release_schema_version": RELEASE_SCHEMA_VERSION,
-        "suite": "v0.9-standard-challenge-suite",
+        "suite": "standard-challenge-suite",
+        "suite_version": __version__,
         "challenge_names": challenge_names,
         "challenge_dirs": output_dirs,
         "leaderboard": leaderboard,

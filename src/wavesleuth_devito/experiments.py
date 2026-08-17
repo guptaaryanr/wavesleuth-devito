@@ -235,7 +235,7 @@ code {{ background: #f6f6f6; padding: 0.1rem 0.25rem; }}
 </head>
 <body>
 <h1>{title}</h1>
-<p>This is a lightweight v0.3 report. It records what was searched, what won, how it scored, and how concentrated the candidate mismatch surface was.</p>
+<p>This is a lightweight experiment report. It records what was searched, what won, how it scored, and how concentrated the candidate mismatch surface was.</p>
 {_html_table(summary)}
 <h2>Notes</h2>
 <ul>

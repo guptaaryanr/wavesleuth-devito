@@ -1,76 +1,90 @@
-# WaveSleuth-Devito artifact schema notes
+# Artifact schema
 
-v0.9 is the first schema-audit release. The project still uses plain JSON and
-NPZ files, but the following naming conventions are now preferred.
+The current artifact schema version is `0.9.3`. Fresh artifacts use the same
+value as the package version through `ARTIFACT_SCHEMA_VERSION` in
+`wavesleuth_devito.metadata`.
 
-## World JSON
+## Compatibility policy
 
-A world JSON contains:
+- Fresh worlds, reconstructions, challenge manifests, challenge summaries,
+  active summaries, and release-suite summaries emit the current schema.
+- Supported older artifacts remain readable.
+- Normal validation identifies historical schemas without treating them as
+  errors.
+- `validate --strict` warns when regeneration would move an artifact to the
+  current schema.
+- Artifacts produced by a newer schema are reported explicitly.
 
-- `name`
-- `grid`
-- `medium`
-- `acquisition`
-- `simulation`
+## Core artifacts
 
-The hidden object lives under `medium.anomaly`. Supported generated target
-families include circles, ellipses, rings, two-circles, cracks, layered variants,
-blobs, and mask-blocks.
+### World JSON
 
-## Run NPZ
+Contains grid, physical extent, medium parameters, anomaly description,
+acquisition geometry, and simulation settings.
 
-A run NPZ contains receiver traces, time, acquisition coordinates, velocity
-metadata, and serialized public world metadata.
+### Run NPZ
 
-Trace layouts:
+Contains receiver traces, time, velocity model or redacted background model,
+source and receiver coordinates, optional wavefield products, and serialized
+world metadata.
 
-- ordinary one-shot/simultaneous traces may be `(time, receiver)`
-- sequential multi-shot traces use `(shot, time, receiver)`
-- active-demo artifacts standardize cumulative rounds to `(shot, time, receiver)`
-
-Blind public runs replace the true velocity model with the background model and
-remove final wavefield/snapshot arrays.
-
-## Reconstruction JSON
-
-Preferred fields:
-
-- `method`
-- `best_candidate`
-- `objective`
-- `candidate_grid` or search metadata
-- `physical_score`
-- `challenge_score` when the reconstruction belongs to a challenge
-
-Backward compatibility:
-
-- older files may use `score` for the physical reconstruction score
-- v0.9 readers normalize this to `physical_score`
-
-## Challenge directory
-
-A challenge directory contains:
+Sequential active artifacts use a stable trace layout:
 
 ```text
-challenge_summary.json
-challenge_manifest.json
-worlds/
-runs/
-figures/
-reports/
-secret/        # blind/local answer-key mode only
-public/        # blind public metadata only
+(shot, time, receiver)
 ```
 
-Preferred score names:
+Ordinary single-shot `simulate_world()` remains backward-compatible and may
+return `(time, receiver)` in memory.
 
-- `physical_score`: reconstruction quality, such as IoU and center error
-- `challenge_score`: budgeted game score, including forward-run and sensing cost
+### Reconstruction JSON
 
-## v0.9 validation commands
+Contains method, target kind, candidates or selected cells, objective settings,
+best candidate, mismatch information, uncertainty summaries where available,
+and physical scoring when answer metadata is available.
 
-```bash
-wavesleuth-devito doctor
-wavesleuth-devito validate challenge_easy challenge_mask runs/mask_blocks_obs.npz
-wavesleuth-devito release-report --out reports/release_report.html --challenge-paths challenge_easy challenge_mask
+### Challenge manifest
+
+Contains public paths, blind-state metadata, difficulty, schema, and secret
+hashes when blind mode is enabled.
+
+### Challenge summary
+
+Uses:
+
+```text
+physical_score
+challenge_score
 ```
+
+`score` remains a compatibility alias for the physical score.
+
+### Active summary
+
+Contains strategy, source history, per-round trace metadata, per-round physical
+scores and uncertainty diagnostics, final physical score, and score change.
+
+### Release-suite summary
+
+Uses the stable suite identifier:
+
+```text
+standard-challenge-suite
+```
+
+Package/schema versions are stored separately.
+
+## Blind artifacts
+
+Public blind worlds expose top-level markers:
+
+```json
+{
+  "blind": true,
+  "answer_hidden": true,
+  "blind_schema_version": "0.9.3"
+}
+```
+
+The nested `blind_public_metadata` object retains richer redaction notes.
+Secret file-byte and canonical hashes are stored separately.

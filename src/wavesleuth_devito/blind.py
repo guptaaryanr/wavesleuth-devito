@@ -12,9 +12,10 @@ import numpy as np
 
 from .exceptions import ValidationError
 from .io import array_string, ensure_parent
+from .metadata import ARTIFACT_SCHEMA_VERSION
 from .world import background_velocity_model_from_world, validate_world
 
-PUBLIC_SCHEMA_VERSION = "0.9.2"
+PUBLIC_SCHEMA_VERSION = ARTIFACT_SCHEMA_VERSION
 
 
 def canonical_json(data: dict[str, Any]) -> str:
@@ -83,7 +84,7 @@ def public_world_from_secret(secret_world: dict[str, Any], *, challenge: str | N
     """Return valid public world metadata that hides the true anomaly location.
 
     The current baseline inversions still need target family and known-shape
-    hints such as circle radius or ellipse axes. v0.6 hides the answer-bearing
+    hints such as circle radius or ellipse axes. blind mode hides the answer-bearing
     location and model arrays; fully secret shape/contrast challenges are left
     for later releases.
     """

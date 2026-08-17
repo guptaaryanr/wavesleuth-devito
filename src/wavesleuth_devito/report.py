@@ -102,7 +102,7 @@ def _staged_uncertainty_note(reconstruction: dict[str, Any]) -> str:
     return (
         "<p><strong>Staged-search note:</strong> this reconstruction contains candidates from multiple search stages. "
         "For location ambiguity, <code>center_effective_candidates</code> is usually more interpretable than raw "
-        "<code>effective_candidates</code>. In v0.5.1, center probabilities use the best mismatch per unique center "
+        "<code>effective_candidates</code>. Center probabilities use the best mismatch per unique center "
         "so duplicated refinement candidates do not inflate a center.</p>"
     )
 

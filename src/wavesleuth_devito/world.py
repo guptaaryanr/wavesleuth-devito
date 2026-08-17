@@ -17,6 +17,7 @@ from .geometry import (
     receiver_coordinates,
     source_coordinates,
 )
+from .metadata import ARTIFACT_SCHEMA_VERSION
 
 DEFAULT_SEED = 20260203
 SUPPORTED_WORLD_KINDS = ("circle", "rectangle", "ellipse", "ring", "two-circles", "crack", "layered", "circle-layered", "blobs", "mask-blocks")
@@ -146,6 +147,7 @@ def _default_shot_mode(acquisition: str) -> str:
 
 def _base_world(name: str, kind: str, *, acquisition: str = "single") -> dict[str, Any]:
     return {
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
         "name": name,
         "grid": {
             "nx": 70,
@@ -232,7 +234,7 @@ def make_default_world(
                     {"i": 2, "j": 4},
                 ],
                 "cell_velocity": float(world["medium"]["anomaly_velocity"]),
-                "description": "deterministic coarse block mask used by v0.8 cell-search",
+                "description": "deterministic coarse block mask used by cell-search",
             }
         )
     elif kind == "rectangle":

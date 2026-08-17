@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.9.3
+
+Final pre-v1.0 release candidate.
+
+- Centralized fresh artifact schemas through `ARTIFACT_SCHEMA_VERSION`.
+- Made challenge, blind, active, mask, and release-suite artifacts emit the current schema.
+- Replaced version-specific generated descriptions with stable wording.
+- Rewrote current-product documentation and added the post-v1 roadmap.
+- Added audit-bundle Git-ignore rules and a release-hygiene helper.
+- Hardened tests against stale exact-version assertions.
+- Did not change numerical simulation, inversion, challenge calibration, or active policies.
+
 ## v0.9.2
 
 Final pre-v1.0 release candidate. Fixes release-report version assertions,

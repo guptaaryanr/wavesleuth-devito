@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 from typing import Any
 
 PROJECT_NAME = "WaveSleuth-Devito"
-__version__ = "0.9.2"
+__version__ = "0.9.3"
+ARTIFACT_SCHEMA_VERSION = __version__
 
 
 def utc_timestamp() -> str:
@@ -19,5 +20,6 @@ def base_metadata() -> dict[str, Any]:
     return {
         "project": PROJECT_NAME,
         "version": __version__,
+        "schema_version": ARTIFACT_SCHEMA_VERSION,
         "created_utc": utc_timestamp(),
     }

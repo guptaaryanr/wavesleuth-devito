@@ -29,7 +29,7 @@ from .exceptions import UnsupportedWorldError, ValidationError
 from .geometry import grid_extent, receiver_coordinates
 from .inversion import grid_search_circle, grid_search_ellipse
 from .io import ensure_parent, load_json, save_json, save_world
-from .metadata import base_metadata
+from .metadata import base_metadata, ARTIFACT_SCHEMA_VERSION
 from .scoring import score_reconstruction
 from .simulation import simulate_world
 from .uncertainty import candidate_probabilities
@@ -553,7 +553,7 @@ img {{ border: 1px solid #ddd; margin-bottom: 1rem; }}
 {''.join(image_blocks)}
 <h2>Notes</h2>
 <ul>
-<li>This v0.7.2 active demo re-simulates cumulative shots each round for simplicity.</li>
+<li>This active demo re-simulates cumulative shots each round for simplicity.</li>
 <li>Active trace files are standardized to <code>(shot, time, receiver)</code> after simulation, including one-shot rounds.</li>
 <li>The source-selection policy is deterministic and heuristic, not an optimal experimental-design solver.</li>
 <li>Use this to inspect whether additional illumination reduces ambiguity and improves reconstruction.</li>
@@ -850,9 +850,9 @@ try:
         def run_active_demo(*args, **kwargs):
             summary = _ws_v092_original_run_active_demo(*args, **kwargs)
             if isinstance(summary, dict):
-                summary["version"] = _ws_v092_version
-                summary["schema_version"] = _ws_v092_version
-                summary["artifact_schema_version"] = _ws_v092_version
+                summary["version"] = __version__
+                summary["schema_version"] = ARTIFACT_SCHEMA_VERSION
+                summary["artifact_schema_version"] = ARTIFACT_SCHEMA_VERSION
                 final_score = _ws_v092_score_from_active_summary(summary)
                 if final_score is not None:
                     summary["final_reconstruction_score"] = float(final_score)
