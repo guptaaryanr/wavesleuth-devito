@@ -10,9 +10,6 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "Aryan Gupta"}]
-[project.urls]
-Repository = "https://github.com/guptaaryanr/wavesleuth-devito"
-Issues = "https://github.com/guptaaryanr/wavesleuth-devito/issues"
 keywords = ["devito", "wave-equation", "inverse-problems", "simulation", "acoustics"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -28,6 +25,10 @@ dependencies = [
   "numpy>=1.23",
   "matplotlib>=3.6"
 ]
+
+[project.urls]
+Repository = "https://github.com/guptaaryanr/wavesleuth-devito"
+Issues = "https://github.com/guptaaryanr/wavesleuth-devito/issues"
 
 [project.optional-dependencies]
 devito = ["devito>=4.8"]
