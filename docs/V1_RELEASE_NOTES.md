@@ -5,17 +5,17 @@ playground.
 
 ## Included
 
-- constant-density 2D acoustic simulation through Devito
+- constant density 2D acoustic simulation through Devito
 - simultaneous and sequential shots, acquisition presets, and data perturbations
-- circle, rectangle, layered, blobs, ellipse, ring, two-circle, crack,
-  circle-layered, and mask-blocks world generation
-- circle joint/staged search, known-shape ellipse center search, and greedy
-  coarse mask-cell reconstruction
-- mismatch-derived uncertainty summaries
+- circle, rectangle, layered, blobs, ellipse, ring, two circle, crack,
+  circle layered, and mask blocks world generation
+- circle joint/staged search, known shape ellipse center search, and greedy
+  coarse mask cell reconstruction
+- mismatch derived uncertainty summaries
 - open and blind challenges, physical and budgeted scores, and leaderboards
-- multi-round active source-selection demonstrations
+- multi round active source selection demonstrations
 - HTML reports, artifact validation, environment doctor, canonical release
-  suite, and isolated wheel-install release smoke
+  suite, and isolated wheel install release smoke
 
 ## Canonical regression references
 

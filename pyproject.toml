@@ -9,7 +9,10 @@ description = "A compact Devito-backed inverse-wave playground for hidden 2D med
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-authors = [{name = "WaveSleuth contributors"}]
+authors = [{name = "Aryan Gupta"}]
+[project.urls]
+Repository = "https://github.com/guptaaryanr/wavesleuth-devito"
+Issues = "https://github.com/guptaaryanr/wavesleuth-devito/issues"
 keywords = ["devito", "wave-equation", "inverse-problems", "simulation", "acoustics"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",

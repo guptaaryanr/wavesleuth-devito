@@ -1,19 +1,19 @@
 # WaveSleuth-Devito
 
-WaveSleuth-Devito is a compact inverse-wave playground built on Devito. It
-simulates acoustic waves through hidden two-dimensional media, records sparse
+WaveSleuth-Devito is a compact inverse wave playground built on Devito. It
+simulates acoustic waves through hidden two dimensional media, records sparse
 receiver traces, and reconstructs hidden structures with deliberately simple,
 inspectable inversion strategies.
 
-The project feels like scientific Battleship with wave propagation: hide a
+The project feels like scientific Battleship with wave propagation. We hide a
 structure, choose how to illuminate it, observe a few traces, infer what is
 there, and inspect why the reconstruction worked or failed.
 
-**Status:** v1.0.0 is the first stable release. The package, fresh artifact schema, canonical challenge suite, blind-challenge flow, active-sensing flow, and release tooling are versioned together.
+**Status:** v1.0.0 is the first stable release. The package, fresh artifact schema, canonical challenge suite, blind challenge flow, active sensing flow, and release tooling are versioned together.
 
 ## What it is
 
-- a local CPU playground for small two-dimensional acoustic inverse problems
+- a local CPU playground for small two dimensional acoustic inverse problems
 - a real Devito forward model, not a NumPy wave surrogate presented as Devito
 - a visual sandbox for sparse acquisition, uncertainty, blind challenges, and
   active sensing
@@ -23,29 +23,29 @@ there, and inspect why the reconstruction worked or failed.
 
 ## What it is not
 
-- a production seismic, ultrasound, or nondestructive-testing package
-- a validated field-scale model
+- a production seismic, ultrasound, or nondestructive testing package
+- a validated field scale model
 - a generic Devito benchmark
-- a full-waveform inversion framework
-- evidence that mismatch-derived uncertainty weights are calibrated Bayesian
+- a full waveform inversion framework
+- evidence that mismatch derived uncertainty weights are calibrated Bayesian
   posteriors
 
 ## Current capabilities
 
 | Area | Stable capability |
 |---|---|
-| Forward model | Devito-backed constant-density 2D acoustic wave equation |
+| Forward model | Devito backed constant density 2D acoustic wave equation |
 | Sources | Ricker pulse, simultaneous or sequential shots |
 | Boundaries | Reflective/default boundary or simple damping sponge, not full PML |
-| Acquisition | Single, crossfire, ring, top-only, left-right, limited-angle |
+| Acquisition | Single, crossfire, ring, top only, left-right, limited angle |
 | Data realism | Deterministic noise, dropout, amplitude jitter, and time jitter |
 | Circle inversion | Joint grid search and staged center/radius/velocity search |
-| Ellipse inversion | Known-shape center search; broader parameter search is experimental |
-| Mask inversion | Greedy coarse-cell recovery for `mask-blocks` worlds |
+| Ellipse inversion | Known shape center search; broader parameter search is experimental |
+| Mask inversion | Greedy coarse cell recovery for `mask-blocks` worlds |
 | Objectives | Raw or differential traces, L2 or correlation, optional time gates |
-| Uncertainty | Candidate and unique-center mismatch-derived summaries |
+| Uncertainty | Candidate and unique center mismatch-derived summaries |
 | Challenges | Open and blind modes, physical and budgeted scores, leaderboards |
-| Active sensing | Multi-round source selection with three deterministic heuristics |
+| Active sensing | Multi round source selection with three deterministic heuristics |
 | Release tools | `doctor`, `validate`, `challenge-suite`, and `release-report` |
 
 The detailed support table is in
@@ -78,7 +78,7 @@ python -m pip install -e ".[test]"
 ```
 
 World generation, JSON handling, scoring, validation, documentation checks, and
-non-Devito tests still work. Simulation and inversion fail clearly when Devito
+non Devito tests still work. Simulation and inversion fail clearly when Devito
 is unavailable.
 
 ## Fastest useful start
@@ -168,7 +168,7 @@ Extra unknowns can reduce trace mismatch without improving geometry.
 
 ## Coarse mask workflow
 
-`mask-blocks` is the first non-parametric baseline. It greedily adds coarse
+`mask-blocks` is the first non parametric baseline. It greedily adds coarse
 cells and verifies every candidate with Devito.
 
 ```bash
@@ -214,7 +214,7 @@ wavesleuth-devito score-challenge challenge_ellipse_blind
 ```
 
 Public blind runs retain acquisition geometry, traces, timing, background
-velocity, and known-shape hints required by the stable baseline. They do not
+velocity, and known shape hints required by the stable baseline. They do not
 contain the true velocity model, final wavefield, snapshots, or hidden location.
 
 ## Active sensing
@@ -242,7 +242,7 @@ wavesleuth-devito active-leaderboard \
   active_uncertainty active_spread active_opposite
 ```
 
-These policies are deterministic heuristics, not optimal experimental-design
+These policies are deterministic heuristics, not optimal experimental design
 solvers. A new shot may expose ambiguity without monotonically improving a
 simple inversion.
 
@@ -253,7 +253,7 @@ Two scores serve different purposes:
 - `physical_score` describes reconstruction quality, including IoU, center
   error, shape-parameter errors, and contrast errors where supported.
 - `challenge_score` is the budgeted game score. It rewards reconstruction
-  quality and penalizes source, receiver, and forward-run cost. Runtime is
+  quality and penalizes source, receiver, and forward run cost. Runtime is
   diagnostic only.
 
 The legacy `score` alias remains readable for backward compatibility.
@@ -262,7 +262,7 @@ The legacy `score` alias remains readable for backward compatibility.
 
 Candidate probabilities are soft weights derived from mismatch values. They are
 not calibrated posteriors. `center_effective_candidates` is usually the clearest
-location-ambiguity diagnostic because it deduplicates repeated centers across
+location ambiguity diagnostic because it deduplicates repeated centers across
 refinement stages.
 
 ## World families
@@ -282,7 +282,7 @@ circle-layered
 mask-blocks
 ```
 
-Stable reconstruction baselines currently cover circle, known-shape ellipse,
+Stable reconstruction baselines currently cover circle, known shape ellipse,
 and calibrated coarse `mask-blocks` targets. Other families are simulation and
 visualization targets for future inversion work.
 
@@ -297,22 +297,22 @@ bash collect_wavesleuth_v1_audit.sh
 ```
 
 The master audit collects tests, environment information, a world gallery, the
-standard challenge suite, blind-integrity checks, active demos, validation,
+standard challenge suite, blind integrity checks, active demos, validation,
 reports, and checksums.
 
 ## Current limitations
 
-- The forward model is a small constant-density acoustic toy model.
+- The forward model is a small constant density acoustic toy model.
 - The simple sponge is not a production PML.
 - Circle and ellipse inversions are parametric.
 - Ellipse axes/orientation recovery is experimental.
-- Mask-cell search is greedy and calibrated only for a simple deterministic
+- Mask cell search is greedy and calibrated only for a simple deterministic
   milestone.
 - Velocity contrast remains less identifiable than location and radius in the
   staged circle challenge.
 - Active policies are heuristic.
 - Uncertainty weights are qualitative.
-- No GPU, MPI, 3D, cloud, notebook, or neural-network dependency is required.
+- No GPU, MPI, 3D, cloud, notebook, or neural network dependency is required.
 
 ## Documentation
 

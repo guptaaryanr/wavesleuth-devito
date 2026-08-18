@@ -6,14 +6,14 @@
 | rectangle | yes | yes | yes | no | limited |
 | layered | yes | yes | yes | no | limited |
 | blobs | yes | yes | yes | no | limited |
-| ellipse | yes | yes | yes | known-shape center search | yes |
+| ellipse | yes | yes | yes | known shape center search | yes |
 | ring | yes | yes | yes | no | mask visualization only |
-| two-circles | yes | yes | yes | no | limited |
+| two circles | yes | yes | yes | no | limited |
 | crack | yes | yes | yes | no | limited |
-| circle-layered | yes | yes | yes | no dedicated baseline | limited |
-| mask-blocks | yes | yes | yes | greedy coarse cell search | yes |
+| circle layered | yes | yes | yes | no dedicated baseline | limited |
+| mask blocks | yes | yes | yes | greedy coarse cell search | yes |
 
-## Cross-cutting features
+## Cross cutting features
 
 | Capability | Status |
 |---|---|

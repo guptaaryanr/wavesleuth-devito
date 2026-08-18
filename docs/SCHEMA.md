@@ -7,7 +7,7 @@ value as the package version through `ARTIFACT_SCHEMA_VERSION` in
 ## Compatibility policy
 
 - Fresh worlds, reconstructions, challenge manifests, challenge summaries,
-  active summaries, and release-suite summaries emit the current schema.
+  active summaries, and release suite summaries emit the current schema.
 - Supported older artifacts remain readable.
 - Normal validation identifies historical schemas without treating them as
   errors.
@@ -34,7 +34,7 @@ Sequential active artifacts use a stable trace layout:
 (shot, time, receiver)
 ```
 
-Ordinary single-shot `simulate_world()` remains backward-compatible and may
+Ordinary single shot `simulate_world()` remains backward compatible and may
 return `(time, receiver)` in memory.
 
 ### Reconstruction JSON
@@ -45,7 +45,7 @@ and physical scoring when answer metadata is available.
 
 ### Challenge manifest
 
-Contains public paths, blind-state metadata, difficulty, schema, and secret
+Contains public paths, blind state metadata, difficulty, schema, and secret
 hashes when blind mode is enabled.
 
 ### Challenge summary
@@ -61,10 +61,10 @@ challenge_score
 
 ### Active summary
 
-Contains strategy, source history, per-round trace metadata, per-round physical
+Contains strategy, source history, per round trace metadata, per round physical
 scores and uncertainty diagnostics, final physical score, and score change.
 
-### Release-suite summary
+### Release suite summary
 
 Uses the stable suite identifier:
 
@@ -76,7 +76,7 @@ Package/schema versions are stored separately.
 
 ## Blind artifacts
 
-Public blind worlds expose top-level markers:
+Public blind worlds expose top level markers:
 
 ```json
 {
@@ -87,4 +87,4 @@ Public blind worlds expose top-level markers:
 ```
 
 The nested `blind_public_metadata` object retains richer redaction notes.
-Secret file-byte and canonical hashes are stored separately.
+Secret file byte and canonical hashes are stored separately.
